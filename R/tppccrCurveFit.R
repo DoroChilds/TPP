@@ -142,8 +142,17 @@ tppccrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(),
           file_name  <- file.path(plotDir, paste("drCurve_", 
                                                  gsub("([^[:alnum:]])", "_", 
                                                       ipi),".pdf", sep=""))
-          ggsave(filename=file.path(resultPath, file_name), plot=p, width=20, 
-                 height=25, units="cm")
+          
+          ## Print plot to PDF:
+          pdf(file=file.path(resultPath, file_name), width=7.87, height=9.84, 
+              useDingbats=FALSE)
+          grid.arrange(p)
+          dev.off()      
+          ## We used to plot with the ggsave function until a major update in the 
+          ## gridExtra package (to version 2.0.0) made ggsave incompatible with 
+          ## gridArrange output. We'll later try to switch back to the command:
+          # ggsave(filename=file.path(resultPath, file_name), plot=p, width=20, 
+          # height=25, units="cm")
         }
       }
     }
@@ -156,7 +165,7 @@ tppccrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(),
     ## Check if slope is outside of concentration range
     flagOutsideConcRange <- -1*pec50_final > ubnd | -1*pec50_final < lbnd
     flagStr <- ifelse(flagOutsideConcRange, yes="Yes", no="No")
-
+    
     ## Save fitting results
     fitResults <- rbind(fitResults, data.frame(Protein_ID=ipi, pEC50=pec50_final,
                                                slope=hill, R_sq=r2, 
@@ -179,7 +188,7 @@ tppccrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(),
   ## Append fold changes and fit results for the output table:
   dfFCs   <- data.frame(Protein_ID=protIDs, fcMat, stringsAsFactors=FALSE)
   output <- join(dfFCs, fitResults, by="Protein_ID")
-
+  
   ## Append columns imported from input data:
   dfFeatureDat <- pData(featureData(data))
   dfFeatureDat$CompoundEffect <- NULL

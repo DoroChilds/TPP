@@ -98,8 +98,16 @@ plotMeltingCurve <- function(modelList, xMat, fcMat, curvePars, protID,
                         clrs=plotCols)
     
     ## Print plot to PDF:
-    if (!is.null(filename)) ggsave(filename=filename, plot=p, width=20, 
-                                   height=25, units="cm")    
+    if (!is.null(filename)) {
+      pdf(file=filename, width=7.87, height=9.84, useDingbats=FALSE)
+      grid.arrange(p)
+      dev.off()      
+      ## We used to plot with the ggsave function until a major update in the 
+      ## gridExtra package (to version 2.0.0) made ggsave incompatible with 
+      ## gridArrange output. We'll later try to switch back to the command:
+      # ggsave(filename=filename, plot=p, width=20, height=25, units="cm") #
+    }
+    
     return(NULL)
   }
 }

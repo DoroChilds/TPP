@@ -44,7 +44,7 @@
 #'   
 #'   If the melting curve fitting procedure does not converge, it will be 
 #'   repeatedly started from perturbed starting parameters (maximum iterations 
-#'   defined by argment \code{maxAttempts}).
+#'   defined by argument \code{maxAttempts}).
 #'   
 #' @examples
 #' data(hdacTR_smallExample)

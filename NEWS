@@ -4,3 +4,16 @@ Version 1.0.0:
   
   o First release of the TPP package for analyzing Thermal Proteome Profiling 
     experiments.
+
+Version 1.1.0:
+  o Changes in devel will be characterized by version number 1.1.x
+
+Version 1.1.1:
+
+  o bugfixes in config table import from .csv files: 
+    1. can now handle different types of delimitors (";", "\t", ",")
+    2. automatically removes empty rows after import
+
+Version 1.1.2:
+  o the recent update of the gridExtra package to Version 2.0.0 required a small fix to 
+    ensure sucessful plotting of the melting curves and parameter tables.

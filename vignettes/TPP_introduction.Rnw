@@ -18,7 +18,7 @@ European Molecular Biology Laboratory (EMBL),
 \\ Heidelberg, Germany\\
 \texttt{dorothee.childs@embl.de}}
 
-\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2015-03-04)}
+\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2015-07-20)}
 
 \begin{document}
 <<opts, include=FALSE>>=

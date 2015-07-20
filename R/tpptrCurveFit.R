@@ -1,7 +1,7 @@
 #' Fit melting curves to all proteins in a dataset.
 #' @details If the melting curve fitting procedure does not converge, it will be
 #'   repeatedly started from perturbed starting parameters (maximum iterations 
-#'   defined by argment \code{maxAttempts})
+#'   defined by argument \code{maxAttempts})
 #'   
 #' @return A list of ExpressionSets storing the data together with the melting
 #'   curve parameters for each treatment condition and biological replicate.
@@ -19,7 +19,7 @@
 #' normalizedData <- tpptrNorm$normData
 #' hdacSubsets <- lapply(normalizedData, 
 #'                       function(d) d[grepl("HDAC", featureNames(d))])
-#' tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets)
+#' tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets, nCores=1)
 #' 
 #' @param data list of \code{ExpressionSet}s with protein fold changes for curve fitting.
 #' @param resultPath location where to store the melting curve plots.
