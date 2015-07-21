@@ -45,10 +45,12 @@ plotMinSlopes_vs_MPDiffs <- function(mpDiffs, minSlopes, pValues, expName1,
                       expName2, ".pdf", sep="")
     pdf(file=file.path(path, plotFile), width=8, height=8)
   }
+  
+  titleObj <- textGrob(paste(expName1, "vs.", expName2), 
+                       gp=gpar(fontsize=20,fontface='bold'), just="top")
   grid.arrange(arrangeGrob(scatterPlot, histPlot, ncol=2, widths=c(3,1)), 
-               heights=c(1,3), 
-               main = textGrob(paste(expName1, "vs.", expName2), 
-                               gp=gpar(fontsize=20,fontface='bold'), just="top"))
+               heights=c(1,0.1), main = titleObj)
+  
   if (!is.null(path)){
     dev.off()
   }

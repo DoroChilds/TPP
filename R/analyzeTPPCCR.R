@@ -82,6 +82,8 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
                           r2Cutoff=0.8,  fcCutoff=1.5, slopeBounds=c(1,50),
                           plotCurves=TRUE){
   
+  message("This is TPP version ", packageVersion("TPP"),".")
+  
   ## ---------------------------------------------------------------------------
   ## 1) Import data and filter out rows for which column 'nonZeroCols'==0:
   eSets <- tppccrImport(configTable=configTable, data=data, idVar=idVar, 

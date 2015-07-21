@@ -93,6 +93,8 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
                          startPars=c("Pl"=0, "a"=550, "b"=10), maxAttempts=500,
                          binWidth=300, plotCurves=TRUE){
   
+  message("This is TPP version ", packageVersion("TPP"),".")
+  
   ## Import data:
   trData <- tpptrImport(configTable=configTable, data=data, idVar=idVar, fcStr=fcStr, 
                         naStrs=naStrs, qualColName=qualColName)

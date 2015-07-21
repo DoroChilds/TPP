@@ -1,7 +1,7 @@
 Package: TPP
 Type: Package
 Title: Analyze thermal proteome profiling (TPP) experiments
-Version: 1.1.2
+Version: 1.1.3
 Author: Dorothee Childs, Holger Franken, Mikhail Savitski and Wolfgang
         Huber
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
