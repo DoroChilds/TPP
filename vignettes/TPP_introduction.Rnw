@@ -301,7 +301,9 @@ print(onlyBNew)
 Finally, we export the new results to an Excel spreadsheet: 
 %Because this process can be time consuming for a large dataset, we only export the detected potential targets:
 <<trExport, message=TRUE>>=
-tppExport(tab=TRresultsBNew, file=file.path(resultPath, paste("targets_binWidth",bNew,".xlsx",sep="")))
+tppExport(tab=TRresultsBNew, 
+          file=file.path(resultPath, 
+                         paste("targets_binWidth",bNew,".xlsx",sep="")))
 @
 
 \subsection{Analyzing data not produced by the accompanying \Rpackage{isobarQuant} package}\label{sec:TR_with_nonIsobQuant_Data}

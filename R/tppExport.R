@@ -9,7 +9,7 @@
 #' @return No value returned.
 #' @export
 tppExport <- function(tab, file){
-  message("Writing results to file: ", file)
+  message("Writing results to file:\n", file)
   # Boolean columns: Convert TRUE/(FALSE|NA) to YES/NO values
   allCols <- colnames(tab)
   boolCols <- c(grep("model_converged_", allCols, value=TRUE),
@@ -30,8 +30,10 @@ tppExport <- function(tab, file){
   }
   
   ## Remove inflection point column from TPP-TR output:
-  inflPointColumn <- grep("inflPoint", allCols, value=TRUE)
-  tab <- subset(tab, select=!(allCols %in% inflPointColumn))
+  rmCols <- c(grep("inflPoint", allCols, value=TRUE),
+              allCols[substr(allCols, 1, 2) == "a_"],
+              allCols[substr(allCols, 1, 2) == "b_"])
+  tab <- subset(tab, select=!(allCols %in% rmCols))
   allCols <- colnames(tab)
   
   ## Sort proteins in alphabetical order:

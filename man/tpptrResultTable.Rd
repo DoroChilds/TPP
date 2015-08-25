@@ -27,7 +27,7 @@ If a TPP-TR experiment was performed with the conditions "Vehicle"
 }
 \examples{
 data(hdacTR_fittedData_smallExample)
-resultTable <- tpptrResultTable(trDataFitted)
+resultTable <- tpptrResultTable(hdacTR_fittedData_smallExample)
 subset(resultTable, fulfills_all_4_requirements)$Protein_ID
 }
 \references{

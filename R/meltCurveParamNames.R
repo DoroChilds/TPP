@@ -6,7 +6,7 @@ meltCurveParamNames <- function(returnParNames=TRUE, returnPerformanceInfo=TRUE)
   ## data objects.
   out <- c()
   if (returnParNames) {
-    out <-c(out, "meltPoint", "inflPoint", "slope", "plateau", "R_sq")
+    out <-c(out, "a", "b", "meltPoint", "inflPoint", "slope", "plateau", "R_sq")
   }
   if (returnPerformanceInfo) {
     out <- c(out, "model_converged", "sufficient_data_for_fit")

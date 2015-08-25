@@ -14,7 +14,7 @@ fitMeltCurvesToProtein <- function(xMat, yDF, startPars, maxAttempts, expNames,
   curveParNames <- meltCurveParamNames()
   curveParsWholeProt<- data.frame(matrix(nrow=length(expNames), 
                                          ncol=length(curveParNames), 
-                                         dimnames=list(expNames,curveParNames)))
+                                         dimnames=list(expNames,c( curveParNames))))
   for (en in expNames){
     xTmp <- xMat[en,]
     yTmp <- fcMat[en,]
