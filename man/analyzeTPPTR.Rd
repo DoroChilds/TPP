@@ -5,11 +5,13 @@
 \title{Analyze TPP-TR experiment}
 \usage{
 analyzeTPPTR(configTable, data = NULL, resultPath = NULL,
-  idVar = "gene_name", fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN",
-  "<NA>"), qualColName = "qupm", normalize = TRUE,
+  idVar = "gene_name", fcStr = "rel_fc_", ciStr = NULL, naStrs = c("NA",
+  "n/d", "NaN", "<NA>"), qualColName = "qupm", normalize = TRUE,
   normReqs = tpptrDefaultNormReqs(), ggplotTheme = tppDefaultTheme(),
   nCores = "max", startPars = c(Pl = 0, a = 550, b = 10),
-  maxAttempts = 500, binWidth = 300, plotCurves = TRUE)
+  maxAttempts = 500, plotCurves = TRUE, fixedReference = NULL,
+  pValMethod = "maxQuant", pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
+  pValParams = list(binWidth = 300), verbose = FALSE, xlsxExport = TRUE)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file,
@@ -29,6 +31,10 @@ unique identifiers for each protein.}
 \item{fcStr}{character string indicating which columns contain the actual
 fold change values. Those column names containing the suffix \code{fcStr}
 will be regarded as containing fold change values.}
+
+\item{ciStr}{character string indicating which columns contain confidence
+intervals for the fold change measurements. If specified, confidence
+intervals will be plotted around the melting curves.}
 
 \item{naStrs}{character vector indicating missing values in the data table.
 When reading data from file, this value will be passed on to the argument
@@ -54,10 +60,27 @@ passed to function \code{\link{nls}} for curve fitting.}
 \item{maxAttempts}{maximal number of curve fitting attempts if model does not
 converge.}
 
-\item{binWidth}{bin width used for p-value computation.}
-
 \item{plotCurves}{boolan value indicating whether melting curves should be
-  plotted. Deactivating plotting decreases runtime.}
+plotted. Deactivating plotting decreases runtime.}
+
+\item{fixedReference}{name of a fixed reference experiment for normaliztion.
+If NULL (default), the experiment with the best R2 when fitting a melting
+curve through the median fold changes is chosen as the reference.}
+
+\item{pValMethod}{Method for p-value computation. Currently restricted to
+'maxQuant' (see Cox & Mann (2008)).}
+
+\item{pValFilter}{optional list of filtering criteria to be applied before
+p-value computation.}
+
+\item{pValParams}{optional list of parameters for p-value computation.}
+
+\item{verbose}{print name of each fitted protein to the command lin as a
+means of progress report.}
+
+\item{xlsxExport}{boolean value indicating whether to produce result table in
+  .xlsx format (requires package \code{openxlsx} and a zip application to be
+  installed).}
 }
 \value{
 A data frame in which the fit results are stored row-wise for each
@@ -75,10 +98,10 @@ Invokes the following steps: \enumerate{ \item Import data using the
   set argument \code{normalize=TRUE}. The normalization will be filtered
   according to the criteria specified in the \code{normReqs} argument (also
   see the documentation of \code{\link{tpptrNormalize}} and
-  \code{\link{tpptrDefaultNormReqs}} for further information. \item Fit
-  melting curves using the \code{\link{tpptrCurveFit}} function. \item
-  Produce result table using the \code{\link{tpptrResultTable}} function.
-  \item Export results to Excel using the \code{\link{tppExport}} function. }
+  \code{\link{tpptrDefaultNormReqs}} for further information). \item Fit
+  melting curves using the function \code{\link{tpptrCurveFit}}. \item
+  Produce result table using the function \code{\link{tpptrAnalyzeMeltingCurves}}.
+  \item Export results to Excel using the function \code{\link{tppExport}}. }
 
   The default settings are tailored towards the output of the python package
   isobarQuant, but can be customised to your own dataset by the arguments
@@ -92,6 +115,16 @@ Invokes the following steps: \enumerate{ \item Import data using the
 
   The function \code{analyzeTPPTR} reports intermediate results to the
   command line. To suppress this, use \code{\link{suppressMessages}}.
+
+  The \code{configTable} argument is a dataframe, or the path to a
+  spreadsheet (tab-delimited text-file or xlsx format). Information about
+  each experiment is stored row-wise. It contains the following columns:
+  \itemize{ \item{\code{Path}:}{location of each datafile. Alternatively,
+  data can be directly handed over by the \code{data} argument.}
+  \item{\code{Experiment}: }{unique experiment names.}
+  \item{\code{Condition}: }{experimental conditions of each dataset.}
+  \item{Label columns: } each isobaric label names a column that contains the
+  temperatures administered for the label in the individual experiments. }
 
   The argument \code{nCores} could be either 'max' (use all available cores)
   or an upper limit of CPUs to be used.
@@ -114,6 +147,7 @@ Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T.,
   346(6205), 1255784.
 }
 \seealso{
-tppDefaultTheme
+tppDefaultTheme, tpptrImport, tpptrNormalize, tpptrCurveFit,
+tpptrAnalyzeMeltingCurves
 }
 

@@ -2,58 +2,75 @@
 % Please edit documentation in R/tppccrCurveFit.R
 \name{tppccrCurveFit}
 \alias{tppccrCurveFit}
-\title{Fit and analyse dose response curves}
+\title{Fit dose response curves}
 \usage{
-tppccrCurveFit(data, resultPath = NULL, ggplotTheme = tppDefaultTheme(),
-  doPlot = TRUE, fcCutoff = 1.5, r2Cutoff = 0.8, slopeBounds = c(1, 50))
+tppccrCurveFit(data = NULL, fcTable = NULL, cpdEffects = NULL,
+  slopeBounds = c(1, 50), nCores = "max", verbose = FALSE)
 }
 \arguments{
-\item{data}{ExpressionSet containing protein fold changes for curve fitting.}
+\item{data}{list of expressionSet objects containing protein fold changes for
+dose response curve fitting.}
 
-\item{resultPath}{location where to store dose-response curve plots and
-result table.}
+\item{fcTable}{optional long table with fold changes for each experiment.
+Can be provided instead of the input argument \code{data}.}
 
-\item{ggplotTheme}{ggplot theme for dose response curve plots.}
-
-\item{doPlot}{boolan value indicating whether dose response curves should be
-plotted. Deactivating plotting decreases runtime.}
-
-\item{fcCutoff}{cutoff for highest compound concentration fold change.}
-
-\item{r2Cutoff}{quality criterion on dose response curve fit.}
+\item{cpdEffects}{optional long table of compound effects per protein and
+experiment. Can be provided instead of the input argument \code{data}.}
 
 \item{slopeBounds}{bounds on the slope parameter for dose response curve
 fitting.}
+
+\item{nCores}{either a numerical value given the desired number of CPUs, or
+'max' to automatically assign the maximum possible number (default).}
+
+\item{verbose}{print name of each fitted protein to the command
+line as a means of progress report.}
 }
 \value{
-A data frame in which the fit results are stored row-wise for each
-  protein.
+A list of expressionSet objects storing fold changes, the fitted
+  curve parameters, as well as row and column metadata. In each expressionSet
+  \code{S}, the fold changes can be accessed by \code{exprs(S)}. Protein
+  expNames can be accessed by \code{featureNames(S)}. Isobaric labels and the
+  corresponding concentrations are returned by \code{S$label} and
+  \code{S$concentration}. The fitted curve parameters are stored in
+  code{featureData(S)}.
 }
 \description{
 \code{tppccrCurveFit} fits logistic dose response curves to fold
-  change measurements of a TPP-CCR experiment and returns quality information
-  about the estimated parameters.
+  change measurements of a TPP-CCR experiment.
 }
 \details{
-\code{data} is an ExpressionSet object created by
-\code{\link{tppccrImport}}. It contains the isobaric labels and administered
-drug concentrations in the \code{phenoData} and user-defined protein
-properties in the \code{featureData}. Protein IDs are stored in the
-\code{featureNames}.
+\code{data} is a list of expressionSet objects created by
+  \code{\link{tppccrImport}}. If desired, it can be already preprocessed by
+  \code{\link{tppccrNormalize}} or \code{\link{tppccrTransform}}. It contains
+  the isobaric labels and administered drug concentrations in the
+  \code{phenoData} and user-defined protein properties in the
+  \code{featureData}. Protein IDs are stored in the \code{featureNames}.
 
-The dose response curve plots will be stored in a subfolder with name
-\code{DoseResponse_Curves} at the location specified by \code{resultPath}.
+  Measurements and compound effects for curve fitting can be provided
+  by the arguments \code{fcTable} and \code{cpdEffects}, instead of being
+  stored in expressionSets in \code{data}.
+
+  If specified, \code{fcTable} needs to be a long
+  table with column names "id" (the protein names), "concentration" (the fold
+  changes), "labelName" (the isobaric label to each measurement), and
+  "experiment" (e.g. "Vehicle_1" or "Panobinostat_1").
+
+  If specified, \code{cpdEffects} needs to be a long
+  table with column names "id" (the protein names), "cpdEff" (character
+  vector of compound effects, may contain NAs), and
+  "experiment" (e.g. "Vehicle_1" or "Panobinostat_1").
 }
 \examples{
 data(hdacCCR_smallExample)
-tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1,
-                           data=hdacCCR_data_repl1)
+tppccrData <- tppccrImport(configTable=hdacCCR_config,
+                           data=hdacCCR_data)
 tppccrNorm <- tppccrNormalize(data=tppccrData)
 tppccrTransformed <- tppccrTransform(data=tppccrNorm)
-tppccrFitResults <- tppccrCurveFit(data=tppccrTransformed)
-subset(tppccrFitResults, passed_filter)
+tppccrFitted <- tppccrCurveFit(data=tppccrTransformed, nCores=1)
 }
 \seealso{
-\code{\link{tppccrImport}}, \code{\link{tppDefaultTheme}}
+\code{\link{tppccrImport}}, \code{\link{tppccrNormalize}},
+  \code{\link{tppccrTransform}}
 }
 

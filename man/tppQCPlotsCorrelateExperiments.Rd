@@ -29,12 +29,12 @@ data(hdacTR_smallExample)
 tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
 # Quality control (QC) plots BEFORE normalization:
 tppQCPlotsCorrelateExperiments(tppData=tpptrData,
-annotStr="Non-normalized Fold Changes", ggplotTheme=ggplotTheme)
+annotStr="Non-normalized Fold Changes")
 # Quality control (QC) plots AFTER normalization:
 tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 tpptrDataNormalized <- tpptrNorm$normData
 tppQCPlotsCorrelateExperiments(tppData=tpptrDataNormalized,
-annotStr="Normalized Fold Changes", ggplotTheme=ggplotTheme)
+annotStr="Normalized Fold Changes")
 }
 \seealso{
 \code{\link{tppDefaultTheme}}

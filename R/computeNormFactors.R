@@ -1,4 +1,4 @@
-computeNormFactors <- function(data, startPars, maxAttempts){
+computeNormFactors <- function(data, startPars, maxAttempts, fixedReference=NULL){
   ## Fit sigmoids to median fold changes of each treatment group and determine 
   ## best fit.
   message("Computing normalization coefficients:")
@@ -15,11 +15,17 @@ computeNormFactors <- function(data, startPars, maxAttempts){
   
   ## Melting curve parametes:
   r2 <- sapply(grNames, function(gn) rSquared(model=modelList[[gn]], y=yMat[,gn]))
-    
-  ## Select best curve fit:
-  r2Best <- which.max(r2)
-  mBest  <- modelList[[r2Best]]
-  message(paste("-> Experiment with best model fit: ", grNames[r2Best], " (R2: ", signif(r2[r2Best],4),")", sep=""))
+  
+  if(is.null(fixedReference)){
+    ## Select best curve fit:
+    refidx <- which.max(r2)
+    mBest  <- modelList[[refidx]]
+    message(paste("-> Experiment with best model fit: ", grNames[refidx], " (R2: ", signif(r2[refidx],4),")", sep=""))
+  } else {
+    refidx <- which(grNames == fixedReference)
+    mBest <- modelList[[refidx]]
+    message(paste("-> Fixed reference experiment: ", grNames[refidx], sep=""))
+  }
   
   ## Compute correction factors and store in ExpressionSet object:
   message("3. Computing normalization coefficients")
@@ -32,6 +38,6 @@ computeNormFactors <- function(data, startPars, maxAttempts){
               "medians"     = yMat,
               "tempVals"    = xMat,
               "rSquared"    = r2,
-              "bestFit"     = grNames[[r2Best]],
+              "bestFit"     = grNames[[refidx]],
               "corrFactors" = dfCoeffs))
 }

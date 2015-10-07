@@ -1,37 +1,49 @@
-plotColors <- function(expConditions, expReplicates){
+plotColors <- function(expConditions, comparisonNums){
   ## Create matching color pairs for vehicle and treatment groups
   groupColors <- FALSE
-  if (all(!is.na(expConditions)) && all(!is.na(expReplicates))){
-    expReplicates <- as.numeric(expReplicates)
+  
+  if (all(!is.na(expConditions))){
     condLevels <- sort(unique(expConditions))
-    repLevels  <- sort(unique(expReplicates))
+    compLevels  <- sort(unique(comparisonNums))
     condNum <- length(condLevels)
-    repNum  <- length(repLevels)
+    compNum  <- length(compLevels)
     
-    ## Check if several experiments within a replicate got the same condition assigned
-    ## (can happen, for example, when all repliacate entries got default value "1")
-    if (max(table(paste(expConditions, expReplicates))) == 1){
-      ## Check if numbers of conditions and replicates do not exceed maximum
-      if (condNum==2 && repNum<=8){ # brewer pal can only produce up to 6 color pairs with 2 intensities each
-        if(all.equal(condLevels, c("Treatment", "Vehicle")) & all.equal(repLevels, 1:repNum)){
+    ## Check if several experiments within a comparison got the same condition assigned
+    ## (can happen, for example, when comparing two vehicle experiments against each other)
+    if (max(table(paste(expConditions, comparisonNums))) == 1){
+      ## Check if numbers of conditions and comparisons do not exceed maximum
+      if (condNum==2 && compNum<=8){ # brewer pal can only produce up to 8 color pairs with 2 intensities each
+        if(all.equal(condLevels, c("Treatment", "Vehicle")) & all.equal(compLevels, 1:compNum)){
           groupColors <- TRUE
         }
       }
     }
   }
   
-  lightCols <- c("orangered2", "royalblue2", "gray40", "yellow3", "orchid3", "darksalmon") #, "darkseagreen", "yellow3")
-  darkCols  <- c("orangered4", "royalblue4", "gray0", "yellow4", "orchid4", "darkorange") #, "lemonchiffon4", "goldenrod4")#, , "blueviolet", )
+  plotClrsLight <- brewer.pal(n=8, name = "Set2")
+  plotClrsDark  <- brewer.pal(n=8, name = "Dark2")
+  
+  NAsInComparisonNums <- is.na(comparisonNums)
+  numNAsInComparisonNums <- sum(NAsInComparisonNums)
+  
   if (groupColors==TRUE){
+    lightCols = colorRampPalette(plotClrsLight)(length(expConditions) + numNAsInComparisonNums)
+    darkCols = colorRampPalette(plotClrsDark)(length(expConditions) + numNAsInComparisonNums)
+    
     colorVec <- rep(NA, length(expConditions))
-    for (r in repLevels){
-      iT <- which(expConditions=="Treatment" & expReplicates==r)
-      iV <- which(expConditions=="Vehicle" & expReplicates==r)
+    for (r in compLevels){
+      iT <- which(expConditions=="Treatment" & comparisonNums==r)
+      iV <- which(expConditions=="Vehicle" & comparisonNums==r)
       colorVec[iT] <- darkCols[r]
       colorVec[iV] <- lightCols[r]
     }
+    
+    if(numNAsInComparisonNums > 0){
+      colorVec[is.na(colorVec)] = darkCols[sum(!is.na(colorVec)) : length(darkCols)]
+    }
+    
   } else if (groupColors==FALSE){
-    colorVec <- darkCols[1:length(expConditions)]
+    colorVec <- colorRampPalette(brewer.pal(n=8, name="Dark2"))(length(expConditions))
   }
   return(colorVec)
 }

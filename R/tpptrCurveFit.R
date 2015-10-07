@@ -4,12 +4,12 @@
 #'   defined by argument \code{maxAttempts})
 #'   
 #' @return A list of ExpressionSets storing the data together with the melting
-#'   curve parameters for each treatment condition and biological replicate.
+#'   curve parameters for each experiment.
 #'   Each ExpressionSet contains the measured fold changes, as well as row and
 #'   column metadata. In each ExpressionSet \code{S}, the fold changes can be
 #'   accessed by \code{exprs(S)}. Protein expNames can be accessed by 
-#'   \code{featureNames(S)}. TMT labels and the corresponding temperatures are 
-#'   returned by \code{S$labels} and \code{S$temperatures}.
+#'   \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are 
+#'   returned by \code{S$label} and \code{S$temperature}.
 
 #' 
 #' @examples
@@ -21,47 +21,57 @@
 #'                       function(d) d[grepl("HDAC", featureNames(d))])
 #' tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets, nCores=1)
 #' 
-#' @param data list of \code{ExpressionSet}s with protein fold changes for curve fitting.
+#' @param data list of \code{ExpressionSet}s with protein fold changes for curve
+#'   fitting.
+#' @param dataCI list of \code{ExpressionSet}s with protein fold change confidence 
+#' intervals for curve fitting. Default to NULL.
 #' @param resultPath location where to store the melting curve plots.
 #' @param ggplotTheme ggplot theme for melting curve plots.
-#' @param doPlot boolan value indicating whether melting curves should 
-#' be plotted, or whether just the curve parameters should be returned.
-#' @param startPars start values for the melting curve parameters. Will be passed
-#' to function \code{\link{nls}} for curve fitting.
-#' @param maxAttempts maximal number of curve fitting attempts if model does not converge.
-#' @param nCores either a numerical value given the desired number of CPUs, or 'max'
-#' to automatically assign the maximum possible number (default).
+#' @param doPlot boolan value indicating whether melting curves should be
+#'   plotted, or whether just the curve parameters should be returned.
+#' @param startPars start values for the melting curve parameters. Will be
+#'   passed to function \code{\link{nls}} for curve fitting.
+#' @param maxAttempts maximal number of curve fitting attempts if model does not
+#'   converge.
+#' @param nCores either a numerical value given the desired number of CPUs, or
+#'   'max' to automatically assign the maximum possible number (default).
+#' @param verbose plot name of each fitted protein to the command lin as a means
+#'   of progress report.
 #' @details The melting curve plots will be stored in a subfolder with name 
-#' \code{Melting_Curves} at the location specified by \code{resultPath}. 
+#'   \code{Melting_Curves} at the location specified by \code{resultPath}.
 #' @seealso \code{\link{tppDefaultTheme}}
 #' @export
-tpptrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(), 
-                          doPlot=TRUE, startPars=c("Pl"=0, "a"=550, "b"=10), 
-                          maxAttempts=500, nCores='max'){
-  if (is.null(resultPath)){
-    doPlot <- FALSE
-  }
-  ## Check if output directory exists already. If not, create it here.
-  if (doPlot){
-    plotDir <- "Melting_Curves"
-    if (!file.exists(file.path(resultPath, plotDir))) 
-      dir.create(file.path(resultPath, plotDir), recursive=TRUE)    
-  }
+tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL, 
+                          ggplotTheme=tppDefaultTheme(), doPlot=TRUE, 
+                          startPars=c("Pl"=0, "a"=550, "b"=10), 
+                          maxAttempts=500, nCores='max', verbose=FALSE){
   
-  ## Extract metadata about experiment names, conditions, replicates, proteins
-  expInfo <- sapply(data, function(set){set@annotation})
-  expNames        <- expInfo["name",]
-  names(data) <- expNames
+  # set parameter if curves are plotted
+  #doPlot <- getOption("TPPTR_plot") && !is.null(resultPath)
+  doPlot <- doPlot && !is.null(resultPath)
+  
+  # get CI option: should CIs be used in the fit or not ?
+  useCI <- getOption("TPPTR_CI")
+  if(is.null(useCI)) useCI <- FALSE
+
+  
+  ## Extract metadata about experiment names, conditions, and proteins
+  expInfo      <- sapply(data, annotation)
+  expNames     <- expInfo["name",]
   grConditions <- expInfo["condition",]
-  grReplicates <- as.numeric(expInfo["replicate",])
+  compDF       <- createComparisonTable(infoTable=expInfo)
   protIDs <- unique(unlist(lapply(data, featureNames)))
   
-  ## Prepare file names for melting curve plots. Replace special characters by
-  ## '_'.
+  ## Prepare plots (if doPlot=TRUE)
   if (doPlot){
-    plotPathsFull <- file.path(plotDir, paste("meltCurve_",
-                                              gsub("([^[:alnum:]])", "_", 
-                                                   protIDs),".pdf", sep=""))
+    ## Check if output directory exists already. If not, create it here.
+    plotDir <- "Melting_Curves"
+    if (!file.exists(file.path(resultPath, plotDir))){
+      dir.create(file.path(resultPath, plotDir), recursive=TRUE)
+    }
+    ## File names for melting curve plots: Replace special characters by '_'.
+    fNames<-paste("meltCurve_",gsub("([^[:alnum:]])","_",protIDs),".pdf",sep="")
+    plotPathsFull <- file.path(plotDir, fNames)
   } else {
     plotPathsFull <- rep("", length(protIDs))
   }
@@ -76,33 +86,89 @@ tpptrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(),
       yTmp <- matrix(NA_real_, nrow=length(protIDs), ncol=ncol(data[[g]]), 
                      dimnames=list(protIDs, colnames(yTmp)))
     }
+    ## Ensure that fold changes stay sorted by temperature and are not re-sorted
+    ## by labels during the rbind command (important if different experiments 
+    ## assign different temperature order to tmt labels)
+    colnames(yTmp) <- 1:ncol(yTmp) 
     yMat <- rbind(yMat, data.frame("expName"=g, "protID"=rownames(yTmp), 
                                    "FC"=yTmp, stringsAsFactors=FALSE))
+    
   }
-  ## Determine operating system to determine whether legends should be added:
-  osType <- Sys.info()['sysname']
-  if (osType %in% c("Linux", "Windows")){
-    addLegend <- TRUE    
-  } else addLegend <- FALSE
+  
+  if (useCI){
+    ciMat <- data.frame(matrix(nrow=0, ncol=(ncol(data[[1]])+2)))
+    for (g in expNames){
+      ciTmp <- exprs(dataCI[[g]])
+      if (nrow(ciTmp)==0){
+        ciTmp <- matrix(NA_real_, nrow=length(protIDs), ncol=ncol(dataCI[[g]]), 
+                        dimnames=list(protIDs, colnames(ciTmp)))
+      }
+      ## Ensure that fold changes stay sorted by temperature and are not re-sorted
+      ## by labels during the rbind command (important if different experiments 
+      ## assign different temperature order to tmt labels)
+      colnames(ciTmp) <- 1:ncol(ciTmp) 
+      ciMat <- rbind(ciMat, data.frame("expName"=g, "protID"=rownames(ciTmp), 
+                                       "CI"=ciTmp, stringsAsFactors=FALSE))
+      
+    }
+  }
+  
+  
+  ## Determine operating system to decide whether legends should be added 
+  ## (legends interfere with parallelization due to a bug in one of the involved packages):
+  addLegend <- checkIfLegendPossible()
   
   ## Calculate melting curves and plot results:
   message("Fitting melting curves to ", length(protIDs), " proteins.")
   nCores <- checkCPUs(cpus=nCores)
-  doParallel::registerDoParallel(cores=nCores)
   t1 <- Sys.time()
-  dfCurvePars <- foreach(p=protIDs, .combine=rbind, .inorder=FALSE, .verbose=FALSE, 
-                         .packages = c("ggplot2", "gridExtra")) %dopar%
-    fitMeltCurvesToProtein(xMat, yDF=subset(yMat, protID==p), startPars=startPars,
-               maxAttempts=maxAttempts, expNames=expNames, resultPath=resultPath, 
-               plotPathRel=plotPathsFull[[p]], protID=p, plotTheme=ggplotTheme, 
-               grConds=grConditions, grReps=grReplicates, doPlot=doPlot, addLegend=addLegend)
-  stopImplicitCluster()
+  
+  
+  # ciDF = ifelse(is.null(ciMat), NULL,  subset(ciMat, protID==p))
+  
+  # differentiate between parallel and serial execution:
+  # if nCores == 1 use serial execution via lapply
+  # if nCores > 1 use the foreach package for multicore execution
+  if (nCores > 1) {
+    doParallel::registerDoParallel(cores=nCores)
+    
+    # fitMeltCurves <- function(xMat, yDF, startPars, maxAttempts, expNames, 
+    # protID, verbose)
+    
+    
+    # parallel execution with foreach and dopar 
+    dfCurvePars <- foreach(p=protIDs, .combine=rbind, .inorder=FALSE, .verbose=FALSE, 
+                           .packages = c("ggplot2", "gridExtra")) %dopar% {
+                             tpptrHelperFitandPlot(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
+                                                   addLegend, resultPath, plotPathsFull, useCI, doPlot)
+                           }
+    
+    
+    stopImplicitCluster()  
+    # } <- deleted
+    
+  } else {
+    
+    # serial execution with laapply and do.call("rbind", ...) 
+    dfCurvePars <- lapply(protIDs, 
+                          function(p){          
+                            tpptrHelperFitandPlot(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
+                                                  addLegend, resultPath, plotPathsFull, useCI, doPlot)
+                          })
+    
+    dfCurvePars = do.call('rbind', dfCurvePars)
+  }
+  
+  
   timeDiff <- Sys.time()-t1
   message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", units(timeDiff), "\n")
   gc(verbose=FALSE)
   message("Melting curves fitted sucessfully!")  
   
   ## Inform user about success rate:
+  dfCurvePars$sufficient_data_for_fit <- as.logical(dfCurvePars$sufficient_data_for_fit)
+  dfCurvePars$model_converged         <- as.logical(dfCurvePars$model_converged)
+  
   conv <- dfCurvePars$model_converged
   expr <- dfCurvePars$sufficient_data_for_fit
   message(sum(conv, na.rm=TRUE), " out of ", sum(expr), 
@@ -114,14 +180,81 @@ tpptrCurveFit <- function(data, resultPath=NULL, ggplotTheme=tppDefaultTheme(),
   return(data)
 }
 
-stopImplicitCluster <- function()
-{
-    .options <- doParallel:::.options 
-    if(exists(".revoDoParCluster", where=.options) && 
-      !is.null(.options[['.revoDoParCluster']]))
-    {
-            stopCluster(.options[['.revoDoParCluster']])
-            remove('.revoDoParCluster', envir=.options)
+
+tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
+                                  addLegend, resultPath, plotPathsFull, useCI, doPlot){
+  #' Helper function that combines the code for fitting and plotting of melting curves for parallel or sequential (in lapply) execution
+  #' 
+  
+  # retrieving options via getOptions doesn't work with parallel execution
+  # therefore options are passed as variables (useCI, doPlot)
+  
+  yDF = subset(yMat, protID==p)
+  
+  resFC <- fitMeltCurves(xMat, yDF=yDF, colPrefix = "FC",
+                         startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                         protID=p, verbose=verbose)
+  
+  # if we ant to use the CIs give the subseit of the CI matrix to the function
+  # otherwise NULL
+  if (useCI) {
+    ciDF=subset(ciMat, protID==p)
+    ciDF=ciDF[match(yDF$expName, ciDF$expName),]
+    
+    ciDFUpper <- ciDFLower <- ciDF
+    ciDFUpper[,-(1:2)] <- yDF[,-(1:2)] + ciDF[,-(1:2)] / 2
+    ciDFLower[,-(1:2)] <- yDF[,-(1:2)] - ciDF[,-(1:2)] / 2
+    
+    resUpper <- fitMeltCurves(xMat, yDF=ciDFUpper, colPrefix = "CI",
+                              startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                              protID=p, verbose=verbose)
+    
+    resLower <- fitMeltCurves(xMat, yDF=ciDFLower, colPrefix = "CI",
+                              startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                              protID=p, verbose=verbose)
+    
+    listUpper = resUpper[[3]]
+    listLower = resLower[[3]]
+    
+    CI_reportData = data.frame(CI_meltPointUpper = resUpper[[1]]$meltPoint,
+                               CI_meltPointLower = resLower[[1]]$meltPoint,
+                               CI_meltPoint_delta = resUpper[[1]]$meltPoint - resLower[[1]]$meltPoint)
+    
+  } else {  
+    listUpper = listLower = NULL
+  }
+  
+  if(doPlot){
+    pl <- plotMeltingCurve(modelList = resFC[[3]], listUpper = listUpper, listLower = listLower,
+                           xMat = xMat, fcMat = resFC[[2]], curvePars = resFC[[1]], protID = p,
+                           plotTheme = ggplotTheme, expConditions = grConditions, expComps = compDF, 
+                           addLegend = addLegend, useCI=useCI)
+    
+    if(is.null(pl)){
+      plotPathRel <- NA_character_
+    } else {
+      plotPathRel <- plotPathsFull[p]
+      # ggsave(filename=file.path(resultPath, plotPathRel), pl,width=20, height=25, units="cm")
+      
+      pdf(file=file.path(resultPath, plotPathRel), width=7.87, height=9.84, 
+          useDingbats=FALSE)
+      grid.draw(pl)
+      dev.off()
+      
     }
+  } else {
+    plotPathRel <- NA_character_
+  }
+  
+  curveParsWholeProt <- resFC[[1]]
+  curveParsWholeProt$protID <- p
+  curveParsWholeProt$plot   <- plotPathRel
+  curveParsWholeProt$expName <- expNames  
+  
+  if (useCI){
+    curveParsWholeProt = cbind(curveParsWholeProt, CI_reportData)
+  }
+  
+  curveParsWholeProt
 }
 

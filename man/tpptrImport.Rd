@@ -31,13 +31,12 @@ additional quality criteria when deciding between different non-unique
 protein identifiers.}
 }
 \value{
-A list of ExpressionSets storing the imported data for each treatment
-  condition and biological replicate. Each ExpressionSet contains the
-  measured fold changes, as well as row and column metadata. In each
-  ExpressionSet \code{S}, the fold changes can be accessed by
-  \code{exprs(S)}. Protein expNames can be accessed by
-  \code{featureNames(S)}. TMT labels and the corresponding temperatures are
-  returned by \code{S$labels} and \code{S$temperatures}.
+A list of ExpressionSets storing the imported data for experiment.
+  Each ExpressionSet contains the measured fold changes, as well as row and
+  column metadata. In each ExpressionSet \code{S}, the fold changes can be
+  accessed by \code{exprs(S)}. Protein expNames can be accessed by
+  \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are
+  returned by \code{S$label} and \code{S$temperature}
 }
 \description{
 \code{tpptrImport} imports several tables of protein fold
@@ -54,21 +53,20 @@ The imported datasets have to contain measurements obtained by
   a list of dataframes in the \code{data} argument. They can differ, for
   example, by biological replicate or by experimental condition (for example,
   treatment versus vehicle). Their names are defined uniquely by the
-  \code{Experiment} column in \code{configTable}. If this argument is not
-  specified, generic names will be assigned. Replicates and experimental
-  conditions can be specified by optional columns in \code{configTable}.
+  \code{Experiment} column in \code{configTable}. Experimental conditions can
+  be specified by an optional column in \code{configTable}.
 
   The default settings are adjusted to analyse data of the pyhton package
   \code{isobarQuant}. You can also customise them for your own dataset.
 
   The \code{configTable} argument is a dataframe, or the path to a
-  spreadsheet (tab-delimited text-file or xlsx format). Information about
-  each experiment is stored row-wise. It contains the following columns:
+  spreadsheet (tab-delimited text-file without quoted strings, or xlsx format).
+  Information about each experiment is stored row-wise.
+  It contains the following columns:
   \itemize{ \item{\code{Path}:}{location of each datafile. Alternatively,
   data can be directly handed over by the \code{data} argument.}
   \item{\code{Experiment}: }{unique experiment names.}
   \item{\code{Condition}: }{experimental conditions of each dataset.}
-  \item{\code{Replicate}:}{experimental replicates of each dataset.}
   \item{Label columns: } each isobaric label names a column that contains the
   temperatures administered for the label in the individual experiments. }
 

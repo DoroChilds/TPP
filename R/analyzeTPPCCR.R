@@ -23,8 +23,8 @@
 #'   isobarQuant, but can be customised to your own dataset by the arguments 
 #'   \code{idVar, fcStr, naStrs, qualColName}.
 #'   
-#'   If \code{resultPath} is not specified, the location of the input file 
-#'   specified in \code{configTable} will be used. If the input data are not 
+#'   If \code{resultPath} is not specified, result files are stored at the path 
+#'   defined in the first entry of \code{configTable$Path}. If the input data are not 
 #'   specified in \code{configTable}, no result path will be set. This means 
 #'   that no output files or dose response curve plots are produced and 
 #'   \code{analyzeTPPCCR} just returns the results as a data frame.
@@ -32,14 +32,20 @@
 #'   The function \code{analyzeTPPCCR} reports intermediate results to the 
 #'   command line. To suppress this, use \code{\link{suppressMessages}}.
 #'   
-#' @details The dose response curve plots will be stored in a subfolder with 
+#' The dose response curve plots will be stored in a subfolder with 
 #'   name \code{DoseResponse_Curves} at the location specified by 
 #'   \code{resultPath}.
 #'   
+#' Only proteins with fold changes bigger than
+#' \code{[fcCutoff * (1 - fcTolerance)} or smaller than 
+#' \code{1/(fcCutoff * (1 - fcTolerance))]} will be used for curve fitting.
+#' Additionally, the proteins fulfilling the fcCutoff criterion without 
+#' tolerance will be marked in the output column \code{meets_FC_requirement}.
+#'   
 #' @examples
 #' data(hdacCCR_smallExample)
-#' tppccrResults <- analyzeTPPCCR(configTable=hdacCCR_config_repl1, 
-#'                                data=hdacCCR_data_repl1)
+#' tppccrResults <- analyzeTPPCCR(configTable=hdacCCR_config, 
+#'                                data=hdacCCR_data, nCores=1)
 #'   
 #' @param configTable dataframe, or character object with the path to a file, 
 #'   that specifies important details of the TPP-CCR experiment. See Section 
@@ -54,6 +60,7 @@
 #' @param fcStr character string indicating which columns contain the actual 
 #'   fold change values. Those column names containing the suffix \code{fcStr} 
 #'   will be regarded as containing fold change values.
+#' @param fcTolerance tolerance for the fcCutoff parameter. See details.
 #' @param naStrs character vector indicating missing values in the data table. 
 #'   When reading data from file, this value will be passed on to the argument 
 #'   \code{na.strings} in function \code{read.delim}.
@@ -62,6 +69,8 @@
 #'   protein identifiers.
 #' @param normalize perform median normalization (default: TRUE).
 #' @param ggplotTheme ggplot theme for dose response curve plots.
+#' @param nCores either a numerical value given the desired number of CPUs, or 
+#'   'max' to automatically assign the maximum possible number (default).
 #' @param nonZeroCols character string indicating a column that will be used for
 #'   filtering out zero values.
 #' @param r2Cutoff Quality criterion on dose response curve fit.
@@ -70,6 +79,10 @@
 #'   fitting.
 #' @param plotCurves boolan value indicating whether dose response curves should
 #'   be plotted. Deactivating plotting decreases runtime.
+#' @param verbose print name of each fitted or plotted protein to the command 
+#' line as a means of progress report.
+#' @param xlsxExport produce results table in xlsx format and store at the 
+#' location specified by the \code{resultPath} argument.
 #'   
 #' @seealso tppDefaultTheme
 #'   
@@ -78,58 +91,77 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
                           idVar="gene_name", fcStr="rel_fc_", 
                           naStrs=c("NA", "n/d", "NaN", "<NA>"), qualColName="qupm",
                           normalize=TRUE, ggplotTheme=tppDefaultTheme(), 
-                          nonZeroCols="qssm", 
+                          nCores="max", nonZeroCols="qssm", 
                           r2Cutoff=0.8,  fcCutoff=1.5, slopeBounds=c(1,50),
-                          plotCurves=TRUE){
+                          plotCurves=TRUE, verbose=FALSE, xlsxExport=TRUE,
+                          fcTolerance=0.1){
   
   message("This is TPP version ", packageVersion("TPP"),".")
   
   ## ---------------------------------------------------------------------------
   ## 1) Import data and filter out rows for which column 'nonZeroCols'==0:
-  eSets <- tppccrImport(configTable=configTable, data=data, idVar=idVar, 
-                        fcStr=fcStr, qualColName=qualColName, naStrs=naStrs, nonZeroCols=nonZeroCols)
-  
+  datIn <- tppccrImport(configTable=configTable, data=data, idVar=idVar, 
+                        fcStr=fcStr, naStrs=naStrs, qualColName=qualColName, 
+                        nonZeroCols=nonZeroCols)
+  expNames <- names(datIn)
+  expNum   <- length(expNames)
   
   ## Extract directory from the filenames in config table, if specified:
-  confgTableTmp <- importCheckConfigTable(infoTable=configTable)
-  files        <- confgTableTmp$Path
-  if (is.null(resultPath) & !is.null(files)){
-    resultPath <- dirname(files[1])
-    resultPath <- file.path(resultPath, "TPP_results")
-  }
-  if (is.null(resultPath)){
-    message("No result directory specified. No output files or melting curve plots will be produced.") 
-    plotCurves <- FALSE
-  } else {
-    message("Results will be written to ", resultPath)
-    if (!file.exists(resultPath)) dir.create(resultPath, recursive=TRUE)
-  }
+  confgFields <- suppressMessages(importCheckConfigTable(infoTable=configTable, 
+                                                         type="CCR"))
+  files      <- confgFields$files
+  outDirList <- importFct_makeOutputDirs(outDir=resultPath, fNames=files)
+  flagDoWrite <- outDirList$doWrite
+  pathDataObj <- outDirList$pathDataObj
+  pathExcel=resultPath <- outDirList$outDir
+  if (!flagDoWrite) plotCurves <- FALSE  
   
   ## ---------------------------------------------------------------------------
   ## 2) Normalize fold changes by their median:
   if (normalize){
-    eSetsNormalized <- tppccrNormalize(data=eSets)    
+    datNorm <- tppccrNormalize(data=datIn)
   } else {
-    eSetsNormalized <- eSets
+    datNorm <- datIn
   }
   
   ## ---------------------------------------------------------------------------
-  ## 3) Transform interesting proteins:
-  ## 1. select 'stabilized' and 'destabilized' proteins
-  ## 2. transform selected proteins
-  eSetsFiltered <- tppccrTransform(data=eSetsNormalized, fcCutoff=fcCutoff)
-    
+  ## 3) Noramlize to lowest concentrations and transform fold changes to [0,1]
+  datNormToRef   <- tppccrNormalizeToReference(data=datNorm)
+  datTransformed <- tppccrTransform(data=datNormToRef, fcCutoff=fcCutoff, 
+                                    fcTolerance=fcTolerance)
+  
   ## ---------------------------------------------------------------------------
   ## 4) calculate pEC50 values
-  resultTable <- tppccrCurveFit(data=eSetsFiltered, resultPath=resultPath, 
-                                ggplotTheme=ggplotTheme, doPlot=plotCurves, 
-                                fcCutoff=fcCutoff, r2Cutoff=r2Cutoff, slopeBounds=slopeBounds)
-  if (!is.null(resultPath)){
-    ## 5) Save result table as data frame and Excel spreadsheet:
-    save(list=c("resultTable"), file=file.path(resultPath, "results_TPP_CCR.RData"))
-    tppExport(tab=resultTable, file=file.path(resultPath, "results_TPP_CCR.xlsx"))
+  datFitted <- tppccrCurveFit(data=datTransformed, slopeBounds=slopeBounds, verbose=verbose,
+                              nCores=nCores)
+  
+  ## 5) Plot dose response curves
+  if (plotCurves){
+    datFitted <- tppccrPlotCurves(data=datFitted, resultPath=resultPath, verbose=verbose, nCores=nCores,
+                                  ggplotTheme=ggplotTheme)
   }
   
+  ## 6) Produce results table
+  resultTable <- tppccrResultTable(data=datFitted, r2Cutoff=r2Cutoff)
   
-  return(resultTable)
+  ## 7) Save result table as data frame:
+  if (flagDoWrite){
+    save(list=c("resultTable"), file=file.path(pathDataObj, "results_TPP_CCR.RData"))
+  }
+  
+  ## 8) Save result table as xlsx spreadsheet:
+  if (xlsxExport){
+    if (flagDoWrite){
+      if (expNum > 1){
+        expColors <- plotColors(expConditions=rep(NA, expNum), comparisonNums=rep(NA,expNum))
+      } else {
+        expColors <- NULL
+      }
+      tppExport(tab=resultTable, file=file.path(pathExcel, "results_TPP_CCR.xlsx"), expNames=expNames, expColors=expColors)
+    } else {
+      warning("Cannot produce xlsx output because no result path is specified.")
+    }
+  }
+  
+  invisible(resultTable)
 } 

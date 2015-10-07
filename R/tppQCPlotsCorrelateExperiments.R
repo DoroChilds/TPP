@@ -6,12 +6,12 @@
 #' tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
 #' # Quality control (QC) plots BEFORE normalization:
 #' tppQCPlotsCorrelateExperiments(tppData=tpptrData, 
-#' annotStr="Non-normalized Fold Changes", ggplotTheme=ggplotTheme)
+#' annotStr="Non-normalized Fold Changes")
 #' # Quality control (QC) plots AFTER normalization:
 #' tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 #' tpptrDataNormalized <- tpptrNorm$normData
 #' tppQCPlotsCorrelateExperiments(tppData=tpptrDataNormalized, 
-#' annotStr="Normalized Fold Changes", ggplotTheme=ggplotTheme)
+#' annotStr="Normalized Fold Changes")
 #' 
 #' @return List of plots for each experiment.
 #' @param tppData List of expressionSets with data to be plotted.
@@ -22,6 +22,8 @@
 #' @export
 tppQCPlotsCorrelateExperiments <- function(tppData, annotStr="", path=NULL,
                                            ggplotTheme=tppDefaultTheme()){
+  theme_set(ggplotTheme)
+  
   if (length(tppData) > 1){
     expNames <- names(tppData)
     plotObjList <- list()
@@ -68,7 +70,7 @@ tppQCPlotsCorrelateExperiments <- function(tppData, annotStr="", path=NULL,
           if (!file.exists(path)) dir.create(path, recursive=TRUE)      
           plotFile <- paste(plotName, "_", annotStr, ".pdf", sep="")
           ggsave(filename=file.path(path, plotFile), plot=p, width=20, 
-                 height=25, units="cm")
+                 height=25, units="cm", useDingbats=FALSE)
         }
       }
     }

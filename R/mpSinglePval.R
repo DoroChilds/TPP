@@ -1,4 +1,4 @@
-mpSinglePval = function(x, r_1, r0, r1){
+mpSinglePval = function(x, r_1, r0, r1, type){
   ## Compute p-value for a given melting point difference value using 
   ## precomputed distribution quantiles.
   if(!is.na(x)){
@@ -10,7 +10,11 @@ mpSinglePval = function(x, r_1, r0, r1){
       p <- 1/2 * VGAM::erfc(z/sqrt(2))
     }
   } else {
-    p <- NA_real_
+    p <- z <- NA_real_
   }
-  return(p)
+  if (type == "p"){
+    return(p)    
+  } else if (type == "z"){
+    return(z)
+  }
 }

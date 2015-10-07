@@ -6,7 +6,7 @@
 \usage{
 tpptrNormalize(data, normReqs = tpptrDefaultNormReqs(),
   qcPlotTheme = tppDefaultTheme(), qcPlotPath = NULL, startPars = c(Pl =
-  0, a = 550, b = 10), maxAttempts = 1)
+  0, a = 550, b = 10), maxAttempts = 1, fixedReference = NULL)
 }
 \arguments{
 \item{data}{List of \code{ExpressionSet}s with protein fold changes to be
@@ -25,15 +25,18 @@ passed to function \code{\link{nls}} for curve fitting.}
 
 \item{maxAttempts}{maximal number of curve attempts to fit melting curve to
 fold change medians when computing normalization factors.}
+
+\item{fixedReference}{name of a fixed reference experiment for normaliztion.
+If NULL (default), the experiment with the best R2 when fitting a melting
+curve through the median fold changes is chosen as the reference.}
 }
 \value{
 A list of ExpressionSets storing the normalized data for each
-  treatment condition and biological replicate. Each ExpressionSet contains
-  the measured fold changes, as well as row and column metadata. In each
-  ExpressionSet \code{S}, the fold changes can be accessed by
-  \code{exprs(S)}. Protein expNames can be accessed by
-  \code{featureNames(S)}. TMT labels and the corresponding temperatures are
-  returned by \code{S$labels} and \code{S$temperatures}.
+  experiment. Each ExpressionSet contains the measured fold changes, as well
+  as row and column metadata. In each ExpressionSet \code{S}, the fold
+  changes can be accessed by \code{exprs(S)}. Protein expNames can be
+  accessed by \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are
+  returned by \code{S$label} and \code{S$temperature}
 }
 \description{
 Normalizes fold changes determined by TPP-TR experiments over
@@ -57,7 +60,7 @@ Performs normalization of all fold changes in a given list of
 data(hdacTR_smallExample)
 tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
 tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
-tpptrNorm$qcPlotObj
+names(tpptrNorm)
 }
 \references{
 Savitski, M. M. and Reinhard, F. BM. and Franken, H. and Werner,

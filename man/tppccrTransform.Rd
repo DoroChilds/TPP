@@ -4,31 +4,45 @@
 \alias{tppccrTransform}
 \title{Transform fold changes of TPP-CCR experiment}
 \usage{
-tppccrTransform(data, fcCutoff = 1.5)
+tppccrTransform(data, fcCutoff = 1.5, fcTolerance = 0.1)
 }
 \arguments{
 \item{data}{expressionSet object containing the data to be transformed.}
 
-\item{fcCutoff}{Cutoff for highest compound concentration fold change.}
+\item{fcCutoff}{cutoff for highest compound concentration fold change.}
+
+\item{fcTolerance}{tolerance for the fcCutoff parameter. See details.}
 }
 \value{
-ExpressionSet object storing the transformed fold changes, as well as
-  row and column metadata. In each ExpressionSet \code{S}, the fold changes
+List of expressionSet objects storing the transformed fold changes,
+as well as row and column metadata. In each expressionSet \code{S}, the fold changes
   can be accessed by \code{exprs(S)}. Protein expNames can be accessed by
-  \code{featureNames(S)}. TMT labels and the corresponding temperatures are
-  returned by \code{S$labels} and \code{S$temperatures}.
+  \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are
+  returned by \code{S$label} and \code{S$concentration}.
 }
 \description{
 Transform fold changes of TPP-CCR experiment to prepare them for
   dose response curve fitting.
 }
+\details{
+Only proteins with fold changes bigger than
+\code{[fcCutoff * (1 - fcTolerance)} or smaller than
+\code{1/(fcCutoff * (1 - fcTolerance))]} will be used for curve fitting.
+Additionally, the proteins fulfilling the fcCutoff criterion without
+tolerance will be marked in the output column \code{meets_FC_requirement}.
+}
 \examples{
 data(hdacCCR_smallExample)
-tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data = hdacCCR_data_repl1)
+tppccrData <- tppccrImport(configTable=hdacCCR_config, data = hdacCCR_data)
 tppccrNorm <- tppccrNormalize(data=tppccrData)
+# Perform transformation:
 tppccrTransformed <- tppccrTransform(data=tppccrNorm)
-determinedEffectTypes <- featureData(tppccrTransformed)$CompoundEffect
-transformedData <- data.frame(exprs(tppccrTransformed),
-                              Type=determinedEffectTypes)
+# Obtain transformed measurements per replicate:
+transf_replicate1 <- tppccrTransformed$Panobinostat_1
+transf_replicate2 <- tppccrTransformed$Panobinostat_2
+# Inspect transformed data in replicate 1:
+effects_replicate1 <- featureData(transf_replicate1)$compound_effect
+newData_repl1 <- data.frame(exprs(transf_replicate1),
+                              Type=effects_replicate1)[!is.na(effects_replicate1),]
 }
 

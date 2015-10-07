@@ -24,12 +24,13 @@
 .onLoad <- function(libname, pkgname) {
   if (.Platform$OS.type == "windows") {
     if (Sys.which("zip")==""){
-      msgText <- "\n ==> PLEASE READ BEFORE PACKAGE USE: Could not locate a zip 
-     command in your path. This command is required for Excel output on Windows. 
+      msgText <- "\n ==> PLEASE READ BEFORE PACKAGE USE: 
+     Could not locate a zip command in your path. This command is required for 
+     Excel output on Windows (see vignette). 
      You can still use the 'TPP' package and access its results via the 
      dataframes produced by 'analyzeTPPTR' and 'analzyeTPPCCR'. 
-      For export to Excel, please add a zip command to the path."
-      packageStartupMessage(msgText,"\n")      
+     For export to Excel, please add a zip command to the path."
+     packageStartupMessage(msgText,"\n")      
     }
   }
 }

@@ -24,3 +24,63 @@ Version 1.1.3:
 
 Version 1.1.4:
   o Curve parameters "a" and "b" are now reported in the output of analyzeTPPTR and tpptrCurveFit.
+
+Version 1.2.5:
+  o CCR-part: 
+      fold changes can now be normalized to their lowest temperature during 
+      import by the function tppccrNormalizeToReference. 
+      This ensures that the transformed values will always be between 0 and 1.
+      When normalizing to the lowest concentration, and this value is 0, a small 
+      constant (1e-15) is added to prevent division by zero.
+  o CCR-import:
+      Argument nonZeroCols can be NULL if no additional filtering is needed.
+  o CCR output: 
+      To make filtering easier, the 'passed_filter' column now shows 
+      FALSE even if proteins could not be used for fitting (instead of NAs).
+  o CCR output: 
+      To make filtering easier, the 'passed_filter' column now shows 
+      FALSE even if proteins could not be used for fitting (instead of NAs).
+  o CCR output: 
+      column with normalization results was renamed from 'normalized' 
+      to 'median_normalized' to distinguish from the newly introduced normalization 
+      to value at lowest concentration.
+  o Excel export: 
+      Columns are only color-coded by experiment, when the number of
+      experiments is > 1.
+  o Excel export: 
+      Columns are only color-coded by experiment when the number of
+      experiments is > 1.
+  o Excel export:
+      Relative paths to the plots work now for TR- and CCR part
+  o Bug fix for data import: 
+      Unique identifiers now treated correctly again.
+  o Bug fix for Excel output: 
+      Boolean column entries are only transformed to  "yes"/"no" for non-missing values.
+  o Bugfix in TR-QC plots: 
+      do not attempt to create Tm difference histograms if only one experiment is provided.
+  o Bugfix in TR normalization: 
+      fixedReference argument works again
+  o Bugfix in TR-QC plots: 
+      do not attempt to plot minSlope vs. Tm-diffs if no valid Tm-diff values are available.
+
+Version 1.9.9:
+  o Major update to the CCR-part: It is now possible to fit and plot multiple
+    experiments simultaneously.
+  o It is now possible to perform user-specified comparisons of different 
+    experiments. They are specified in the 'comparison' column of the config 
+    table.
+  o TR-part: Hypothesis testing is now separated from result table creation. Therefore, 
+    a new function was introduced (tpptrAnalyzeMeltCurves) -> see vignette.
+  o CCR-part: Curve fitting and plotting are now conducted by separate functions -> see
+    vignette.
+  o Bug fixes
+  o Introduced color coding of the columns belonging to different experiments in 
+    the excel output. This requires openxlsx version >= 2.4.0.
+  o The CCR workflow now only returns normalized measurements if normalization was 
+    actually performed. Unmodified measurements are always returned and indicated 
+    by the suffix 'unmodified'.
+  o Data import from tab-delimited files now ignores quotes so that protein annotation 
+    fields can contain single ' or " characters.
+  o Now enabling arbitrary numbers of plot colors for melting curves or dose response 
+    curves.
+    

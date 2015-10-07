@@ -13,5 +13,5 @@ NULL
 #'  measurements of a TPP-TR experiment (accessible by the \code{exprs} 
 #'  command), as well as fitted melting curve parameters in the
 #'  \code{featureData}. It can be used as input for the function
-#'  \code{\link{tpptrResultTable}}.
+#'  \code{\link{tpptrAnalyzeMeltingCurves}}.
 NULL

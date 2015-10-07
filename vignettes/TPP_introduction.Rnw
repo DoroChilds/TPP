@@ -8,7 +8,7 @@
 \usepackage{forloop}
 
 %\pagestyle{empty}
-<<style, eval=TRUE, echo=FALSE, results='asis'>>=
+<<style, echo=FALSE, results='asis'>>=
 BiocStyle::latex()
 @
 
@@ -22,11 +22,13 @@ European Molecular Biology Laboratory (EMBL),
 
 \begin{document}
 <<opts, include=FALSE>>=
-knitr::opts_chunk$set(concordance=TRUE,
-               resize.width="0.45\\textwidth",
-               fig.align='center',
-               tidy = FALSE,
-               message=FALSE)
+knitr::opts_chunk$set(concordance=TRUE, 
+                      eval = TRUE,
+                      cache = FALSE,
+                      resize.width="0.45\\textwidth",
+                      fig.align='center',
+                      tidy = FALSE,
+                      message=FALSE)
 @
 
 \maketitle
@@ -41,7 +43,7 @@ The analysis of TPP experiments requires several data analytic and statistical m
 
 \tableofcontents
 
-\section{Introduction}
+\section{Installation}
 To install the package, type the following commands into the \R{} console
 <<install, eval=FALSE>>=
 source("http://bioconductor.org/biocLite.R")
@@ -49,9 +51,18 @@ biocLite("TPP")
 @
 
 The installed package can be loaded by
-<<package, eval=TRUE>>=
+<<package>>=
 library("TPP")
 @
+
+\subsection{Special note for Windows users}
+The \Rpackage{TPP} package uses the \Rpackage{openxlsx} package to produce Excel 
+output \cite{openxlsx}. \Rpackage{openxlsx} requires a zip application to be 
+installed on your system and to be included in the path. On Windows, such a zip 
+application ist not installed by default, but is available, for example, via 
+\href{http://cran.r-project.org/bin/windows/Rtools/}{Rtools}. Without the zip 
+application, you can still use the 'TPP' package and access its results via the 
+dataframes produced by the main functions. 
 
 \section{TPP-TR and TPP-CCR analysis}
 The \Rpackage{TPP} package performs two analysis workflows:
@@ -98,7 +109,7 @@ It contains the following columns:
 \begin{itemize}
 \item Experiment: name of each experiment.
 \item Condition: experimental conditions (Vehicle or Treatment).
-\item Replicate: experimental replicates.
+\item Comparisons: comparisons to be performed.
 \item Label columns: each isobaric label names a column that contains the temperature the label corresponds to in the individual experiments.
 \end{itemize}
 An additional \texttt{Path} column must be added to the table if the data should be imported from files instead of data frames.
@@ -110,7 +121,7 @@ summary(hdacTR_data)
 @
 They each contain between \Sexpr{min(sapply(hdacTR_data, nrow))} and \Sexpr{max(sapply(hdacTR_data, nrow))} proteins each:
 <<dataStatsTP>>=
-data.frame(hdacTR_config[, c("Experiment", "Condition", "Replicate")],
+data.frame(hdacTR_config[, c("Experiment", "Condition")],
            "No.of Proteins"=sapply(hdacTR_data, nrow), row.names=NULL)
 @
 
@@ -141,12 +152,14 @@ resultPath = file.path(getwd(), 'Panobinostat_Vignette_Example')
 \end{itemize}
 If you want to use data from other sources than \Rpackage{isobarQuant}, see section \ref{sec:TR_with_nonIsobQuant_Data} for instructions.
 
+If you import the data directly from tab-delimited \texttt{.txt} files, please make sure that the entries are not encapsulated by quotes (for example, \texttt{"entry1"} or \texttt{'entry2'}). All quotes will be ignored during data import in order to robustly handle entries containing single quotes (for example protein annotation by \texttt{5'} or \texttt{3'}).
+
 By default, plots for the fitted melting curves are produced and stored in pdf 
 format for each protein during runtime and we highly recommend that you do this when you analyse your data. However, producing plots for all \Sexpr{length(unique(unlist(sapply(hdacTR_data, function(d) d$gene_name))))} proteins in our dataset can be time consuming and would slow down the execution of the current example. Thus, we first disable plotting by setting the argument \Rcode{plotCurves=FALSE}. 
 Afterwards, we will produce plots for individual proteins of interest. Note that, in practice, you will only be able to examine the results in an unbiased manner if you allow the production of all plots.
 
 We start the workflow by typing
-<<analyzeTR, eval=TRUE, cache=TRUE>>=
+<<analyzeTR>>=
 TRresults <- analyzeTPPTR(configTable=hdacTR_config, data=hdacTR_data, nCores=2,
                           resultPath=resultPath, plotCurves=FALSE) 
 @
@@ -275,7 +288,7 @@ The melting curve plots were stored in subdirectory \texttt{Melting\_Curves} in 
 \subsubsection{Significance assessment of melting point shifts}
 Similar to the normalization explained earlier, significance assessment of melting point shifts has to be performed on the whole dataset due to the binning procedure used for p-value computation. For the given dataset, we have already analyzed all curve parameters by the function \Rfunction{analyzeTPPTR}. Here we show how you can start this procedure independently of the other steps. This can be useful when you only need to re-compute the p-values (for example with a different binning parameter) without the runtime intense curve fitting before.
 
-Melting curve parameter analysis is performed by the function \Rfunction{tpptrResultTable}. It requires a list of \Rclass{ExpressionSet}s with melting curve parameters stored in the featureData. To avoid runtime intensive repetitions of the curve fitting procedure, \Rfunction{analyzeTPPTR} saved these objects as an intermediate result after curve fitting in the subdirectory \texttt{/dataObj}. We can access them by the command:
+Melting curve parameter analysis is performed by the function \Rfunction{tpptrAnalyzeMeltingCurves}. It requires a list of \Rclass{ExpressionSet}s with melting curve parameters stored in the featureData. To avoid runtime intensive repetitions of the curve fitting procedure, \Rfunction{analyzeTPPTR} saved these objects as an intermediate result after curve fitting in the subdirectory \texttt{/dataObj}. We can access them by the command:
 <<loadTRfitResultss>>=
 load(file.path(resultPath, "dataObj", "fittedData.RData"), verbose=TRUE)
 @
@@ -284,26 +297,28 @@ This loaded the object \Robject{trDataFitted}, which is a list of \Rclass{Expres
 Now we start the curve parameter evaluation, trying a new bin width of 200 instead of the default value 300:
 <<trPvals, message=TRUE>>=
 bNew <- 200
-TRresultsBNew <- tpptrResultTable(data=trDataFitted, binWidth=bNew)
+print(sapply(trDataFitted, annotation))
+TRresultsBNew <- tpptrAnalyzeMeltingCurves(data=trDataFitted, 
+                                           pValParams=list(binWidth=bNew,
+                                                           minR2=0.8, 
+                                                           maxPlateau=0.3))
 @
 
 We can then compare the outcome to the results that we previously obtained with a bin width of 300:
 <<compBWidth>>=
-tr_targetsBNew <- subset(TRresultsBNew, fulfills_all_4_requirements==TRUE)$Protein_ID
+tr_targetsBNew <- subset(TRresultsBNew, fulfills_all_4_requirements)$Protein_ID
 onlyB300 <- setdiff(tr_targets, tr_targetsBNew)
 onlyBNew <- setdiff(tr_targetsBNew, tr_targets)
 print(onlyB300)
 print(onlyBNew)
 @
-%We observe that dcreasing the bin width by \Sexpr{300 - bNew} leads to the detection of \Sexpr{length(onlyBNew)} new target protein\Sexpr{ifelse(length(as.character(onlyBNew))==1, "", "s")}, while \Sexpr{length(as.character(onlyB300))} of the previous targets \Sexpr{ifelse(length(as.character(onlyB300))==1, "is", "are")} now omitted.
+%We observe that decreasing the bin width by \Sexpr{300 - bNew} leads to the detection of \Sexpr{length(onlyBNew)} new target protein\Sexpr{ifelse(length(as.character(onlyBNew))==1, "", "s")}, while \Sexpr{length(as.character(onlyB300))} of the previous targets \Sexpr{ifelse(length(as.character(onlyB300))==1, "is", "are")} now omitted.
 
 \subsubsection{Output table}
 Finally, we export the new results to an Excel spreadsheet: 
 %Because this process can be time consuming for a large dataset, we only export the detected potential targets:
 <<trExport, message=TRUE>>=
-tppExport(tab=TRresultsBNew, 
-          file=file.path(resultPath, 
-                         paste("targets_binWidth",bNew,".xlsx",sep="")))
+tppExport(tab=TRresultsBNew, file=file.path(resultPath, paste("targets_binWidth",bNew,".xlsx",sep="")))
 @
 
 \subsection{Analyzing data not produced by the accompanying \Rpackage{isobarQuant} package}\label{sec:TR_with_nonIsobQuant_Data}
@@ -320,6 +335,10 @@ trNewReqs$fcRequirements[,"fcColumn"] <- c(6,8,9)
 print(trNewReqs)
 @
 
+\subsection{Specifying the experiments to compare}
+- By default, Treatment groups are compared to Vehicle groups within each replicate. It ist important that only one Treatment and Vehicle group are specified per Replicate (if specified in the condition column).
+- If valid comparison columns are specified in the config table, only those comparisons are performed.
+
 \section{Analyzing TPP-CCR experiments}
 First, we load the data:
 <<load_ccr_data>>=
@@ -329,14 +348,14 @@ This command loads two objects: the configuration tables for two replicates (\te
 
 \subsection{Starting the whole workflow by \Rfunction{analyzeTPPCCR}}
 We start the workflow for replicate 1 by typing
-<<analyzeCCR, eval=TRUE, cache=TRUE>>=
-CCRresults <- analyzeTPPCCR(configTable=hdacCCR_config_repl1, data=hdacCCR_data_repl1,
+<<analyzeCCR>>=
+CCRresults <- analyzeTPPCCR(configTable=hdacCCR_config[1,], data=hdacCCR_data[[1]],
                             resultPath=resultPath, plotCurves=FALSE) 
 @
 
 The following proteins passed the criteria of displaying a clear response to the treatment, and enabling curve fitting with $R^2 > 0.8$:
 <<ccrTargets>>=
-ccr_targets <- subset(CCRresults, passed_filter)$Protein_ID
+ccr_targets <- subset(CCRresults, passed_filter_Panobinostat_1)$Protein_ID
 print(ccr_targets)
 @
 
@@ -353,7 +372,7 @@ The following section explains how to invoke the individual steps of the workflo
 The function \Rfunction{tppccrImport} imports the data and converts it into an 
 \Rclass{ExpressionSet}:
 <<ccrImport, message=TRUE>>=
-ccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data=hdacCCR_data_repl1)
+ccrData <- tppccrImport(configTable=hdacCCR_config[1,], data=hdacCCR_data[[1]])
 @
 
 \subsubsection{Data normalization}
@@ -366,7 +385,7 @@ ccrDataNormalized <- tppccrNormalize(data=ccrData)
 \subsubsection{Data transformation}
 We next have to specify the type of response for each protein, and transform the data accordingly:
 <<ccrTransform, message=TRUE>>=
-ccrDataTransformed <- tppccrTransform(data=ccrDataNormalized)
+ccrDataTransformed <- tppccrTransform(data=ccrDataNormalized)[[1]]
 @
 
 \subsubsection{Dose response curve fitting}
@@ -378,11 +397,13 @@ ccrDataHDAC <- ccrDataTransformed[match(hdac_targets, featureNames(ccrDataTransf
 
 We fit dose response curves for these proteins using the function \Rfunction{tppccrCurveFit}:
 <<ccrFitHDAC, message=TRUE>>=
-ccrResultsHDAC <- tppccrCurveFit(data=ccrDataHDAC, resultPath=resultPath)
+ccrDataFittedHDAC <- tppccrCurveFit(data=list(Panobinostat_1=ccrDataHDAC), nCores=1)
+tppccrPlotCurves(ccrDataFittedHDAC, resultPath=resultPath, nCores=1)
 @
 This function produces a table that contains the dose response curve parameters and additional information about each protein:
 <<fittedDRPars>>=
-print(ccrResultsHDAC[,c(1, 12:15)])
+ccrResultsHDAC <- tppccrResultTable(ccrDataFittedHDAC)
+print(ccrResultsHDAC[,c(1, 22:25)])
 @
 
 The dose response curve plots were stored in subdirectory \texttt{DoseResponse\_Curves} in \texttt{resultPath}. You can browse this directory and inspect the fits and melting curve parameters. In the following, you can see the plot that were placed in this directory for the \Sexpr{length(hdac_targets)} detected targets: 
@@ -393,6 +414,13 @@ The dose response curve plots were stored in subdirectory \texttt{DoseResponse\_
 \includegraphics[width=0.5\textwidth]{\Sexpr{resultPath}/DoseResponse_Curves/drCurve_\Sexpr{hdac_targets[4]}}
 \end{center}
 
+\subsection{Package output (CCR part)}
+Returned objects: data frame, spreadsheet in .xlsx format.
+
+The spreadsheet contains the following types of columns:
+\begin{itemize}
+\item \texttt{normalized\_to\_lowest\_conc}: Fold changes normalized to the values at the lowest concentration. This ensures that the transformed values always range from $0$ to $1$. If the value at the lowest concentration is $0$, a small constant ($1e-15$) is added to prevent division by zero.
+\end{itemize}
 
 \bibliography{TPP_references}
 \end{document}

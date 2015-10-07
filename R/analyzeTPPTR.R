@@ -13,15 +13,15 @@
 #'   protein.
 #'   
 #' @details Invokes the following steps: \enumerate{ \item Import data using the
-#'   \code{\link{tpptrImport}} function. \item Perform normalization (optional) 
+#'   \code{\link{tpptrImport}} function. \item Perform normalization (optional)
 #'   using the \code{\link{tpptrNormalize}} function. To perform normalization, 
 #'   set argument \code{normalize=TRUE}. The normalization will be filtered 
 #'   according to the criteria specified in the \code{normReqs} argument (also 
 #'   see the documentation of \code{\link{tpptrNormalize}} and 
-#'   \code{\link{tpptrDefaultNormReqs}} for further information. \item Fit 
-#'   melting curves using the \code{\link{tpptrCurveFit}} function. \item 
-#'   Produce result table using the \code{\link{tpptrResultTable}} function. 
-#'   \item Export results to Excel using the \code{\link{tppExport}} function. }
+#'   \code{\link{tpptrDefaultNormReqs}} for further information). \item Fit
+#'   melting curves using the function \code{\link{tpptrCurveFit}}. \item
+#'   Produce result table using the function \code{\link{tpptrAnalyzeMeltingCurves}}. 
+#'   \item Export results to Excel using the function \code{\link{tppExport}}. }
 #'   
 #'   The default settings are tailored towards the output of the python package 
 #'   isobarQuant, but can be customised to your own dataset by the arguments 
@@ -35,6 +35,16 @@
 #'   
 #'   The function \code{analyzeTPPTR} reports intermediate results to the 
 #'   command line. To suppress this, use \code{\link{suppressMessages}}.
+#'   
+#'   The \code{configTable} argument is a dataframe, or the path to a 
+#'   spreadsheet (tab-delimited text-file or xlsx format). Information about 
+#'   each experiment is stored row-wise. It contains the following columns: 
+#'   \itemize{ \item{\code{Path}:}{location of each datafile. Alternatively, 
+#'   data can be directly handed over by the \code{data} argument.} 
+#'   \item{\code{Experiment}: }{unique experiment names.} 
+#'   \item{\code{Condition}: }{experimental conditions of each dataset.} 
+#'   \item{Label columns: } each isobaric label names a column that contains the
+#'   temperatures administered for the label in the individual experiments. }
 #'   
 #'   The argument \code{nCores} could be either 'max' (use all available cores) 
 #'   or an upper limit of CPUs to be used.
@@ -60,6 +70,9 @@
 #'   results, and the final results table.
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
+#' @param ciStr character string indicating which columns contain confidence 
+#' intervals for the fold change measurements. If specified, confidence 
+#' intervals will be plotted around the melting curves.
 #' @param fcStr character string indicating which columns contain the actual 
 #'   fold change values. Those column names containing the suffix \code{fcStr} 
 #'   will be regarded as containing fold change values.
@@ -79,92 +92,142 @@
 #'   passed to function \code{\link{nls}} for curve fitting.
 #' @param maxAttempts maximal number of curve fitting attempts if model does not
 #'   converge.
-#' @param binWidth bin width used for p-value computation.
 #' @param plotCurves boolan value indicating whether melting curves should be 
 #'   plotted. Deactivating plotting decreases runtime.
+#' @param fixedReference name of a fixed reference experiment for normaliztion. 
+#'   If NULL (default), the experiment with the best R2 when fitting a melting 
+#'   curve through the median fold changes is chosen as the reference.
+#' @param pValMethod Method for p-value computation. Currently restricted to 
+#'   'maxQuant' (see Cox & Mann (2008)).
+#' @param pValParams optional list of parameters for p-value computation.
+#' @param pValFilter optional list of filtering criteria to be applied before 
+#'   p-value computation.
+#' @param verbose print name of each fitted protein to the command lin as a
+#'   means of progress report.
+#' @param xlsxExport boolean value indicating whether to produce result table in
+#'   .xlsx format (requires package \code{openxlsx} and a zip application to be 
+#'   installed).
+
+
 #'   
-#' @seealso tppDefaultTheme
+#' @seealso tppDefaultTheme, tpptrImport, tpptrNormalize, tpptrCurveFit, 
+#' tpptrAnalyzeMeltingCurves
 #' @export
 analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL, 
-                         idVar="gene_name", fcStr="rel_fc_", 
+                         idVar="gene_name", fcStr="rel_fc_", ciStr=NULL,
                          naStrs=c("NA", "n/d", "NaN", "<NA>"), qualColName="qupm",
                          normalize=TRUE, normReqs=tpptrDefaultNormReqs(),
                          ggplotTheme=tppDefaultTheme(), nCores='max',
                          startPars=c("Pl"=0, "a"=550, "b"=10), maxAttempts=500,
-                         binWidth=300, plotCurves=TRUE){
-  
+                         plotCurves=TRUE, fixedReference=NULL, pValMethod="maxQuant", 
+                         pValFilter=list(minR2=0.8, maxPlateau=0.3),
+                         pValParams=list(binWidth=300), verbose=FALSE, xlsxExport =TRUE){
   message("This is TPP version ", packageVersion("TPP"),".")
   
   ## Import data:
   trData <- tpptrImport(configTable=configTable, data=data, idVar=idVar, fcStr=fcStr, 
                         naStrs=naStrs, qualColName=qualColName)
+  
+  if(!is.null(ciStr)){
+    
+    # set option to indiacte use of confidence intervals during analysis
+    options("TPPTR_CI" = TRUE)
+    
+    trDataCI <- tpptrImport(configTable=configTable, data=data, idVar=idVar, fcStr=ciStr, 
+                          naStrs=naStrs, qualColName=qualColName)
+    
+    stopifnot(all(sapply(names(trData), function(i){all(dim(trData[[i]]) == dim(trDataCI[[i]]))})))
+    
+  } else {
+    options("TPPTR_CI" = FALSE)
+    trDataCI <- NULL
+  }
+  
+  # # set plot parameter for curve plotting
+  # options("TPPTR_plot" = plotCurves)
+  
+  expInfo   <- sapply(trData, annotation)
   expNames  <- names(trData)
-  expCond   <- sapply(trData, function(s) s@annotation[["condition"]])
-  expRepl   <- as.numeric(sapply(trData, function(s) s@annotation[["replicate"]]))
+  expNum   <- length(expNames)
+  
+  expConds   <- sapply(trData, function(s) s@annotation[["condition"]])
+  expComps  <- createComparisonTable(infoTable=expInfo)  
   
   ## Extract directory from the filenames in config table, if specified:
-  confgTableTmp <- importCheckConfigTable(infoTable=configTable)
-  files         <- confgTableTmp$Path
-  if (is.null(resultPath) & !is.null(files)){
-    resultPath <- dirname(files[1])
-    resultPath <- file.path(resultPath, "TPP_results")
-  }
-  if (is.null(resultPath)){
-    message("No result directory specified. No output files or melting curve plots will be produced.") 
-    plotCurves <- FALSE
-  } else {
-    message("Results will be written to ", resultPath)
-    
-    ## Create output directory and include a subfolder for data objects created during 
-    ## package excecution:
-    pathDataObj <- file.path(resultPath, "dataObj")
-    if (!file.exists(pathDataObj)) dir.create(pathDataObj, recursive=TRUE)
-    
-    ## Save imported data before normalization:
-    save(list=c("trData"), file=file.path(pathDataObj, "importedData.RData"))
+  confgFields <- suppressMessages(importCheckConfigTable(infoTable=configTable, 
+                                                         type="TR"))
+  files      <- confgFields$files
+  outDirList <- importFct_makeOutputDirs(outDir=resultPath, fNames=files)
+  flagDoWrite <- outDirList$doWrite
+  pathDataObj <- outDirList$pathDataObj
+  pathExcel=resultPath <- outDirList$outDir
+  if (!flagDoWrite) plotCurves <- FALSE
+  
+  ## Save imported data before normalization:
+  if (flagDoWrite){
+    save(list=c("trData", "trDataCI"), file=file.path(pathDataObj, "importedData.RData"))
   }
   
   ## Normalize data:
   if (normalize){
     normResults <- tpptrNormalize(data=trData, normReqs=normReqs, 
-                                  qcPlotTheme=ggplotTheme, qcPlotPath=NULL)
+                                  qcPlotTheme=ggplotTheme, qcPlotPath=NULL, fixedReference=fixedReference)
     trDataNormalized <- normResults[["normData"]]
+    ## Save normalized data:
+    if (flagDoWrite){
+      save(list=c("trDataNormalized"), file=file.path(pathDataObj, 
+                                                      "normalizedData.RData"))    
+    }
   } else {
     trDataNormalized <- trData
   }
   
-  if (!is.null(resultPath)){
-    save(list=c("trDataNormalized"), file=file.path(pathDataObj, "normalizedData.RData"))    
-  }
-  
   ## Fit melting curves:
-  trDataFitted <- tpptrCurveFit(data=trDataNormalized, resultPath=resultPath,
+  trDataFitted <- tpptrCurveFit(data=trDataNormalized, dataCI=trDataCI,
+                                resultPath=resultPath,
                                 ggplotTheme=ggplotTheme, doPlot=plotCurves,
-                                startPars=startPars, maxAttempts=maxAttempts, nCores=nCores)
-  if (!is.null(resultPath)){
+                                startPars=startPars, maxAttempts=maxAttempts, 
+                                nCores=nCores, verbose=verbose)
+  ## Save data including parameters of the model fits:
+  if (flagDoWrite){
     save(list=c("trDataFitted"), file=file.path(pathDataObj, "fittedData.RData"))
   }
   
   ## Analyse melting curves and create result table:
-  resultTable <- tpptrResultTable(data=trDataFitted, binWidth=binWidth)
+  resultTable <- tpptrAnalyzeMeltingCurves(data=trDataFitted, 
+                                           pValMethod=pValMethod, 
+                                           pValFilter=pValFilter, 
+                                           pValParams=pValParams)
   
-  if (!is.null(resultPath)){
-    ## Save result table as data frame and Excel spreadsheet:
+  ## Save result table as data frame:
+  if (flagDoWrite){
     save(list=c("resultTable"), file=file.path(pathDataObj, "results_TPP_TR.RData"))
-    tppExport(tab=resultTable, file=file.path(resultPath, "results_TPP_TR.xlsx"))
   }
+  
+  ## Save result table as xlsx spreadsheet:
+  if (xlsxExport ){
+    if (flagDoWrite){
+      if (expNum > 1){
+        ## Determine background colors for the columns belonging to the same experiment:
+        compNums <- assignCompNumber_to_expName(compDF=expComps, expNames=expNames)
+        expColors <- plotColors(expConditions = expConds, comparisonNums = compNums)
+        } else {
+          expColors <- NULL
+        }      
+        # Create output table:
+        tppExport(tab=resultTable,  file=file.path(pathExcel, "results_TPP_TR.xlsx"), 
+                  expColors=expColors, expNames=expNames)
+      } else {
+        warning("Cannot produce xlsx output because no result path is specified.")
+      }
+    }
   
   ## --------------------------------------------------------------------------------------------
   ## Create QC plots:
-  if (!is.null(resultPath)){
+  if (flagDoWrite){
     pdf(file=file.path(resultPath, "QCplots.pdf"), width=8, height=9)
-
-    ## 1. Illustrate group overlaps by venn diagrams:
-    message("Creating venn diagrams...")
-    pVenn <- tppVenn(data=trData)
-    grid.draw(pVenn)
-    
-    ## 2. QC plot to illustrate median curve fits:
+        
+    ## 1. QC plot to illustrate median curve fits:
     message("Creating QC plots to visualize median curve fits...")
     if (normalize){
       qcPlotMedianFit <- normResults[["qcPlotObj"]]
@@ -172,11 +235,15 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
     }
     message("done.\n")
     
-    ## 3. QC plot to correlate fold changes before and after normalization between all experiments:
+    ## 2. QC plot to correlate fold changes before and after normalization between all experiments:
     message("Creating QC plots to visualize normalization effects...")
-    qcPlotCorrelateGroupsRaw  <- tppQCPlotsCorrelateExperiments(tppData=trData, annotStr="Non-normalized Fold Changes", ggplotTheme=ggplotTheme)
+    qcPlotCorrelateGroupsRaw  <- tppQCPlotsCorrelateExperiments(tppData=trData, 
+                                                                annotStr="Non-normalized Fold Changes", 
+                                                                ggplotTheme=ggplotTheme)
     if (normalize){
-      qcPlotCorrelateGroupsNorm <- tppQCPlotsCorrelateExperiments(tppData=trDataNormalized, annotStr="Normalized Fold Changes", ggplotTheme=ggplotTheme)
+      qcPlotCorrelateGroupsNorm <- tppQCPlotsCorrelateExperiments(tppData=trDataNormalized, 
+                                                                  annotStr="Normalized Fold Changes", 
+                                                                  ggplotTheme=ggplotTheme)
     }
     for (pn in names(qcPlotCorrelateGroupsRaw)){
       suppressWarnings(print(qcPlotCorrelateGroupsRaw[[pn]]))
@@ -184,18 +251,11 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
     }
     message("done.\n")
     
-    ## 4. QC plot to visualize distribution of melting curve parameters:
-    if(!is.null(expCond)){
-      message("Creating QC plots to visualize minimal slope distributions...")
-      suppressWarnings(tpptrQCPlotsMinSlopes_vs_MPdiffs(resultTable=resultTable, 
-                                                        expNames=expNames, 
-                                                        expRepl=expRepl, 
-                                                        expCond=expCond,
-                                                        ggplotTheme=ggplotTheme))
-      message("done.\n")
-    }
+    tpptrQCplots(resultTab=resultTable, expNames=expNames, 
+                 expConditions=expConds, compDF=expComps, 
+                 minR2=pValFilter$minR2, ggplotTheme=ggplotTheme)
     dev.off()
     ## --------------------------------------------------------------------------------------------
   }
-  return(resultTable)
+  invisible(resultTable)
 }

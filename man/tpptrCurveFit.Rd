@@ -4,36 +4,44 @@
 \alias{tpptrCurveFit}
 \title{Fit melting curves to all proteins in a dataset.}
 \usage{
-tpptrCurveFit(data, resultPath = NULL, ggplotTheme = tppDefaultTheme(),
-  doPlot = TRUE, startPars = c(Pl = 0, a = 550, b = 10),
-  maxAttempts = 500, nCores = "max")
+tpptrCurveFit(data, dataCI = NULL, resultPath = NULL,
+  ggplotTheme = tppDefaultTheme(), doPlot = TRUE, startPars = c(Pl = 0, a
+  = 550, b = 10), maxAttempts = 500, nCores = "max", verbose = FALSE)
 }
 \arguments{
-\item{data}{list of \code{ExpressionSet}s with protein fold changes for curve fitting.}
+\item{data}{list of \code{ExpressionSet}s with protein fold changes for curve
+fitting.}
+
+\item{dataCI}{list of \code{ExpressionSet}s with protein fold change confidence
+intervals for curve fitting. Default to NULL.}
 
 \item{resultPath}{location where to store the melting curve plots.}
 
 \item{ggplotTheme}{ggplot theme for melting curve plots.}
 
-\item{doPlot}{boolan value indicating whether melting curves should
-be plotted, or whether just the curve parameters should be returned.}
+\item{doPlot}{boolan value indicating whether melting curves should be
+plotted, or whether just the curve parameters should be returned.}
 
-\item{startPars}{start values for the melting curve parameters. Will be passed
-to function \code{\link{nls}} for curve fitting.}
+\item{startPars}{start values for the melting curve parameters. Will be
+passed to function \code{\link{nls}} for curve fitting.}
 
-\item{maxAttempts}{maximal number of curve fitting attempts if model does not converge.}
+\item{maxAttempts}{maximal number of curve fitting attempts if model does not
+converge.}
 
-\item{nCores}{either a numerical value given the desired number of CPUs, or 'max'
-to automatically assign the maximum possible number (default).}
+\item{nCores}{either a numerical value given the desired number of CPUs, or
+'max' to automatically assign the maximum possible number (default).}
+
+\item{verbose}{plot name of each fitted protein to the command lin as a means
+of progress report.}
 }
 \value{
 A list of ExpressionSets storing the data together with the melting
-  curve parameters for each treatment condition and biological replicate.
+  curve parameters for each experiment.
   Each ExpressionSet contains the measured fold changes, as well as row and
   column metadata. In each ExpressionSet \code{S}, the fold changes can be
   accessed by \code{exprs(S)}. Protein expNames can be accessed by
-  \code{featureNames(S)}. TMT labels and the corresponding temperatures are
-  returned by \code{S$labels} and \code{S$temperatures}.
+  \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are
+  returned by \code{S$label} and \code{S$temperature}.
 }
 \description{
 Fit melting curves to all proteins in a dataset.

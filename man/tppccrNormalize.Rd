@@ -7,22 +7,22 @@
 tppccrNormalize(data)
 }
 \arguments{
-\item{data}{expressionSet with measurements to be normalized}
+\item{data}{list of expressionSets with measurements to be normalized}
 }
 \value{
-ExpressionSet object storing the normalized fold changes, as well as
-  row and column metadata. In each ExpressionSet \code{S}, the fold changes
-  can be accessed by \code{exprs(S)}. Protein expNames can be accessed by
-  \code{featureNames(S)}. TMT labels and the corresponding temperatures are
-  returned by \code{S$labels} and \code{S$temperatures}.
+List of expressionSet objects storing the normalized fold changes, as well as
+  row and column metadata. In each expressionSet \code{S}, the fold changes
+  can be accessed by \code{exprs(S)}. Protein names can be accessed by
+  \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are
+  returned by \code{S$label} and \code{S$concentration}.
 }
 \description{
 Normalize each fold change column by its median.
 }
 \examples{
 data(hdacCCR_smallExample)
-tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data = hdacCCR_data_repl1)
+tppccrData <- tppccrImport(configTable=hdacCCR_config, data = hdacCCR_data)
 tppccrNorm <- tppccrNormalize(data=tppccrData)
-head(exprs(tppccrNorm))
+head(exprs(tppccrNorm[[1]]))
 }
 

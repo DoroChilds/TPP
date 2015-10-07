@@ -4,12 +4,16 @@
 \alias{tppExport}
 \title{Produce Excel table of TPP-TR or TPP-CCR experiment.}
 \usage{
-tppExport(tab, file)
+tppExport(tab, file, expNames = NULL, expColors = NULL)
 }
 \arguments{
 \item{tab}{Table with results of the TPP analysis.}
 
 \item{file}{path for storing results table}
+
+\item{expNames}{character vector of experiment names of the same length as expColors.}
+
+\item{expColors}{character vector of background colors to group the result columns belonging to different experiments.}
 }
 \value{
 No value returned.

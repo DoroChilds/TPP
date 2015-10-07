@@ -4,54 +4,83 @@
 #'   
 #' @examples
 #' data(hdacCCR_smallExample)
-#' tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data = hdacCCR_data_repl1)
+#' tppccrData <- tppccrImport(configTable=hdacCCR_config, data = hdacCCR_data)
 #' tppccrNorm <- tppccrNormalize(data=tppccrData)
+#' # Perform transformation:
 #' tppccrTransformed <- tppccrTransform(data=tppccrNorm)
-#' determinedEffectTypes <- featureData(tppccrTransformed)$CompoundEffect
-#' transformedData <- data.frame(exprs(tppccrTransformed), 
-#'                               Type=determinedEffectTypes)
+#' # Obtain transformed measurements per replicate:
+#' transf_replicate1 <- tppccrTransformed$Panobinostat_1
+#' transf_replicate2 <- tppccrTransformed$Panobinostat_2
+#' # Inspect transformed data in replicate 1:
+#' effects_replicate1 <- featureData(transf_replicate1)$compound_effect
+#' newData_repl1 <- data.frame(exprs(transf_replicate1), 
+#'                               Type=effects_replicate1)[!is.na(effects_replicate1),]
 #'                               
-#' @return ExpressionSet object storing the transformed fold changes, as well as 
-#'   row and column metadata. In each ExpressionSet \code{S}, the fold changes
+#' @return List of expressionSet objects storing the transformed fold changes, 
+#' as well as row and column metadata. In each expressionSet \code{S}, the fold changes
 #'   can be accessed by \code{exprs(S)}. Protein expNames can be accessed by 
-#'   \code{featureNames(S)}. TMT labels and the corresponding temperatures are 
-#'   returned by \code{S$labels} and \code{S$temperatures}.
+#'   \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
+#'   returned by \code{S$label} and \code{S$concentration}.
 #' 
 #' @param data expressionSet object containing the data to be transformed.
-#' @param fcCutoff Cutoff for highest compound concentration fold change.
+#' @param fcCutoff cutoff for highest compound concentration fold change. 
+#' @param fcTolerance tolerance for the fcCutoff parameter. See details.
+#' 
+#' @details  
+#' Only proteins with fold changes bigger than
+#' \code{[fcCutoff * (1 - fcTolerance)} or smaller than 
+#' \code{1/(fcCutoff * (1 - fcTolerance))]} will be used for curve fitting.
+#' Additionally, the proteins fulfilling the fcCutoff criterion without 
+#' tolerance will be marked in the output column \code{meets_FC_requirement}.
+#' 
 #' @export
-tppccrTransform <- function(data, fcCutoff=1.5) {
-  message("Transforming data ...")
-  fcOrig     <- exprs(data)
-  
-  ## Mark proteins that are stabilized or destabilized by compound treatment
-  fcMaxConc  <- fcOrig[, which.max(data$concentration)]
-  flagStab   <- fcMaxConc >= fcCutoff
-  flagDestab <- fcMaxConc <= 1/fcCutoff
-  compoundEffect                   <- rep(NA_character_, nrow(data))
-  compoundEffect[flagStab]         <- "stabilized"
-  compoundEffect[flagDestab]       <- "destabilized"
-  featureData(data)$CompoundEffect <- compoundEffect
-  
-  # Iterate through all protein fold change columns and do transformation
-  iStab   <- which(flagStab)
-  iDestab <- which(flagDestab)
-  
-  fcNew <- matrix(nrow=nrow(data), ncol=ncol(data), dimnames=list(featureNames(data), colnames(data)))
-  for (i in 1:nrow(fcNew)){
-    if (i %in% iStab){
-      # Transform fc of proteins stabilized by cpd treatment to 
-      # fc=0 for DMSO and fc=1 for hightest cpd conc
-      fcNew[i,] <- (fcOrig[i,] - 1) / (fcMaxConc[i] - 1)
-    } else if (i %in% iDestab){
-      # Transform fc of proteins destabilized by cpd treatment to 
-      # fc=1 for DMSO and fc=0 for hightest cpd conc
-      fcNew[i,] <- (fcOrig[i,]-fcMaxConc[i])/ (1-fcMaxConc[i])
-    }
-  }
-  
-  ## Store transformed data in expressionSets and return result
-  exprs(data) <- fcNew  
-  message("done.")
-  return(data)  
+tppccrTransform <- function(data, fcCutoff=1.5, fcTolerance=0.1) {
+  dataListTransformed <- list()  
+  for (expName in names(data)){
+    message("Transforming dataset: ", expName)
+    dTmp   <- data[[expName]]
+    fcOrig <- exprs(dTmp)
+    
+    ## Mark proteins that are stabilized or destabilized by compound treatment
+    fcMaxConc <- fcOrig[, which.max(dTmp$concentration)]
+    
+    ## 1. Use threshold without tolerance. Will be reported in result table.
+    flagS_strict <- fcMaxConc >= fcCutoff
+    flagD_strict <- fcMaxConc <= 1/fcCutoff
+    featureData(dTmp)$meets_FC_requirement <- flagS_strict|flagD_strict
+    
+    ## 2. Repeat with tolerance to include proteins close to the threshold.
+    flagS <- fcMaxConc >= fcCutoff * (1 - fcTolerance)
+    flagD <- fcMaxConc <= 1/(fcCutoff * (1 - fcTolerance))
+    
+    cpdEffect        <- rep(NA_character_, nrow(dTmp))
+    cpdEffect[flagS] <- "stabilized"
+    cpdEffect[flagD] <- "destabilized"
+    featureData(dTmp)$compound_effect <- cpdEffect
+
+    fcNew <- matrix(NA_real_, nrow=nrow(dTmp), ncol=ncol(dTmp), 
+                    dimnames=list(featureNames(dTmp), colnames(dTmp)))
+
+    # Transform FCs of proteins stabilized by cpd treatment to 
+    # fc=0 for DMSO and fc=1 for hightest cpd conc
+    iS <- which(flagS)
+    fcNew[iS,]   <- (fcOrig[iS  ,] - 1) / (fcMaxConc[iS] - 1)
+
+    # Transform FCs of proteins destabilized by cpd treatment to 
+    # fc=1 for DMSO and fc=0 for hightest cpd conc
+    iD <- which(flagD)
+    fcNew[iD,] <- (fcOrig[iD,] - fcMaxConc[iD])/ (1-fcMaxConc[iD])
+
+    ## Store transformed FCs in exprs field:
+    exprs(dTmp) <- fcNew
+    
+    ## Store transformed FCs in featureData so that it can be compared to the 
+    ## untransformed values in the result table:
+    fcNamesTransf <- paste(colnames(fcNew), "transformed", sep="_")
+    pData(featureData(dTmp))[,fcNamesTransf] <- fcNew
+    
+    dataListTransformed[[expName]] <- dTmp
+  }  
+  message("Transformation complete.\n")
+  return(dataListTransformed)  
 }

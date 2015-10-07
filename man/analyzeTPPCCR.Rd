@@ -7,8 +7,10 @@
 analyzeTPPCCR(configTable, data = NULL, resultPath = NULL,
   idVar = "gene_name", fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN",
   "<NA>"), qualColName = "qupm", normalize = TRUE,
-  ggplotTheme = tppDefaultTheme(), nonZeroCols = "qssm", r2Cutoff = 0.8,
-  fcCutoff = 1.5, slopeBounds = c(1, 50), plotCurves = TRUE)
+  ggplotTheme = tppDefaultTheme(), nCores = "max", nonZeroCols = "qssm",
+  r2Cutoff = 0.8, fcCutoff = 1.5, slopeBounds = c(1, 50),
+  plotCurves = TRUE, verbose = FALSE, xlsxExport = TRUE,
+  fcTolerance = 0.1)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file,
@@ -41,6 +43,9 @@ protein identifiers.}
 
 \item{ggplotTheme}{ggplot theme for dose response curve plots.}
 
+\item{nCores}{either a numerical value given the desired number of CPUs, or
+'max' to automatically assign the maximum possible number (default).}
+
 \item{nonZeroCols}{character string indicating a column that will be used for
 filtering out zero values.}
 
@@ -52,7 +57,15 @@ filtering out zero values.}
 fitting.}
 
 \item{plotCurves}{boolan value indicating whether dose response curves should
-  be plotted. Deactivating plotting decreases runtime.}
+be plotted. Deactivating plotting decreases runtime.}
+
+\item{verbose}{print name of each fitted or plotted protein to the command
+line as a means of progress report.}
+
+\item{xlsxExport}{produce results table in xlsx format and store at the
+location specified by the \code{resultPath} argument.}
+
+\item{fcTolerance}{tolerance for the fcCutoff parameter. See details.}
 }
 \value{
 A data frame in which the fit results are stored row-wise for each
@@ -76,19 +89,29 @@ Invokes the following steps: \enumerate{ \item Import data using the
   isobarQuant, but can be customised to your own dataset by the arguments
   \code{idVar, fcStr, naStrs, qualColName}.
 
-  If \code{resultPath} is not specified, the location of the input file
-  specified in \code{configTable} will be used. If the input data are not
+  If \code{resultPath} is not specified, result files are stored at the path
+  defined in the first entry of \code{configTable$Path}. If the input data are not
   specified in \code{configTable}, no result path will be set. This means
   that no output files or dose response curve plots are produced and
   \code{analyzeTPPCCR} just returns the results as a data frame.
 
   The function \code{analyzeTPPCCR} reports intermediate results to the
   command line. To suppress this, use \code{\link{suppressMessages}}.
+
+The dose response curve plots will be stored in a subfolder with
+  name \code{DoseResponse_Curves} at the location specified by
+  \code{resultPath}.
+
+Only proteins with fold changes bigger than
+\code{[fcCutoff * (1 - fcTolerance)} or smaller than
+\code{1/(fcCutoff * (1 - fcTolerance))]} will be used for curve fitting.
+Additionally, the proteins fulfilling the fcCutoff criterion without
+tolerance will be marked in the output column \code{meets_FC_requirement}.
 }
 \examples{
 data(hdacCCR_smallExample)
-tppccrResults <- analyzeTPPCCR(configTable=hdacCCR_config_repl1,
-                               data=hdacCCR_data_repl1)
+tppccrResults <- analyzeTPPCCR(configTable=hdacCCR_config,
+                               data=hdacCCR_data, nCores=1)
 }
 \references{
 Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T.,

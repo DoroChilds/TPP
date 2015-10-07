@@ -4,9 +4,9 @@
 \name{hdacCCR_smallExample}
 \alias{hdacCCR_smallExample}
 \title{Example subsets of a Panobinostat TPP-CCR dataset (replicates 1 and 2) and the
-  corresponding configuration tables to start the analysis.}
+  corresponding configuration table to start the analysis.}
 \description{
 Example subsets of a Panobinostat TPP-CCR dataset (replicates 1 and 2) and the
-  corresponding configuration tables to start the analysis.
+  corresponding configuration table to start the analysis.
 }
 

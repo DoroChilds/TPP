@@ -15,8 +15,9 @@
 #'   \code{isobarQuant}. You can also customise them for your own dataset.
 #'   
 #'   The \code{configTable} argument is a dataframe, or the path to a 
-#'   spreadsheet (tab-delimited text-file or xlsx format). Information about 
-#'   each experiment is stored row-wise. It contains the following columns: 
+#'   spreadsheet (tab-delimited text-file without quoted strings, or xlsx format). 
+#'   Information about each experiment is stored row-wise. 
+#'   It contains the following columns: 
 #'   \itemize{
 #'  \item{\code{Path}: }{location of the datafile. Alternatively, data can be directly handed
 #'   over by the \code{data} argument.}
@@ -31,12 +32,13 @@
 #' @return ExpressionSet object storing the measured fold changes, as well as
 #' row and column metadata. In each ExpressionSet \code{S}, the fold changes can 
 #' be accessed by \code{exprs(S)}. Protein expNames can be accessed by 
-#' \code{featureNames(S)}. TMT labels and the corresponding temperatures are 
-#' returned by \code{S$labels} and \code{S$temperatures}.   
+#' \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
+#'   returned by \code{S$label} and \code{S$concentration}.
 #' 
 #' @examples
 #' data(hdacCCR_smallExample)
-#' tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data = hdacCCR_data_repl1)
+#' tppccrData <- tppccrImport(configTable=hdacCCR_config, 
+#' data = hdacCCR_data)
 #' 
 #' @param configTable either a dataframe or the path to a spreadsheet. In both cases
 #' it specifies necessary information of the TPP-CCR experiment.
@@ -59,55 +61,53 @@
 #' @export
 #' @seealso \code{\link{tpptrImport}}, \code{\link{tppccrCurveFit}}
 
-tppccrImport <- function(configTable, data=NULL, idVar="gene_name", fcStr="rel_fc_", 
-                       naStrs=c("NA", "n/d", "NaN", "<NA>"), qualColName="qupm", nonZeroCols="qssm"){
-  message("Importing data...\n")
-  configTable <- importCheckConfigTable(infoTable=configTable)
+tppccrImport <- function(configTable, data=NULL, idVar="gene_name", 
+                         fcStr="rel_fc_", naStrs=c("NA", "n/d", "NaN", "<NA>"), 
+                         qualColName="qupm", nonZeroCols="qssm"){
   
-  expName        <- configTable$Experiment
-  file           <- configTable$Path
-  labels         <- setdiff(colnames(configTable), c("Experiment", "Path"))
-  concentrations <- configTable[, labels]
+  dataList <- importTR_main(configTable=configTable, data=data, idVar=idVar, 
+                            fcStr=fcStr, naStrs=naStrs, qualColName=qualColName,
+                            type="CCR")
   
-  ## Determine dataset name:
-  expNameCheck   <- importCheckExperimentNames(expNames=expName, expectedLength=1)
-  expName        <- expNameCheck$expNames
-  genericExpNames <- expNameCheck$genericExpNames
-  
-  ## Check whether dataframe or filename is specified for data import:
-  argList <- importCheckDataFormat(dataframes=data, files=file, 
-                                   expNames=expName, genericExpNames=genericExpNames)
-  data <- argList[["dataframes"]][[expName]]
-  file      <- argList[["files"]][[expName]]
-  
-  ## Determine matrix of concentrations to each isotope label
-  concMatrix <- importCheckTemperatures(temp=concentrations, nData=1)
-  concVec    <- as.numeric(concMatrix)
-  
-  ## Check isotope label argument
-  labels <- importCheckLabels(labelValues=labels, temperatureMat=concMatrix)
-  
-  ## Import data and convert into ExpressionSet format:
-  eSet <- importSingleExp(name=expName, filename=file, dataframe=data,
-                          labels=labels, labelValues=concVec, type="CCR",
-                          idVar=idVar, fcStr=fcStr, qualColName=qualColName, naStrs=naStrs)
-  
-  ## ---------------------------------------------------------------------------
-  ## Preprocess imported dataset
-  ## ---------------------------------------------------------------------------
-  ## Filter data where qusm = 0:
-  filterCol <- match(nonZeroCols, varLabels(featureData(eSet)))
-  if (!is.na(filterCol)){
-    message("Removing proteins with zero values in column ", paste(varLabels(featureData(eSet))[filterCol], collapse=', '), ":")
-    rm <- pData(featureData(eSet))[, filterCol] == 0
-    if(length(rm) > 0) {
-      eSetFiltered <- eSet[!rm,]    
+  ## Remove proteins where nonZeroCols == 0:
+  if (!is.null(nonZeroCols)){
+    dataListFiltered <- list()
+    for (expName in names(dataList)){
+      message("Filtering CCR dataset: ", expName)
+      
+      dTmp <- dataList[[expName]]
+      fDat <- pData(featureData(dTmp))
+      
+      jCol <- match(nonZeroCols, colnames(fDat))
+      colStr <- paste("'", paste(nonZeroCols, collapse="', '"), "'", sep="")
+      if (!any(is.na(jCol))){
+        rm <- apply(as.matrix(fDat[, jCol]) == 0, 1, any)
+        if(length(rm) > 0) {
+          dTmpNew <- dTmp[!rm,]    
+        }
+        message("Removed proteins with zero values in column(s) ", colStr, ":")
+        message("\t", nrow(dTmpNew), " out of ", nrow(dTmp), " proteins remaining.")
+      } else {
+        dTmpNew <- dTmp
+        warning("At least one of the column(s) ", colStr, 
+                ", which were specified in the argument 'nonZeroCols' could not be found in the data. No filtering performed.")
+      }
+      
+      dataListFiltered[[expName]] <- dTmpNew
     }
-    message(nrow(eSetFiltered), " out of ", nrow(eSet), " proteins remaining after filtering.")  
-    message("\n")    
   } else {
-    eSetFiltered <- eSet
-    warning("Column '", nonZeroCols, "', which was specified in the argument 'nonZeroCols' could not be found in the data. No filtering performed.")
+    dataListFiltered <- dataList
   }
-  return(eSetFiltered)
+
+  
+  ## Convert given concentrations to log scale for curve fitting and plotting:
+  for (expName in names(dataListFiltered)){
+    datTmp <- dataListFiltered[[expName]]
+    concTmp <- log10(datTmp$concentration * 10^-6)
+    concTmp[is.infinite(concTmp)] <- -15  
+    dataListFiltered[[expName]]$concentration <- concTmp
+  }
+  
+  
+  return(dataListFiltered)
 }

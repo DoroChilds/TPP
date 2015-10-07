@@ -39,8 +39,8 @@ filtering out zero values.}
 ExpressionSet object storing the measured fold changes, as well as
 row and column metadata. In each ExpressionSet \code{S}, the fold changes can
 be accessed by \code{exprs(S)}. Protein expNames can be accessed by
-\code{featureNames(S)}. TMT labels and the corresponding temperatures are
-returned by \code{S$labels} and \code{S$temperatures}.
+\code{featureNames(S)}. Isobaric labels and the corresponding concentrations are
+  returned by \code{S$label} and \code{S$concentration}.
 }
 \description{
 \code{tppccrImport} imports a table of protein fold changes and
@@ -58,8 +58,9 @@ The imported dataset has to contain measurements obtained by a
   \code{isobarQuant}. You can also customise them for your own dataset.
 
   The \code{configTable} argument is a dataframe, or the path to a
-  spreadsheet (tab-delimited text-file or xlsx format). Information about
-  each experiment is stored row-wise. It contains the following columns:
+  spreadsheet (tab-delimited text-file without quoted strings, or xlsx format).
+  Information about each experiment is stored row-wise.
+  It contains the following columns:
   \itemize{
  \item{\code{Path}: }{location of the datafile. Alternatively, data can be directly handed
   over by the \code{data} argument.}
@@ -73,7 +74,8 @@ The imported dataset has to contain measurements obtained by a
 }
 \examples{
 data(hdacCCR_smallExample)
-tppccrData <- tppccrImport(configTable=hdacCCR_config_repl1, data = hdacCCR_data_repl1)
+tppccrData <- tppccrImport(configTable=hdacCCR_config,
+data = hdacCCR_data)
 }
 \seealso{
 \code{\link{tpptrImport}}, \code{\link{tppccrCurveFit}}

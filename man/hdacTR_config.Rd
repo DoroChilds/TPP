@@ -10,7 +10,7 @@ The configuration table to analyze \link{hdacTR_data}.
 
 
 \code{hdacTR_config} is a data frame that specifies the experiment
- name, isobaric labels, and the administered drug concentrations at each
+ name, isobaric labels, and the administered temperatures at each
  label.
 }
 
