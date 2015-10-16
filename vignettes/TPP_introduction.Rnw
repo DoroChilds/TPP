@@ -18,13 +18,13 @@ European Molecular Biology Laboratory (EMBL),
 \\ Heidelberg, Germany\\
 \texttt{dorothee.childs@embl.de}}
 
-\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2015-07-21)}
+\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2015-10-16)}
 
 \begin{document}
 <<opts, include=FALSE>>=
 knitr::opts_chunk$set(concordance=TRUE, 
                       eval = TRUE,
-                      cache = FALSE,
+                      cache = TRUE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,
@@ -34,9 +34,9 @@ knitr::opts_chunk$set(concordance=TRUE,
 \maketitle
 
 \begin{abstract}
-Detecting the binding partners of a drug is one of the biggest challenges in drug research. Thermal Proteome Profiling (TPP) addresses this question by combining the cellular thermal shift assay concept with mass spectrometry based proteome-wide protein quantitation \cite{savitski2014tracking}. Thereby, drug-target interactions can be inferred from changes in the thermal stability of a protein upon drug binding, or upon downstream cellular regulatory events, in an unbiased manner.
+Detecting the binding partners of a drug is one of the biggest challenges in drug research. Thermal Proteome Profiling (TPP) addresses this question by combining the cellular thermal shift assay concept \cite{molina2013} with mass spectrometry based proteome-wide protein quantitation \cite{savitski2014tracking}. Thereby, drug-target interactions can be inferred from changes in the thermal stability of a protein upon drug binding, or upon downstream cellular regulatory events, in an unbiased manner.
 
-The analysis of TPP experiments requires several data analytic and statistical modeling steps. The package \Rpackage{TPP} facilitates this process by providing exectuable workflows that conduct all necessary steps. This vignette explains the use of the package. For details about the statistical methods, please refer to the paper \cite{savitski2014tracking}.
+The analysis of TPP experiments requires several data analytic and statistical modeling steps \cite{franken2015}. The package \Rpackage{TPP} facilitates this process by providing exectuable workflows that conduct all necessary steps. This vignette explains the use of the package. For details about the statistical methods, please refer to the papers \cite{savitski2014tracking, franken2015}.
 % cite Nature Protocols paper, when available
 %\footnote{An example workflow that reproduces the results of paper \cite{franken2015} is described in the accompanying Vignette: "TPP analysis workflow: \textit{Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors}".}.
 \end{abstract}
@@ -76,13 +76,16 @@ The following sections describe both functionalities in detail.
 \subsection{Overview}
 The function \Rfunction{analyzeTPPTR} executes the whole workflow from data import through normalization and curve fitting to statistical analysis. Nevertheless, all of these steps can be invoked separately by the user. The corresponding functions can be recognized by their suffix \Rfunction{tpptr}. Here, we first show how to start the whole analysis using \Rfunction{analyzeTPPTR}. Afterwards, we demonstrate how to carry out single steps individually.
 
-Before you can start your analysis, you need to specify information about your experiments. This information comprises the name, condition (treatment or vehicle), replicate, as well as the isobaric labels and corresponding temperature values for each experiment.
+Before you can start your analysis, you need to specify information about your experiments: 
+\begin{itemize}
+  \item The mandatory information comprises a unique experiment name, as well as the isobaric labels and corresponding temperature values for each experiment. 
+  \item Optionally, you can also specify a condition for each experiment (treatment or vehicle), as well as an arbitrary number of comparisons. Comparisons are pairs of experiments whose melting points will be compared in order to detect significant shifts.
+\end{itemize}
 
 The package retrieves this information from a configuration table that you need to specify before starting the analysis. This table can either be a data frame that you define in your R session, or a spreadsheet in .xlsx or .csv format. In a similar manner, the measurements themselves can either be provided as a list of data frames, or imported directly from files during runtime.
 
 We demonstrate the functionality of the package using the dataset \texttt{hdacTR\_smallExample}. 
-It contains an illustrative subset of a larger dataset which was obtained by TPP-TR experiments on K562 cells treated with the histone deacetylase (HDAC) inhibitor panobinostat in the treatment groups and with vehicle in the control groups. The experiments were performed for two conditions (vehicle and treatment), with two biological replicates each. The raw MS data were processed with the Python package \Rpackage{isobarQuant}, which provides protein fold changes relative to the protein abundance at the lowest temperature as input for the TPP package.
-% cite our paper and provide link to isobarQuant
+It contains an illustrative subset of a larger dataset which was obtained by TPP-TR experiments on K562 cells treated with the histone deacetylase (HDAC) inhibitor panobinostat in the treatment groups and with vehicle in the control groups. The experiments were performed for two conditions (vehicle and treatment), with two biological replicates each. The raw MS data were processed with the Python package \Rpackage{isobarQuant}, which provides protein fold changes relative to the protein abundance at the lowest temperature as input for the TPP package \cite{franken2015}.
 
 First, we load the data:
 <<load_tr_data>>=
@@ -95,10 +98,11 @@ This command loads two objects:
 \end{enumerate}
 
 \subsection{The configuration table}
-\texttt{hdacTR\_config} is an example of a configuration table in data frame format. The corresponding spreadsheet file is provided together with the package and can be used as a template for your own analysis. It is stored in the folder \texttt{example\_data/TR\_example\_data} in your package installation path. You can locate the \texttt{example\_data} folder on your system by typing
+\texttt{hdacTR\_config} is an example of a configuration table in data frame format. We also provide a .xlsx version of this table. It is stored in the folder \texttt{example\_data/TR\_example\_data} in your package installation path. You can locate the \texttt{example\_data} folder on your system by typing
 <<locate_example_data>>=
 system.file('example_data', package = 'TPP')
 @
+You can use both versions as a template for your own analysis
 
 Let's take a closer look at the content of the configuration table we just loaded:
 <<tr_config_table>>=
@@ -119,7 +123,7 @@ An additional \texttt{Path} column must be added to the table if the data should
 <<dataSummaryTP>>=
 summary(hdacTR_data)
 @
-They each contain between \Sexpr{min(sapply(hdacTR_data, nrow))} and \Sexpr{max(sapply(hdacTR_data, nrow))} proteins each:
+They contain between \Sexpr{min(sapply(hdacTR_data, nrow))} and \Sexpr{max(sapply(hdacTR_data, nrow))} proteins each:
 <<dataStatsTP>>=
 data.frame(hdacTR_config[, c("Experiment", "Condition")],
            "No.of Proteins"=sapply(hdacTR_data, nrow), row.names=NULL)
@@ -336,8 +340,9 @@ print(trNewReqs)
 @
 
 \subsection{Specifying the experiments to compare}
-- By default, Treatment groups are compared to Vehicle groups within each replicate. It ist important that only one Treatment and Vehicle group are specified per Replicate (if specified in the condition column).
-- If valid comparison columns are specified in the config table, only those comparisons are performed.
+You can specify an arbitrary number of comparisons in the configuration table. For each comparison, you add a separate column. The column name needs to start with the prefix 'Comparison'.  The column needs to contain exactly two alpha-numerical characters (in our example, we used 'x'). 
+
+If conditions are specified in the 'Condition' column, comparisons between melting points will always be performed in the direction $Tm_{Treatment} - Tm_{Vehicle}$.
 
 \section{Analyzing TPP-CCR experiments}
 First, we load the data:
@@ -414,13 +419,13 @@ The dose response curve plots were stored in subdirectory \texttt{DoseResponse\_
 \includegraphics[width=0.5\textwidth]{\Sexpr{resultPath}/DoseResponse_Curves/drCurve_\Sexpr{hdac_targets[4]}}
 \end{center}
 
-\subsection{Package output (CCR part)}
-Returned objects: data frame, spreadsheet in .xlsx format.
-
-The spreadsheet contains the following types of columns:
-\begin{itemize}
-\item \texttt{normalized\_to\_lowest\_conc}: Fold changes normalized to the values at the lowest concentration. This ensures that the transformed values always range from $0$ to $1$. If the value at the lowest concentration is $0$, a small constant ($1e-15$) is added to prevent division by zero.
-\end{itemize}
+% \subsection{Package output (CCR part)}
+% Returned objects: data frame, spreadsheet in .xlsx format.
+% 
+% The spreadsheet contains the following types of columns:
+% \begin{itemize}
+% \item \texttt{normalized\_to\_lowest\_conc}: Fold changes normalized to the values at the lowest concentration. This ensures that the transformed values always range from $0$ to $1$. If the value at the lowest concentration is $0$, a small constant ($1e-15$) is added to prevent division by zero.
+% \end{itemize}
 
 \bibliography{TPP_references}
 \end{document}
