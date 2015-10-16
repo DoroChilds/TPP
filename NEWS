@@ -63,7 +63,7 @@ Version 1.2.5:
   o Bugfix in TR-QC plots: 
       do not attempt to plot minSlope vs. Tm-diffs if no valid Tm-diff values are available.
 
-Version 1.9.9:
+Version 2.1.0:
   o Major update to the CCR-part: It is now possible to fit and plot multiple
     experiments simultaneously.
   o It is now possible to perform user-specified comparisons of different 
@@ -83,4 +83,6 @@ Version 1.9.9:
     fields can contain single ' or " characters.
   o Now enabling arbitrary numbers of plot colors for melting curves or dose response 
     curves.
-    
+
+Version 2.1.1:
+Updated package vignette.
