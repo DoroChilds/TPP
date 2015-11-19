@@ -25,6 +25,28 @@ test_that(desc="confgCheck", code={
   expect_equal(confgList, refList)
 })
 
+test_that(desc="confgCheck_expColNULL", code={
+  hdacTR_config$Experiment <- NULL
+  expect_error(importCheckConfigTable(infoTable=hdacTR_config, type="TR"))
+})
+
+test_that(desc="'confgCheck_expColConvertAlnum", code={
+  oldCol <- paste(hdacTR_config$Experiment, c("", ":", "'", "!"))
+  hdacTR_config$Experiment <- oldCol
+  confgList <- importCheckConfigTable(infoTable=hdacTR_config, type="TR")
+  newCol <- confgList$expNames
+  expect_equal(newCol, gsub("([^[:alnum:]])", "_", oldCol))
+})
+
+test_that(desc="'confgCheck_expColEmptyEntries", code={
+  hdacTR_config$Experiment <- gsub("Vehicle_1", "", hdacTR_config$Experiment)
+  confgList <- importCheckConfigTable(infoTable=hdacTR_config, type="TR")
+  expect_equal(confgList$expNames, hdacTR_config$Experiment[-1])
+})
+
+
+
+
 ## ------------------------------------------------------------------------- ##
 ## function 'importFct_readConfigTable':
 ## ------------------------------------------------------------------------- ##
@@ -46,6 +68,27 @@ test_that(desc='confgImportFileCCR', code={
   cfg <- importFct_readConfigTable(cfg=file.path(dirExmpDat, "CCR_example_data", "Panobinostat_TPP-CCR_config.xlsx"))
   cfg$Path <- NULL
   expect_equal(cfg, hdacCCR_config)
+})
+
+
+## ------------------------------------------------------------------------- ##
+## function 'importFct_checkExperimentCol':
+## ------------------------------------------------------------------------- ##
+test_that(desc="'confgExpCol_allok", code={
+  oldCol <- c("abc", "def", "123")
+  newCol <- importFct_checkExperimentCol(expCol=oldCol)
+  expect_equal(newCol, oldCol)
+})
+
+test_that(desc="'confgExpCol_convertAlnum", code={
+  oldCol <- c("ok1", "abc!", "def'", "123$", "ok2")
+  newCol <- importFct_checkExperimentCol(expCol=oldCol)
+  expect_equal(newCol, gsub("([^[:alnum:]])", "_", oldCol))
+})
+
+test_that(desc="'confgExpCol_NULLcol", code={
+  oldCol <- NULL
+  expect_error(importFct_checkExperimentCol(expCol=oldCol))
 })
 
 

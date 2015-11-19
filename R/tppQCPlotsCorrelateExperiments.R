@@ -40,28 +40,46 @@ tppQCPlotsCorrelateExperiments <- function(tppData, annotStr="", path=NULL,
         
         ## Only regard proteins that were detected in both experiments:
         commonProteins <- intersect(featureNames(dat1), featureNames(dat2))
-        commonDat1 <- dat1[commonProteins,]
-        commonDat2 <- dat2[commonProteins,]
-        fc1 <- data.frame(exprs(commonDat1))
-        fc2 <- data.frame(exprs(commonDat2))
-        df1 <- reshape(data=fc1, idvar="protID", ids=row.names(fc1), 
-                       times=paste(commonDat1$temperature, "\U00B0 C"), 
-                       timevar="temperature",
-                       varying=list(colnames(fc1)), direction="long", 
-                       v.names="fc1")
-        df2 <- reshape(data=fc2, idvar="protID", ids=row.names(fc2), 
-                       times=paste(commonDat2$temperature, "\U00B0 C"), 
-                       timevar="temperature",
-                       varying=list(colnames(fc2)), direction="long", 
-                       v.names="fc2")
-        dfPlot <- merge(df1, df2)
-        xy = geom_abline(intercept=0, slope=1, linetype=1, colour="red")
-        p <- ggplot(dfPlot, aes_string(x="fc1", y="fc2"))
-        p <- p + geom_point(alpha=0.2, na.rm=TRUE) + xy
+        if (length(commonProteins)==0){ 
+          emptyPlotStr <- "Protein IDs of\nboth experiments\ndo not overlap
+No plot produced."
+          doEmptyPlot <- TRUE
+        } else if (any(dat1$temperature != dat2$temperature)) {
+          emptyPlotStr <- "Temperatures between\nboth experiments\ndo not match.
+No plot produced."
+          doEmptyPlot <- TRUE
+        } else doEmptyPlot <- FALSE
+        
+        if (doEmptyPlot){
+          p <- ggplot(data=data.frame(x=c(-1,-1,1,1), y=c(-1,1,-1,1)), 
+                      aes(x=x,y=y)) + 
+            geom_blank() + 
+            geom_text(size=10, aes(x=0.75, y=0.75), label=emptyPlotStr) 
+        } else {
+          commonDat1 <- dat1[commonProteins,]
+          commonDat2 <- dat2[commonProteins,]
+          fc1 <- data.frame(exprs(commonDat1))
+          fc2 <- data.frame(exprs(commonDat2))
+          df1 <- reshape(data=fc1, idvar="protID", ids=row.names(fc1), 
+                         times=paste(commonDat1$temperature, "\U00B0 C"), 
+                         timevar="temperature",
+                         varying=list(colnames(fc1)), direction="long", 
+                         v.names="fc1")
+          df2 <- reshape(data=fc2, idvar="protID", ids=row.names(fc2), 
+                         times=paste(commonDat2$temperature, "\U00B0 C"), 
+                         timevar="temperature",
+                         varying=list(colnames(fc2)), direction="long", 
+                         v.names="fc2")
+          dfPlot <- merge(df1, df2)
+          xy = geom_abline(intercept=0, slope=1, linetype=1, colour="red")
+          p <- ggplot(dfPlot, aes_string(x="fc1", y="fc2"))
+          p <- p + geom_point(alpha=0.2, na.rm=TRUE) + xy
+          p <- p + facet_wrap("temperature")
+        }
         p <- p + scale_x_continuous(limits = c(0, 1.5)) + 
           scale_y_continuous(limits = c(0, 1.5))
         p <- p + xlab(expName1) + ylab(expName2) + ggtitle(paste(annotStr))
-        p <- p + facet_wrap("temperature")
+        
         
         plotName <- paste("QC_plots", expName1, "vs", expName2, sep="_")
         plotObjList[[plotName]] <- p

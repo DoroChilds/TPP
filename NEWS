@@ -86,3 +86,12 @@ Version 2.1.0:
 
 Version 2.1.1:
 Updated package vignette.
+  
+2.1.2:
+  o Bugfix in config table import:
+      All non-alphanumeric characters in the Experiment column are now replaced 
+      by'_'.
+ o Bugfix in QC scatter plots:
+      Can now handle cases where protein IDs do not overlap between experiments,
+      or where the temperatures differ between experiments. In this case, empty 
+      plots are produced for the affectd experiment pair.
