@@ -87,7 +87,7 @@ Version 2.1.0:
 Version 2.1.1:
 Updated package vignette.
   
-2.1.2:
+2.1.2 (Nov-19-2015):
   o Bugfix in config table import:
       All non-alphanumeric characters in the Experiment column are now replaced 
       by'_'.
