@@ -26,5 +26,14 @@ test_that("CCR_checkFilters", {
                        "passed_filter_T2" = c(F,F,F,F,T,F,T,F,T,F),
                        row.names = as.character(1:10))
   #resExp[1,3] <- NA
-  print(testthat::expect_equal(res, resExp))
+  expect_equal(res, resExp)
+})
+
+test_that("pec50QualCheck", {
+  lbd <- 0
+  ubd <- 10
+  pec50 <- c(-5, 0, 5, 10, 15, -Inf, Inf, NA)
+  expected <- c("< xmin", 0, 5, 10, NA, "< xmin", NA, NA)
+  returned <- curveFitFctCCR_pEC50qualCheckCol(x=pec50, xmin=lbd, xmax=ubd)
+  expect_equal(expected ,returned)
 })

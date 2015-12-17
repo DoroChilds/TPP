@@ -43,7 +43,7 @@ fitMeltCurves <- function(xMat, yDF, colPrefix, startPars, maxAttempts, expNames
     if (flagModelConverged){
       curveParsTmp <- paramsSigmoid(model=mTmp, xRange=range(xTmp, na.rm=TRUE), 
                                     y=yTmp)
-    
+      
     }
     
     curveParsWholeProt[en,] <- c(curveParsTmp, flagModelConverged, 
@@ -54,7 +54,7 @@ fitMeltCurves <- function(xMat, yDF, colPrefix, startPars, maxAttempts, expNames
 
 fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbose){
   ## 1. Preparation:
-  flagConv = flagOutsideConcRange <- FALSE
+  flagConv = flagOutsideConcRange = pEC50qualCheckCol <- FALSE
   pec50 = pec50_final = slope = r2 <- NA
   concBds <- guessDRparamBoundaries(dose)
   
@@ -90,6 +90,9 @@ fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbo
     lbnd <- dose[order(dose)][2]
     ubnd <- dose[order(dose)][length(dose)]
     flagOutsideConcRange <- pec50 > ubnd | pec50 < lbnd
+    pEC50qualCheckCol <- curveFitFctCCR_pEC50qualCheckCol(x=pec50,
+                                                          xmin=lbnd, 
+                                                          xmax=ubnd)
   }
   
   ## Report/ return results:
@@ -101,6 +104,7 @@ fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbo
   outDF <- data.frame("protID"=protID, "pEC50"=pec50_final, "slope"=slope, 
                       "R_sq"=r2, 
                       "pEC50_outside_conc_range"=flagOutsideConcRange, 
+                      "pEC50_quality_check" = pEC50qualCheckCol,
                       "model_converged"=flagConv, 
                       "sufficient_data_for_fit"=flagDat,
                       "expName"=expName, stringsAsFactors=FALSE)

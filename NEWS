@@ -93,5 +93,9 @@ Updated package vignette.
       by'_'.
  o Bugfix in QC scatter plots:
       Can now handle cases where protein IDs do not overlap between experiments,
-      or where the temperatures differ between experiments. In this case, empty 
-      plots are produced for the affectd experiment pair.
+      or where the temperatures differ between experiments. The affected plots 
+      are left empty and contain a message to explain the problem.
+      
+2.1.3 (Dec-17-2015):
+ o Added column 'pEC50_quality_check' to CCR output to filter out pec50 values 
+ not within concentration ranges.

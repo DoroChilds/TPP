@@ -132,8 +132,8 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
   
   ## ---------------------------------------------------------------------------
   ## 4) calculate pEC50 values
-  datFitted <- tppccrCurveFit(data=datTransformed, slopeBounds=slopeBounds, verbose=verbose,
-                              nCores=nCores)
+  datFitted <- tppccrCurveFit(data=datTransformed, slopeBounds=slopeBounds, 
+                              verbose=verbose, nCores=nCores)
   
   ## 5) Plot dose response curves
   if (plotCurves){

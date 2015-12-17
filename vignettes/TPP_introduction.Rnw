@@ -429,4 +429,3 @@ The dose response curve plots were stored in subdirectory \texttt{DoseResponse\_
 
 \bibliography{TPP_references}
 \end{document}
-\end{document}
