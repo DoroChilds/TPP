@@ -1,4 +1,6 @@
 #' @title Produce Excel table of TPP-TR or TPP-CCR experiment.
+#' @description Produce Excel table of TPP-TR or TPP-CCR experiment out of the
+#' data frame returned by \code{\link{tpptrAnalyzeMeltingCurves}}
 #' 
 #' @examples
 #' data(hdacTR_resultsTable_smallExample)
@@ -6,8 +8,10 @@
 #' 
 #' @param tab Table with results of the TPP analysis.
 #' @param file path for storing results table
-#' @param expColors character vector of background colors to group the result columns belonging to different experiments.
-#' @param expNames character vector of experiment names of the same length as expColors. 
+#' @param expColors character vector of background colors to group the result 
+#' columns belonging to different experiments.
+#' @param expNames character vector of experiment names of the same length as 
+#' expColors. 
 #' @return No value returned.
 #' @export
 tppExport <- function(tab, file, expNames=NULL, expColors=NULL){

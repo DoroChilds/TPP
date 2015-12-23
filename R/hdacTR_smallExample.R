@@ -2,6 +2,9 @@
 #'   corresponding configuration table to start the analysis.
 #' @name hdacTR_smallExample
 #' @docType data
+#' @description Example dataset obtained by TPP-TR experiments for analysis by 
+#' the TPP-package. It contains all necessary arguments to start the analysis
+#' (config table and list of data frames).
 NULL
 #' 
 #' @rdname hdacTR_data

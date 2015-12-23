@@ -355,7 +355,7 @@ This command loads two objects: the configuration tables for two replicates (\te
 We start the workflow for replicate 1 by typing
 <<analyzeCCR>>=
 CCRresults <- analyzeTPPCCR(configTable=hdacCCR_config[1,], data=hdacCCR_data[[1]],
-                            resultPath=resultPath, plotCurves=FALSE) 
+                            resultPath=resultPath, plotCurves=FALSE, nCores=1) 
 @
 
 The following proteins passed the criteria of displaying a clear response to the treatment, and enabling curve fitting with $R^2 > 0.8$:

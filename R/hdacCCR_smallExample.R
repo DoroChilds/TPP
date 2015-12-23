@@ -2,6 +2,10 @@
 #'   corresponding configuration table to start the analysis.
 #' @name hdacCCR_smallExample
 #' @docType data
+#' @description Example dataset obtained by TPP-CCR experiments for analysis by 
+#' the TPP-package. It contains all necessary arguments to start the analysis
+#' (config table and list of data frames).
+
 NULL
 #' 
 #' @rdname hdacCCR_data

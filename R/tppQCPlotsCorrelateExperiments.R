@@ -1,4 +1,5 @@
-#' @title Plot pairwise relationships between the proteins in different TPP
+#' @title Visually compare fold changes of different TPP experiments.
+#' @description  Plot pairwise relationships between the proteins in different TPP
 #'   experiments.
 #'   
 #' @examples

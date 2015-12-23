@@ -35,7 +35,7 @@
 #'   
 #' @examples
 #' data(hdacTR_smallExample)
-#' tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
+#' tpptrData <- tpptrImport(hdacTR_config, hdacTR_data)
 #'   
 #' @param configTable either a dataframe or the path to a spreadsheet. In both 
 #'   cases it specifies necessary information of the TPP-CCR experiment.

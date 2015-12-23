@@ -20,6 +20,9 @@
 #' hdacSubsets <- lapply(normalizedData, 
 #'                       function(d) d[grepl("HDAC", featureNames(d))])
 #' tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets, nCores=1)
+#' # Show estimated parameters for vehicle and treatment experiments:
+#' pData(featureData(tpptrFittedHDACs[["Vehicle_1"]]))
+#' pData(featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
 #' 
 #' @param data list of \code{ExpressionSet}s with protein fold changes for curve
 #'   fitting.
@@ -181,10 +184,12 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
 }
 
 
-tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
-                                  addLegend, resultPath, plotPathsFull, useCI, doPlot){
-  #' Helper function that combines the code for fitting and plotting of melting curves for parallel or sequential (in lapply) execution
-  #' 
+tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts, 
+                                  expNames, verbose, ggplotTheme, grConditions, 
+                                  compDF, addLegend, resultPath, plotPathsFull, 
+                                  useCI, doPlot){
+  # Helper function that combines the code for fitting and plotting of melting 
+  # curves for parallel or sequential (in lapply) execution
   
   # retrieving options via getOptions doesn't work with parallel execution
   # therefore options are passed as variables (useCI, doPlot)

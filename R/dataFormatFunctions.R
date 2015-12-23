@@ -297,13 +297,13 @@ retrieveDataFromESets_CCR <- function(data){
 }
 
 merge_cols <- function(data, fun = paste, ...) {
-  #' Helper function merge columns of matrix into one vector
-  #' 
-  #' @param data data matrix
-     #' @param fun function to deal with different values per row
-     #' @param ... addtional arguments to fun
-     #' 
-     #' @return vector with combined columns
+  # Helper function merge columns of matrix into one vector
+  #
+  # @param data data matrix
+  # @param fun function to deal with different values per row
+  # @param ... addtional arguments to fun
+  #
+  # @return vector with combined columns
      
      data <- as.matrix(data)
      

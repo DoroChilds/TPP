@@ -11,9 +11,18 @@
 #'   protein.
 #'   
 #' @examples
-#' data(hdacTR_fittedData_smallExample)
-#' resultTable <- tpptrAnalyzeMeltingCurves(hdacTR_fittedData_smallExample)
-#' subset(resultTable, fulfills_all_4_requirements)$Protein_ID
+#' data(hdacTR_smallExample)
+#' tpptrData <- tpptrImport(hdacTR_config, hdacTR_data)
+#' tpptrNorm <- tpptrNormalize(data=tpptrData, 
+#'                             normReqs=tpptrDefaultNormReqs())
+#' normalizedData <- tpptrNorm$normData
+#' \dontrun{
+#' # Fit melting curves to each protein 
+#' # (can take some time depending on device used):
+#'  fittedData <- tpptrCurveFit(normalizedData, nCores=1)
+#'  resultTable <- tpptrAnalyzeMeltingCurves(fittedData)
+#'  subset(resultTable, fulfills_all_4_requirements)$Protein_ID
+#' }
 #' 
 #' @param data list of ExpressionSets containing fold changes and metadata. Their
 #'   featureData fields contain the fitted melting curve parameters.

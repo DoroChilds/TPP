@@ -41,7 +41,7 @@
 #'   
 #' @examples
 #' data(hdacTR_smallExample)
-#' tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
+#' tpptrData <- tpptrImport(hdacTR_config, hdacTR_data)
 #' tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 #' names(tpptrNorm)
 #' 
