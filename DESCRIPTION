@@ -1,7 +1,7 @@
 Package: TPP
 Type: Package
 Title: Analyze thermal proteome profiling (TPP) experiments
-Version: 2.1.4
+Version: 2.1.5
 Author: Dorothee Childs, Holger Franken, Mikhail Savitski and Wolfgang Huber
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
 Depends:
@@ -10,14 +10,14 @@ Depends:
     ggplot2,
     openxlsx (>= 2.4.0),
     plyr,
-    gridExtra,
-    grid,
     VennDiagram
 Imports:
     VGAM,
     reshape2,
     nls2,
     foreach,
+    grid,
+    gridExtra,
     doParallel,
     parallel,
     RColorBrewer,
