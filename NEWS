@@ -114,4 +114,6 @@ Updated package vignette.
 2.1.6 (Jan-18-2016)
  o New CCR output column 'pEC50_quality_check' now reports pec50 values with
    the same sign as the 'pec50' column.
- o (to do before version update) Shift order of imports for grid and ggplot2.
+ o Remove importFrom(grid, unit), because unit() is alreay imported by ggplot2 
+   (version 2.0.0.), which caused a warning. 
+   Added dependency ggplot2 (>= 2.0.0) to ensure that grid::unit is still available.

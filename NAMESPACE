@@ -21,7 +21,7 @@ import(plyr)
 import(openxlsx)
 import(VennDiagram)
 import(VGAM)
-importFrom(grid, grid.newpage, grid.draw, gpar, textGrob, unit)
+importFrom(grid, grid.newpage, grid.draw, gpar, textGrob) # grid::unit ist also required, but alreay imported by ggplot2, version 2.0.0.
 importFrom(gridExtra, arrangeGrob, grid.arrange)
 importFrom(parallel, detectCores, stopCluster)
 importFrom(doParallel, registerDoParallel, stopImplicitCluster)
