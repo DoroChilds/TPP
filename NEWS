@@ -106,3 +106,12 @@ Updated package vignette.
    function Documentation). 
  o Minor changes to documentation in order to ensure that R CMD check and 
    BiocCheck run again without warnings.
+   
+2.1.5 (Jan-04-2015)
+ o Now selectively importing functions from grid and gridExtra package to  
+   prevent 'double import' warning due to recent changes in ggplot2.
+   
+2.1.6 (Jan-18-2016)
+ o New CCR output column 'pEC50_quality_check' now reports pec50 values with
+   the same sign as the 'pec50' column.
+ o (to do before version update) Shift order of imports for grid and ggplot2.

@@ -90,9 +90,9 @@ fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbo
     lbnd <- dose[order(dose)][2]
     ubnd <- dose[order(dose)][length(dose)]
     flagOutsideConcRange <- pec50 > ubnd | pec50 < lbnd
-    pEC50qualCheckCol <- curveFitFctCCR_pEC50qualCheckCol(x=pec50,
-                                                          xmin=lbnd, 
-                                                          xmax=ubnd)
+    pEC50qualCheckCol <- curveFitFctCCR_pEC50qualCheckCol(x=pec50_final,
+                                                          xmin=-ubnd, 
+                                                          xmax=-lbnd)
   }
   
   ## Report/ return results:
