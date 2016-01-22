@@ -117,3 +117,9 @@ Updated package vignette.
  o Remove importFrom(grid, unit), because unit() is alreay imported by ggplot2 
    (version 2.0.0.), which caused a warning. 
    Added dependency ggplot2 (>= 2.0.0) to ensure that grid::unit is still available.
+   
+2.1.7 (Jan-22-2016)
+ o Bugfixes required after recent ggplot2 update:
+    - Included selective import of the grid::gTree function for QC plots.
+    - Fixed problem with QC-plot histograms to re-activate plotting of contours 
+      in addition to areas.

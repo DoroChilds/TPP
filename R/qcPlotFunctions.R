@@ -304,7 +304,10 @@ qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames,
     
     p = ggplot(data = diffDF)
     p = p + stat_bin(aes(x=diff, colour=comparison, fill=comparison), 
-                     position='dodge', alpha = 0.05, geom="area", binwidth=0.2)
+                     alpha = 0.05, geom="area", binwidth=0.2, 
+                     position=position_dodge(width = 0))
+    p = p + stat_bin(aes(x=diff, colour=comparison), 
+                     geom="line", binwidth=0.2, position=position_dodge(width = 0))
     xLabels <- seq(-10,10,by = 5)
     p = p + scale_x_continuous(limits=c(-15,15), breaks=xLabels, labels=xLabels)
     p = p + theme(legend.position="bottom")
