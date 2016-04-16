@@ -25,15 +25,15 @@ test_that("No valid melting point difference", {
   
 })
 
-test_that("Try different method (currently not supported)", {
-  i <- !refFilteredOut
-  newP <- try(pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
-                                             mpdiff=refMpDiff[which(i)], 
-                                             method="dummy", 
-                                             control=list(binWidth=300),
-                                             comparisonName = "T_vs_V"))
-  expect_error(newP)
-})
+# test_that("Try different method (currently not supported)", {
+#   i <- !refFilteredOut
+#   newP <- try(pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
+#                                              mpdiff=refMpDiff[which(i)], 
+#                                              method="dummy", 
+#                                              control=list(binWidth=300),
+#                                              comparisonName = "T_vs_V"))
+#   expect_error(newP)
+# })
 
 test_that("Given binWidth too big", {
   i <- !refFilteredOut
