@@ -34,6 +34,7 @@ test_that("No valid melting point difference", {
 #                                              comparisonName = "T_vs_V"))
 #   expect_error(newP)
 # })
+# Removed unit test that causes R CMD check to crash  since the latest update of package 'testthat'.
 
 test_that("Given binWidth too big", {
   i <- !refFilteredOut

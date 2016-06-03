@@ -12,7 +12,7 @@ plotColors <- function(expConditions, comparisonNums){
     ## (can happen, for example, when comparing two vehicle experiments against each other)
     if (max(table(paste(expConditions, comparisonNums))) == 1){
       ## Check if numbers of conditions and comparisons do not exceed maximum
-      if (condNum==2 && compNum<=8){ # brewer pal can only produce up to 8 color pairs with 2 intensities each
+      if (condNum==2 && compNum<=8  && compNum>0){ # brewer pal can only produce up to 8 color pairs with 2 intensities each
         if(all.equal(condLevels, c("Treatment", "Vehicle")) & all.equal(compLevels, 1:compNum)){
           groupColors <- TRUE
         }

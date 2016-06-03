@@ -123,3 +123,17 @@ Updated package vignette.
     - Included selective import of the grid::gTree function for QC plots.
     - Fixed problem with QC-plot histograms to re-activate plotting of contours 
       in addition to areas.
+
+   
+2.3.1
+Update version number after the new Bioconductor Release 3.3 was launched on 
+https://www.bioconductor.org/packages/release/bioc/html/TPP.html
+The version number stays in accordance with Devel version in the new Release.
+
+2.3.2 (Apr-16-2016)
+Removed unit test that causes R CMD check to crash  since the latest update of package 'testthat'.
+
+2.3.3 (Jun-02-2016)
+ o Bugfixes in the functions responsible for filtering by user-specified QC columns (e.g. 'qssm')  for normalization set creation. It is now possible to leave the 'otherRequirements' slot in the normalization criteria empty.
+ o Fixed typos in function documentation of 'analyzeTPPTR()'
+ o Fixed bug in plotColors for the case when no comparisons are specified

@@ -61,7 +61,7 @@
 #' tpptrResults <- analyzeTPPTR(configTable=hdacTR_config, data=hdacTR_data, nCores=1)
 #' 
 #' @param configTable dataframe, or character object with the path to a file, 
-#'   that specifies important details of the TPP-CCR experiment. See Section 
+#'   that specifies important details of the TPP-TR experiment. See Section 
 #'   \code{details} for instructions how to create this object.
 #' @param data single dataframe, or list of dataframes, containing fold change 
 #'   measurements and additional annotation columns to be imported. Can be used 

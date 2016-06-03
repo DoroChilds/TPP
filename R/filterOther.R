@@ -1,6 +1,12 @@
 filterOther <- function(data, cols, lb, ub){
   ## Filter all data sets by specified criteria on metadata columns for 
   ## normalization set construction
+  
+  ## Check if upper and lower bounds are numerics:
+  if (!is.numeric(lb) | !is.numeric(ub)){
+    stop("Normalization requirements must have numeric upper and lower bounds.")
+  }
+  
   ## Initialize boolean vector indicating valid rows:
   rValid <- rep(TRUE, nrow(data))
   
@@ -8,30 +14,33 @@ filterOther <- function(data, cols, lb, ub){
   datCols <- featureData(data)@data
   
   ## Filter proteins according to lower and upper bounds:
-  for (i in 1:length(cols)){
-    if( cols[i] %in% names(datCols) ){
-      rValTmp <- rep(TRUE, nrow(data))
-      
+  matches <- intersect(cols, names(datCols))
+  nonMatches <- setdiff(cols, names(datCols))
+  if (length(matches) > 0){
+    for (i in 1:length(matches)){
       colsTmp <- cols[i]
       lbTmp   <- lb[i]
       ubTmp   <- ub[i]
       
       x       <- datCols[,colsTmp]
-      lbValid <- x >= lbTmp
-      ubValid <- x <= ubTmp
+      passesLowerBound <- x >= lbTmp
+      passesUpperBound <- x <= ubTmp
       
-      rValTmp[!lbValid]       <- FALSE
-      rValTmp[!ubValid]       <- FALSE
-      rValTmp[is.na(lbValid)] <- FALSE
-      rValTmp[is.na(ubValid)] <- FALSE
-      rValid[rValTmp == FALSE] <- FALSE
+      passesLowerBound[is.na(passesLowerBound)] <- FALSE
+      passesUpperBound[is.na(passesUpperBound)] <- FALSE
       
-      message("  Column ", colsTmp, " between ", lbTmp, " and ", ubTmp, "-> ", sum(rValTmp), " out of ", length(rValTmp), " proteins passed")
+      rValTmp <- passesLowerBound & passesUpperBound
+      rValid[!rValTmp] <- FALSE
       
-    }else{
-      warning(paste( cols[i] , "not found in input columns, can't be used for filtering."))
+      message("  Column ", colsTmp, " between ", lbTmp, " and ", ubTmp, "-> ", sum(rValTmp), " out of ", length(rValTmp), " proteins passed.\n")
     }
-    
+  }
+  for (nm in nonMatches){
+    msg <- paste("Desired column '",nm,"' not found in the data set. ", 
+                 "Therefore, it connot be used as a filter criterion when ", 
+                 "creating normalization set.", 
+                 sep = "")
+    message(msg)
   }
   
   fcFiltered = data[rValid,]
