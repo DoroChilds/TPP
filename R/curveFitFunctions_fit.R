@@ -1,5 +1,6 @@
 fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0=TRUE){
-  ## Fit sigmoidal model to a vector of TPP-TR measurements
+  ## Fit melting curve to a vector of TPP-TR measurements
+
   strSigm <- fctSigmoidTR(deriv=0)
   fitFct <- as.formula(paste("y ~", strSigm))
   varyPars <- 0
@@ -32,7 +33,7 @@ fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0=TRUE){
 
 fitSigmoidCCR <- function(xVec, yVec, hill_init, pec50_init, slopeBounds, 
                           concBounds){
-  ## Fit sigmoidal model to a vector of TPP-CCR measurements
+  ## Fit dose response curve to a vector of TPP-CCR measurements
   
   ## Prepare model fit:
   strSigm <- fctSigmoidCCR()

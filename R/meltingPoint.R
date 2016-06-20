@@ -1,5 +1,6 @@
 meltingPoint <- function(model, xRange){
-  ## Compute melting point of sigmoidal model
+  ## Compute melting point of sigmoidal model.
+  
   if (class(model)=="try-error"){
     return(NA)
   } else{

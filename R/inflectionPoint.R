@@ -1,5 +1,6 @@
 inflectionPoint <- function(model, xRange){
-  ## Compute inflection point of sigoidal model
+  ## Compute inflection point of sigmoidal model.
+  
   if (class(model)!="try-error"){
     ## Define expressions for second derivative of sigmoid function:
     strDeriv2  <- fctSigmoidTR(deriv=2)

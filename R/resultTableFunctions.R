@@ -1,4 +1,6 @@
 mergeOutputTables_TR <- function(dataList, pValDF, qualCheckDF){
+  ## Generate final TR output table.
+  
   df1 <- dataList$fcDF
   df2 <- dataList$curveParDF
   df3 <- dataList$plotCol
@@ -42,7 +44,8 @@ mergeOutputTables_TR <- function(dataList, pValDF, qualCheckDF){
 }
 
 mergeOutputTables_CCR <- function(dataList, qualCheckDF){
-  ## Initialize output table and append global columns
+  ## Generate final CCR output table.
+  
   ## Initialize data frames to store annotation columns topic wise
   df0 <- dataList$fcOrig
   df1 <- dataList$fcNorm

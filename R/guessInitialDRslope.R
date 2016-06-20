@@ -1,5 +1,6 @@
 guessInitialDRslope <- function(dose, response, hill_bds, cpd_effect) {
   ## Guess initial Hill slope for logistic curve fit of TPP-CCR experiments.
+
   max_slope <- NA
   slopes <- c()
   perc <- 1

@@ -1,6 +1,8 @@
 pValFctFilterModels <- function(parDF, expNameV, expNameT, minR2, maxPlateau, 
                                 flagCheckPlateau){
-  ## Check melting curve quality before starting p-value computation.
+  ## Check melting curve quality before starting p-value computation by applying
+  ## predefined filters on the curve parameters and R2.
+
   message("Performing quality check on the melting curves of both experiments.")
 
   r2V <- parDF[, paste("R_sq", expNameV, sep="_")]

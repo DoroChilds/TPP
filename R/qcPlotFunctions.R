@@ -1,5 +1,8 @@
 qcPlotFct_VennWrapper <- function(resultTab, expNames, grConditions, compDF, 
                                   minR2){  
+  ## Invoke Venn diagram computation to compare protein numbers per experiment,
+  ## as well as their overlap.
+  
   ## --------------------------------------------------------------------------
   ## I) Create a Venn diagram of protein numbers in all experiments
   ## --------------------------------------------------------------------------
@@ -33,6 +36,8 @@ qcPlotFct_VennWrapper <- function(resultTab, expNames, grConditions, compDF,
 
 qcPlotFct_CreateVenn <- function(dataTab, grNames, compDF, mainTxt, method, 
                                  minR2){
+  ## Create Venn diagram.
+  
   idList     <- list()
   filterList <- list()
   
@@ -102,6 +107,8 @@ qcPlotFct_CreateVenn <- function(dataTab, grNames, compDF, mainTxt, method,
 }
 
 qcPlotFct_invokeBottleplots <- function(resultTable, compDF){
+  ## Invoke QC plots to compare melting point differences to minimal slopes
+  ## for each fitted melting curve.
   alpha = 0.05 # significance level
   
   ## Retrieve experiment names and annotation:
@@ -140,7 +147,7 @@ qcPlotFct_invokeBottleplots <- function(resultTable, compDF){
 
 qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHit, 
                                  expName1, expName2, addHist, yLimVec){ 
-  ## Create 'bottle plot' and histogram of minimal slopes
+  ## Generate QC plots to compare melting point differences to minimal slopes.
   
   ## Create dataframe to be passed to ggplot function:
   plotDf <- data.frame(mpDiffs=mpDiffs, minSlopes=minSlopes)
@@ -220,6 +227,8 @@ qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHi
 }
 
 qcPlotFctVennTable <- function(plotIDs, allIDs){
+  ## Create table to be added below the Venn diagram.
+  
   tableDF = data.frame()
   for(name in names(allIDs)){
     lmntsIn <- length(plotIDs[[name]])
@@ -234,6 +243,8 @@ qcPlotFctVennTable <- function(plotIDs, allIDs){
 
 qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames, 
                                     minR2, expConds){
+  ## Generate QC plots with melting point histograms.
+  
   if (length(expNames) > 1){
     combis <- combn(expNames,2)
     numCompares <- ncol(combis)  

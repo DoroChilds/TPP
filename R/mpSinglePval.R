@@ -1,6 +1,7 @@
 mpSinglePval = function(x, r_1, r0, r1, type){
   ## Compute p-value for a given melting point difference value using 
   ## precomputed distribution quantiles.
+  
   if(!is.na(x)){
     if(x > r0){
       z = (x - r0) / (r1-r0)

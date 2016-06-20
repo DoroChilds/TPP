@@ -1,5 +1,5 @@
 meltCurveParamNames <- function(returnParNames=TRUE, returnPerformanceInfo=TRUE){
-  ##  Assistant function that returns the column names of the melting curve 
+  ## Assistant function that returns the column names of the melting curve 
   ## parameters in the internal datasets.
   ## This function is intended to assure consistency when accessing, 
   ## manipulating, or storing melting curve paramter columns in the package's 

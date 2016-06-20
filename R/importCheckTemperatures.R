@@ -1,4 +1,6 @@
 importCheckTemperatures <- function(temp){
+  ## Retrieve temperatures from the input table.
+  
   tempMatrix <- as.matrix(temp)
   ## Make sure that temperature matrix has non-missing values:
   naRows <- apply(is.na(tempMatrix), 1, all)

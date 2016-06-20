@@ -1,4 +1,8 @@
 importCheckConfigTable <- function(infoTable, type){
+  ## Check the config table for correctness after import, retrieve different
+  ## types of information from it (experiment names, conditions, result path,
+  ## comparisons, labels, temperatures), and return them in a list.
+  
   ## 1. Check whether obligatory experiment information is provided via data 
   ## frame or spreadsheet file.
   infoTable <- importFct_readConfigTable(cfg=infoTable)
@@ -22,7 +26,6 @@ importCheckConfigTable <- function(infoTable, type){
     infoTable$Condition <- NA
     compStrs <- NA
   }
-  
   
   ## 5. Check if table contains mandatory label columns. Stop, if not:
   allCols     <- colnames(infoTable)

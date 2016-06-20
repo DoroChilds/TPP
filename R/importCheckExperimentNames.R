@@ -1,4 +1,6 @@
 importCheckExperimentNames <- function(expNames, dataframes){
+  ## Retrieve experiment names from the input table.
+  
   ## If data is given as a list of dataframes, check whether the names are
   ## consistent with the 'Experiment' column in configTable (argument expNames):
   if (is.list(dataframes) && !is.data.frame(dataframes)){

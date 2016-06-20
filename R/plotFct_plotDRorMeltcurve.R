@@ -2,9 +2,10 @@ plotMeltingCurve <- function(modelList, listUpper=NULL, listLower=NULL,
                              xMat, fcMat, curvePars, protID, 
                              filename, plotTheme, expConditions, expComps, 
                              addLegend, useCI){
+  ## Plot melting curves (one plot per protein).
   
-  # retrieving options via getOptions doesn't work with parallel execution
-  # therefore options are passed as variables
+  # Retrieving options via getOptions doesn't work with parallel execution
+  # therefore options are passed as variables.
   
   ## Produce a ggplot to vizualise fitted melting curves and their parameters.
   if(all(is.na(fcMat))){
@@ -144,6 +145,8 @@ plotMeltingCurve <- function(modelList, listUpper=NULL, listLower=NULL,
 }
 
 plotDRCurve <- function(protID, fcDF, parDF, plotDir, allExp, addLegend, plotCols, verbose){
+  ## Plot dose-response curves (one plot per protein).
+  
   if (verbose) {
     message("Creating plot for protein ", protID)
   }

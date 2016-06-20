@@ -81,6 +81,9 @@ importFct_df_to_eSet <- function(dataframe=NULL, labels,
 }
 
 importFct_extractFCs <- function(datDF, colsFC){
+  ## Extract fold change columns from the imported data tables and return them 
+  ## in a matrix.
+  
   datFC           <- subset(datDF, select=colsFC)
   datFCNum        <- colwise(as.numeric)(datFC)
   fcMat           <- as.matrix(datFCNum)
@@ -142,6 +145,8 @@ importFct_removeDuplicates = function(inDF, refColName, nonNAColNames, qualColNa
 }
 
 importFct_makeUniqueIDs = function(inDF, idColName, expName){
+  ## Replace missing values in the ID column by a unique character string
+  
   idColumn <- as.character(inDF[,idColName])
   countSuffix <- seq(1:length(idColumn[is.na(idColumn)]))
   idColumn[is.na(idColumn)] <- paste('NA_in', expName, countSuffix, sep='_')
@@ -150,6 +155,8 @@ importFct_makeUniqueIDs = function(inDF, idColName, expName){
 }
 
 importFct_create_pData <- function(labels, labelValues, fcCols, type){
+  ## Create phenodata for the expression sets.
+  
   if (type == "TR"){
     dataTmp <- data.frame("label"=labels, "temperature"=labelValues, 
                           "normCoeff"=NA, stringsAsFactors=FALSE, 
@@ -172,6 +179,8 @@ importFct_create_pData <- function(labels, labelValues, fcCols, type){
 }
 
 importFct_create_fData <- function(dat, type, fcRaw){
+  ## Create feature data for the expression sets.
+  
   if (type == "TR"){
     pars <- meltCurveParamNames(TRUE, TRUE)
     

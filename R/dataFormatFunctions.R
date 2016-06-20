@@ -1,4 +1,6 @@
 eSetsToLongTable_fc <- function(data){
+  ## Extract fold changes from expressionSets and store in long tables
+  
   expNames <- names(data)
   longTabFC <- c()
   for (en in expNames){
@@ -24,6 +26,8 @@ eSetsToLongTable_fc <- function(data){
 }
 
 eSetsToLongTable_fData <- function(data){
+  ## Extract feature data from expressionSets and store in long tables
+  
   expNames <- names(data)
   longTabAnnot <- c()
   for (en in expNames){
@@ -47,9 +51,9 @@ eSetsToLongTable_fData <- function(data){
   return(longTabAnnot)
 }
 
-
 retrieveDataFromESets_TR <- function(data){
-  ## Merge row annotation data and fold changes over all experiments
+  ## Merge row annotations and fold changes from different expressionSets
+  ## containing TR data
   
   ## 1. Preparation
   expNames<- names(data)
@@ -166,9 +170,9 @@ retrieveDataFromESets_TR <- function(data){
               plotCol      = merged6))
 }
 
-
 retrieveDataFromESets_CCR <- function(data){
-  ## Merge row annotation data and fold changes over all experiments
+  ## Merge row annotations and fold changes from different expressionSets
+  ## containing CCR data
   
   ## 1. Preparation
   expNames<- names(data)
