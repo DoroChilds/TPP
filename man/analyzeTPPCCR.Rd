@@ -56,7 +56,7 @@ filtering out zero values.}
 \item{slopeBounds}{Bounds on the slope parameter for dose response curve 
 fitting.}
 
-\item{plotCurves}{boolan value indicating whether dose response curves should
+\item{plotCurves}{boolean value indicating whether dose response curves should
 be plotted. Deactivating plotting decreases runtime.}
 
 \item{verbose}{print name of each fitted or plotted protein to the command 

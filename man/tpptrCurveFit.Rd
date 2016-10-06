@@ -50,6 +50,12 @@ Fit melting curves to all proteins in a dataset.
 If the melting curve fitting procedure does not converge, it will be
   repeatedly started from perturbed starting parameters (maximum iterations 
   defined by argument \code{maxAttempts})
+  
+  If \code{doPlot = TRUE}, melting curves are be plotted in individual files
+  per protein. Each file is named by its unique identifier. Filenames are
+  truncated to 255 characters (requirement by most operation systems). 
+  Truncated filenames are indicated by the suffix "_truncated[d]", where [d] 
+  is a unique number to avoid redundancies.
 
 The melting curve plots will be stored in a subfolder with name 
   \code{Melting_Curves} at the location specified by \code{resultPath}.
@@ -60,11 +66,11 @@ tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
 tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 normalizedData <- tpptrNorm$normData
 hdacSubsets <- lapply(normalizedData, 
-                      function(d) d[grepl("HDAC", featureNames(d))])
+                      function(d) d[grepl("HDAC", Biobase::featureNames(d))])
 tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets, nCores=1)
 # Show estimated parameters for vehicle and treatment experiments:
-pData(featureData(tpptrFittedHDACs[["Vehicle_1"]]))
-pData(featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
+Biobase::pData(Biobase::featureData(tpptrFittedHDACs[["Vehicle_1"]]))
+Biobase::pData(Biobase::featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
 
 }
 \seealso{

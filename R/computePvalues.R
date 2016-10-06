@@ -24,7 +24,7 @@ computePvalues <- function(minSlopes, mpDiffs, binWidth, type="p", pAdj="fdr"){
   return(pOut)
 }
 
-assignBins <- function(x, w){
+assignBins <- function(x, w, collapseSmallest = TRUE){
   mpNum       <- length(x)
   binWidthRel <- w/mpNum
   binProp <- sort(unique(c(seq(1, 0, by=-binWidthRel), 0)))
@@ -33,7 +33,9 @@ assignBins <- function(x, w){
   
   ## If bin with lowest values is smaller than the others, include it into the
   ## succeeding bin:
-  if (sum(bins==1) < w) bins[bins==1] <- 2
+  if (collapseSmallest){
+    if (sum(bins==1) < w) bins[bins==1] <- 2
+  }
   
   return(bins)
 }

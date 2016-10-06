@@ -46,19 +46,47 @@
 #'   \item{Label columns: } each isobaric label names a column that contains the
 #'   temperatures administered for the label in the individual experiments. }
 #'   
+#'   The argument \code{methods} can be one of the following:
+#'   More than one method can be specified. For example, parametric testing of 
+#'   melting points and nonparametric spline-based goodness-of-fit tests can be 
+#'   performed seqeuentially in the same analysis. The results are then written 
+#'   to separate columns of the output table.
+#'   
+#'   If \code{methods} contains "meltcurvefit", melting curve plots will be 
+#'   stored in a subfolder with name \code{Melting_Curves} at the location 
+#'   specified by \code{resultPath}.
+#'   If \code{methods} contains "splinefit", plots of the natural spline fits will be 
+#'   stored in a subfolder with name \code{Spline_Fits} at the location 
+#'   specified by \code{resultPath}.
+#'   
 #'   The argument \code{nCores} could be either 'max' (use all available cores) 
 #'   or an upper limit of CPUs to be used.
 #'   
-#'   The melting curve plots will be stored in a subfolder with name 
+#'   If \code{doPlot = TRUE}, melting curve plots are generated seperately for 
+#'   each protein and stored in separate pdfs.
+#'   Each file is named by the unique protein identifier. Filenames are
+#'   truncated to 255 characters (requirement by most operation systems). 
+#'   Truncated filenames are indicated by the suffix "_truncated[d]", where [d] 
+#'   is a unique number to avoid redundancies.
+#'   All melting curve plots are stored in a subfolder with name 
 #'   \code{Melting_Curves} at the location specified by \code{resultPath}.
 #'   
 #'   If the melting curve fitting procedure does not converge, it will be 
 #'   repeatedly started from perturbed starting parameters (maximum iterations 
 #'   defined by argument \code{maxAttempts}).
 #'   
+#'   Argument \code{splineDF} specifies the degrees of freedom for natural
+#'   spline fitting. As a single numeric value, it is directly passed on to the
+#'   \code{splineDF} argument of \code{splines::ns}. Experience shows that
+#'   \code{splineDF = 4} yields good results for TPP data sets with 10
+#'   temperature points. It is also possible to provide a numeric vector. In
+#'   this case, splines are fitted for each entry and the optimal value is
+#'   chosen per protein using Akaike's Information criterion.
+#'   
 #' @examples
 #' data(hdacTR_smallExample)
-#' tpptrResults <- analyzeTPPTR(configTable=hdacTR_config, data=hdacTR_data, nCores=1)
+#' tpptrResults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
+#'                 methods = "splinefit", nCores = 1)
 #' 
 #' @param configTable dataframe, or character object with the path to a file, 
 #'   that specifies important details of the TPP-TR experiment. See Section 
@@ -68,6 +96,10 @@
 #'   instead of specifying the file path in the \code{configTable} argument.
 #' @param resultPath location where to store melting curve plots, intermediate 
 #'   results, and the final results table.
+#' @param methods statistical methods for modeling melting behaviour and detecting 
+#'   significant differences between experimental conditions. Ich more than one 
+#'   method are specified, results will be computed for each and concatenated in 
+#'   the result talble (default: meltcurvefit).
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
 #' @param ciStr character string indicating which columns contain confidence 
@@ -98,7 +130,7 @@
 #'   If NULL (default), the experiment with the best R2 when fitting a melting 
 #'   curve through the median fold changes is chosen as the reference.
 #' @param pValMethod Method for p-value computation. Currently restricted to 
-#'   'maxQuant' (see Cox & Mann (2008)).
+#'   'robustZ' (see Cox & Mann (2008)).
 #' @param pValParams optional list of parameters for p-value computation.
 #' @param pValFilter optional list of filtering criteria to be applied before 
 #'   p-value computation.
@@ -107,21 +139,27 @@
 #' @param xlsxExport boolean value indicating whether to produce result table in
 #'   .xlsx format (requires package \code{openxlsx} and a zip application to be 
 #'   installed).
-
-
+#' @param splineDF degrees of freedom for natural spline fitting.
 #'   
 #' @seealso tppDefaultTheme, tpptrImport, tpptrNormalize, tpptrCurveFit, 
 #' tpptrAnalyzeMeltingCurves
 #' @export
-analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL, 
-                         idVar="gene_name", fcStr="rel_fc_", ciStr=NULL,
-                         naStrs=c("NA", "n/d", "NaN", "<NA>"), qualColName="qupm",
-                         normalize=TRUE, normReqs=tpptrDefaultNormReqs(),
-                         ggplotTheme=tppDefaultTheme(), nCores='max',
-                         startPars=c("Pl"=0, "a"=550, "b"=10), maxAttempts=500,
-                         plotCurves=TRUE, fixedReference=NULL, pValMethod="maxQuant", 
-                         pValFilter=list(minR2=0.8, maxPlateau=0.3),
-                         pValParams=list(binWidth=300), verbose=FALSE, xlsxExport =TRUE){
+analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL, 
+                         methods = c("meltcurvefit", "splinefit"),
+                         idVar = "gene_name", fcStr = "rel_fc_", ciStr = NULL, # settings for data import
+                         naStrs = c("NA", "n/d", "NaN", "<NA>"), 
+                         qualColName = "qupm", 
+                         normalize = TRUE, normReqs = tpptrDefaultNormReqs(), # settings for cross-experiment normalization
+                         ggplotTheme = tppDefaultTheme(), 
+                         nCores = 'max', 
+                         startPars = c("Pl" = 0, "a" = 550, "b" = 10), # settings for melting curve fitting
+                         splineDF = 4, # settings for spline fitting
+                         maxAttempts = 500, plotCurves = TRUE, 
+                         fixedReference = NULL, 
+                         pValMethod = "robustZ", # to do: remove this argument
+                         pValFilter = list(minR2 = 0.8, maxPlateau = 0.3), # settings for robust-z-test
+                         pValParams = list(binWidth = 300), 
+                         verbose = FALSE, xlsxExport = TRUE){
   message("This is TPP version ", packageVersion("TPP"),".")
   
   ## Import data:
@@ -134,7 +172,7 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
     options("TPPTR_CI" = TRUE)
     
     trDataCI <- tpptrImport(configTable=configTable, data=data, idVar=idVar, fcStr=ciStr, 
-                          naStrs=naStrs, qualColName=qualColName)
+                            naStrs=naStrs, qualColName=qualColName)
     
     stopifnot(all(sapply(names(trData), function(i){all(dim(trData[[i]]) == dim(trDataCI[[i]]))})))
     
@@ -182,27 +220,66 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
     trDataNormalized <- trData
   }
   
-  ## Fit melting curves:
-  trDataFitted <- tpptrCurveFit(data=trDataNormalized, dataCI=trDataCI,
-                                resultPath=resultPath,
-                                ggplotTheme=ggplotTheme, doPlot=plotCurves,
-                                startPars=startPars, maxAttempts=maxAttempts, 
-                                nCores=nCores, verbose=verbose)
-  ## Save data including parameters of the model fits:
-  if (flagDoWrite){
-    save(list=c("trDataFitted"), file=file.path(pathDataObj, "fittedData.RData"))
+  allIDs <- lapply(trDataNormalized, featureNames) %>% unlist %>% unname %>% 
+    unique %>% sort
+  resultTable <- data.frame(Protein_ID = allIDs, stringsAsFactors = FALSE)
+  
+  if (any(methods == "meltcurvefit")){
+    ## Fit melting curves:
+    trDataFitted <- tpptrCurveFit(data=trDataNormalized, dataCI=trDataCI,
+                                  resultPath=resultPath,
+                                  ggplotTheme=ggplotTheme, doPlot=plotCurves,
+                                  startPars=startPars, maxAttempts=maxAttempts, 
+                                  nCores=nCores, verbose=verbose)
+    ## Save data including parameters of the model fits:
+    if (flagDoWrite){
+      save(list=c("trDataFitted"), file=file.path(pathDataObj, "fittedData.RData"))
+    }
+    
+    ## Analyse melting curves and create result table:
+    meltCurveResultTable <- tpptrAnalyzeMeltingCurves(data = trDataFitted, 
+                                                      pValMethod = pValMethod, 
+                                                      pValFilter = pValFilter, 
+                                                      pValParams = pValParams)
+    if (flagDoWrite){
+      save(list = c("meltCurveResultTable"), 
+           file = file.path(pathDataObj, "trResultsMeltCurveFit.RData")) # "results_TPP_TR.RData"))
+    }
+    resultTable <- left_join(resultTable, meltCurveResultTable, by = "Protein_ID")
   }
   
-  ## Analyse melting curves and create result table:
-  resultTable <- tpptrAnalyzeMeltingCurves(data=trDataFitted, 
-                                           pValMethod=pValMethod, 
-                                           pValFilter=pValFilter, 
-                                           pValParams=pValParams)
-  
-  ## Save result table as data frame:
-  if (flagDoWrite){
-    save(list=c("resultTable"), file=file.path(pathDataObj, "results_TPP_TR.RData"))
+  if (any(methods == "splinefit")){
+    ## Preparation: convert eSets to long tables:
+    trDataLongTables <- trDataNormalized %>% tpptrTidyUpESets
+    annotData <- trDataLongTables %>% extract2("proteinAnnotation")
+    fitData <- trDataLongTables %>% extract2("proteinMeasurements")
+    
+    splineFitResultTable <- tpptrSplineFitAndTest(data = fitData,
+                                                  factorsH1 = "comparisonFactor",
+                                                  resultPath = resultPath,
+                                                  ggplotTheme = ggplotTheme,
+                                                  doPlot = plotCurves,
+                                                  splineDF = splineDF,# settings for spline fits
+                                                  nCores = nCores, 
+                                                  verbose = verbose,
+                                                  additionalCols = annotData)
+    if (flagDoWrite){
+      save(list = c("splineFitResultTable"), 
+           file = file.path(pathDataObj, "trResultsSplineFit.RData"))
+    }
+    resultTable <- left_join(resultTable, 
+                             splineFitResultTable %>% 
+                               mutate(Protein_ID = as.character(Protein_ID)),
+                             by = "Protein_ID")
   }
+  
+  # Save result table to file if required
+  if (flagDoWrite){
+    save(list = c("resultTable"), 
+         file = file.path(pathDataObj, "results_TPP_TR.RData"))
+  }
+  
+  
   
   ## Save result table as xlsx spreadsheet:
   if (xlsxExport ){
@@ -211,22 +288,22 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
         ## Determine background colors for the columns belonging to the same experiment:
         compNums <- assignCompNumber_to_expName(compDF=expComps, expNames=expNames)
         expColors <- plotColors(expConditions = expConds, comparisonNums = compNums)
-        } else {
-          expColors <- NULL
-        }      
-        # Create output table:
-        tppExport(tab=resultTable,  file=file.path(pathExcel, "results_TPP_TR.xlsx"), 
-                  expColors=expColors, expNames=expNames)
       } else {
-        warning("Cannot produce xlsx output because no result path is specified.")
-      }
+        expColors <- NULL
+      }      
+      # Create output table:
+      tppExport(tab=resultTable,  file=file.path(pathExcel, "results_TPP_TR.xlsx"), 
+                expColors=expColors, expNames=expNames)
+    } else {
+      message("Cannot produce xlsx output because no result path is specified.")
     }
+  }
   
   ## --------------------------------------------------------------------------------------------
   ## Create QC plots:
   if (flagDoWrite){
     pdf(file=file.path(resultPath, "QCplots.pdf"), width=8, height=9)
-        
+    
     ## 1. QC plot to illustrate median curve fits:
     message("Creating QC plots to visualize median curve fits...")
     if (normalize){
@@ -251,9 +328,11 @@ analyzeTPPTR <- function(configTable, data=NULL, resultPath=NULL,
     }
     message("done.\n")
     
-    tpptrQCplots(resultTab=resultTable, expNames=expNames, 
-                 expConditions=expConds, compDF=expComps, 
-                 minR2=pValFilter$minR2, ggplotTheme=ggplotTheme)
+    if (any(methods == "meltcurvefit")){
+      tpptrQCplots(resultTab = resultTable, expNames = expNames, 
+                   expConditions = expConds, compDF = expComps, 
+                   minR2 = pValFilter$minR2, ggplotTheme = ggplotTheme)
+    }
     dev.off()
     ## --------------------------------------------------------------------------------------------
   }

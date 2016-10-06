@@ -16,7 +16,8 @@ Version 1.1.1:
 
 Version 1.1.2:
   o the recent update of the gridExtra package to Version 2.0.0 required a small fix to 
-    ensure sucessful plotting of the melting curves and parameter tables.
+    ensure sucessful plotting of the melting curves and parameter tables, as well as correct
+    display of QC 'bottleplots'.
 
 Version 1.1.3:
   o fixed problem in QC-plot generation due to the gridExtra package update: 
@@ -103,7 +104,7 @@ Updated package vignette.
 2.1.4 (Dec-23-2015)
  o Removed example dataset containing fitted data from the Data folder in order 
    to reduce the overall package size (it was only used by some examples in the 
-   function Documentation). 
+   function documentation). 
  o Minor changes to documentation in order to ensure that R CMD check and 
    BiocCheck run again without warnings.
    
@@ -141,3 +142,14 @@ Removed unit test that causes R CMD check to crash  since the latest update of p
 2.3.4 (Jun-20-2016)
  o Improved documentation of non-exported functions by ensuring that there is 
  at least a one-line comment explaining what the function does.
+
+2.99.0 (Oct-06-2016)
+ o Major update: Extended package to analyse 2D-TPP experiments
+ o Major update: Extended package to analyse TPP-TR experiments by 
+   "non-parametric analysis of response curves" (NPARC), a non-parametrc 
+    spline-based test for treatment effects.
+ o Bugfix in 'tpptrCurveFit': restrict file names to 255 characters when creating
+   melting curve plots in order to prevent file system crashes.
+ o New packages dependencies: dplyr, margrittr
+ o Bugfix in CCR workflow: avoid division by 0 when transforming foldchanges 
+   before dose-response curve fitting.

@@ -1,6 +1,5 @@
 importTR_main <- function(configTable, data, idVar, fcStr, naStrs, qualColName, 
                           type){
-  ## Wrapper function to invoke the individual steps necessary for data import.
   message("Importing data...\n")
   
   ## Check configTable for consistency and extract all relevant information:

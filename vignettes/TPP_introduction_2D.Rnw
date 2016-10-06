@@ -1,0 +1,371 @@
+% \VignetteEngine{knitr::knitr}
+% \VignetteIndexEntry{TPP_introduction_2D}
+% \VignettePackage{TPP}
+\documentclass[10pt,a4paper,twoside]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{forloop}
+\usepackage{mathtools}
+
+
+%\pagestyle{empty}
+<<style-knitr, eval=TRUE, echo=FALSE, results='asis'>>=
+BiocStyle::latex()
+@
+
+\bioctitle[TPP]{Introduction to the \Rpackage{TPP} package for analyzing Thermal Proteome Profiling data: 2D-TPP experiments}
+\author{Dorothee Childs, Nils Kurzawa\\
+European Molecular Biology Laboratory (EMBL),
+\\ Heidelberg, Germany\\
+\texttt{dorothee.childs@embl.de}}
+
+\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2016-09-28)}
+
+\begin{document}
+<<opts, include=FALSE, echo=FALSE>>=
+knitr::opts_chunk$set(concordance = TRUE, 
+                      eval = TRUE,
+                      cache = TRUE,
+                      resize.width="0.45\\textwidth",
+                      fig.align='center',
+                      tidy = FALSE,
+                      message=FALSE)
+@
+
+\maketitle
+
+\begin{abstract}
+Thermal Proteome Profiling (TPP) combines the 
+cellular thermal shift assay concept \cite{molina2013} with mass spectrometry 
+based proteome-wide protein quantitation \cite{savitski2014tracking}. Thereby, 
+drug-target interactions can be inferred from changes in the thermal stability 
+of a protein upon drug binding, or upon downstream cellular regulatory events, 
+in an unbiased manner.
+
+The package \Rpackage{TPP} facilitates this process by providing exectuable 
+workflows that conduct all necessary data analysis steps. Recent advances in 
+the field have lead to the development of so called 2D Thermal Proteome 
+Profiling (2D-TPP) experiments \cite{becher2016}. 
+Recent advances in the field have lead to the development of so called 2D Thermal 
+Proteome Profiling (2D-TPP) experiments \cite{becher2016}. 
+Similar as for the TPP-TR and the TPP-CCR analysis, the function analyze2DTPP 
+executes the whole workflow from data import through normalization and curve 
+fitting to statistical analysis. Nevertheless, all of these steps can also be 
+invoked separately by the user. The corresponding functions can be recognized 
+by their suffix tpp2d.
+
+Here, we first show how to start the whole analysis using analyze2DTPP. 
+Afterwards, we demonstrate how to carry out single steps individually.
+
+For details about the analysis of 1D TR- or CCR experiments 
+\cite{savitski2014tracking, franken2015}, please refer to the 
+vignette \texttt{TPP\_introduction\_1D}.
+
+\end{abstract}
+
+\tableofcontents
+
+\section{Installation}
+To install the package, type the following commands into the \R{} console
+<<install, eval=FALSE>>=
+source("http://bioconductor.org/biocLite.R")
+biocLite("TPP")
+@
+
+The installed package can be loaded by
+<<package>>=
+library("TPP")
+@
+
+\subsection{Special note for Windows users}
+The \Rpackage{TPP} package uses the \Rpackage{openxlsx} package to produce Excel 
+output \cite{openxlsx}. \Rpackage{openxlsx} requires a zip application to be 
+installed on your system and to be included in the path. On Windows, such a zip 
+application ist not installed by default, but is available, for example, via 
+\href{http://cran.r-project.org/bin/windows/Rtools/}{Rtools}. Without the zip 
+application, you can still use the 'TPP' package and access its results via the 
+dataframes produced by the main functions. 
+
+\clearpage
+\section{Analyzing 2D-TPP experiments}
+\subsection{Overview}
+
+Before you can start your analysis, you need to specify information about your 
+experiments:
+
+The mandatory information comprises a unique experiment name, as well as the 
+isobaric labels and corresponding temperature values for each experiment. The 
+package retrieves this information from a configuration table that you need to 
+specify before starting the analysis. This table can either be a data frame that 
+you define in your R session, or a spreadsheet in .xlsx or .csv format. 
+In a similar manner, the measurements themselves can either be provided as a 
+list of data frames, or imported directlyfrom files during runtime.
+
+We demonstrate the functionality of the package using the dataset 
+Panobinostat\_2DTPP\_smallExampleData. It contains an illustrative subset of a 
+larger dataset which was obtained by 2D-TPP experiments on HepG$2$ cells treated 
+with the histone deacetylase (HDAC) inhibitor panobinostat in the treatment groups 
+and with vehicle in the control groups. The experiments were performed for different 
+temperatures. The raw MS data were processed with the Python package isobarQuant, 
+which provides protein fold changes relative to the protein abundance at the lowest 
+temperature as input for the TPP package \cite{becher2016}.
+
+\subsection{Performing the analysis}
+Fist of all, we load an example data set:
+<<load_2d_data>>=
+data("panobinostat_2DTPP_smallExample")
+@
+Using this command we load two objects: 
+\begin{enumerate}
+\item \texttt{Panobinostat\_2DTPP\_smallExampleData}: a list of data frames that contain the measurements to be analyzed,
+\item \texttt{hdac2D\_config}: a configuration table with details about each experiment.
+\end{enumerate}
+
+<<head_2d_data, eval=TRUE>>=
+config_tpp2d <- panobinostat_2DTPP_config
+data_tpp2d <- panobinostat_2DTPP_data
+
+config_tpp2d %>% head
+data_tpp2d %>% str(1)
+@
+The data object \texttt{Panobinostat\_2DTPP\_smallExampleData} is organized as 
+a list of data frames which contain the experimental raw data of an 2D-TPP 
+experiment. The names of the list elements correspond to the different 
+multiplexed experiments. Each experimental dataset constains the following
+columns:
+<<colnames_Pano, eval=TRUE>>=
+data_tpp2d %>% extract2("X020466") %>% colnames
+@
+
+In ordern to perform the complete workflow we can now simply use:
+<<ttp2dworkflow, eval = TRUE >>=
+tpp2dResults <- analyze2DTPP(configFile = config_tpp2d, 
+                             data = data_tpp2d, 
+                             idVar = "representative", 
+                             fcStr = NULL,
+                             intensityStr = "sumionarea_protein_",
+                             methods = "doseResponse", 
+                             qualColName = c("qupm", "qusm"),
+                             addCol = c("clustername","msexperiment_id"),
+                             nonZeroCols = "qupm",
+                             nCores = 2)
+
+tpp2dResults %>% mutate_if(is.character, factor) %>% summary
+@
+
+
+Moreover, we can also invoke the single functions of the workflow manually. Therefore, we start with importing the data.
+Using the import function the data is subsequently imported and stored in a single dataframe containing all the required 
+data columns and those that the user likes to take along through the analysis to be displayed together with the results 
+of this workflow.
+<<ttp2dDataImport2, eval=TRUE>>=
+data2d <- tpp2dImportData(configTable = config_tpp2d, 
+                          data = data_tpp2d, 
+                          idVar = "representative", 
+                          fcStr = NULL,
+                          intensityStr = "sumionarea_protein_",
+                          qualColName = c("qupm", "qusm"),
+                          addCol = c("clustername","msexperiment_id"))
+
+head(data2d)
+@
+
+If we haven't computed fold changes from the raw "sumionarea" data, as it is the case in this example, we can invoke the function \textit{tpp2dComputeFoldChanges} in order to do so: 
+
+<<ttp2dComputeFC2, eval=TRUE>>=
+fcData2d <- tpp2dComputeFoldChanges(configTable = config_tpp2d,
+                                    dataTable = data2d, 
+                                    intensityStr="sumionarea_protein_")
+
+@
+
+Thereon the function adds addtional columns to our dataframe containing corresponding fold changes:
+
+<<head_fold_changes2, eval=TRUE>>=
+head(fcData2d)
+@
+
+We can then normalize the data by performing a median normalization on the fold changes, in order to account for experiment specific noise.
+
+<<ttp2dDoMedianNorm2, eval=TRUE>>=
+normData2d <- tpp2dDoMedianNorm(configTable = config_tpp2d,
+                                dataTable = fcData2d)
+
+head(normData2d)
+# we have to update our fcStr, if we want the normalized columns to be used in the folloeing analysis
+fcStrUpdated <- "norm_rel_fc_protein_"
+@
+
+A configuration file for the TPP-CCR function can be then generated using the function \texttt{tpp2dCreateCCRConfigFile} 
+
+<<tpp2dCreateCCRConfigList2, eval=TRUE>>=
+config_ccr <- tpp2dCreateCCRConfigFile(configTable = config_tpp2d)
+@
+
+To run the TPP-CCR main function on our 2D-TPP data we now invoke:
+
+<<tpp2dRunTPPCCR2, eval=TRUE, warning=FALSE>>=
+ccr2dResults <- tpp2dRunTPPCCR(configFile = config_ccr, 
+                               dataTable = normData2d, 
+                               fcStr = fcStrUpdated, 
+                               idVar = "unique_ID")
+@
+
+Now we can plot the curves for any of the proteins for which at least one CCR curve could be fitted. In this case we choose HDAC2 with it's id IPI00289601.10:  
+
+<<tpp2dPlotGoodCurves, eval=TRUE, warning=FALSE>>=
+goodCurves <- tpp2dPlotCCRGoodCurves(configTable = config_tpp2d, 
+                                     dataTable = ccr2dResults, 
+                                     idVar = "representative",
+                                     fcStr = fcStrUpdated)
+@
+
+<<plotCurve2, eval=TRUE, fig.height=6, fig.width=7.5>>=
+goodCurves[["IPI00289601.10"]]
+@
+%\begin{center}
+%\includegraphics[width=0.75\textwidth]{figure/plotCurve-1}
+%\end{center}
+
+And we can also plot the single curves for each of the proteins with:
+
+<<plotSingleCurves, eval=TRUE, fig.show='hide', fig.height=6, fig.width=7.5 >>=
+singleCurve <- tpp2dPlotCCRSingleCurves(configTable = config_tpp2d, 
+                                        dataTable = ccr2dResults, 
+                                        idVar = "representative",
+                                        fcStr = fcStrUpdated)
+singleCurve[["IPI00289601.10"]][["54"]]
+@
+%\begin{center}
+%\includegraphics[width=0.65\textwidth]{figure/plotSingleCurves-1}
+%\end{center}
+
+\subsection{Quality control analyses}
+In order to access the quality of the experimental 2D-TPP data set acquired in a specific cell line, we recommend to compare the data with vehicle TR experiments (at least two replicates) of the same cell line. For the analysis of this data we supply a QC-workflow that enables comparison of treatment and non-treatment samples with reference data.
+
+In order to start this workflow the first thing we need to do, is to generate a cell line specific TR reference object. We also need to specify the result path where this 
+object should be stored:
+<<result_path_2DTPP>>=
+resultPath = file.path(getwd(), 'Panobinostat_Vignette_Example_2D')
+if (!file.exists(resultPath)) dir.create(resultPath, recursive = TRUE)
+@
+
+<<generateReferenceOject, eval = FALSE, warning=FALSE>>=
+trConfig <- file.path(system.file("example_data", package="TPP"), 
+                      "2D_example_data/panobinostat_ex_confg.csv")
+
+tpp2dCreateTPPTRreference(trConfigTable = trConfig, 
+                          resultPath = resultPath, 
+                          outputName = "some_cell_line_TR_reference", 
+                          createFCboxplots = FALSE)
+@
+For the purpose of explaining this worflow, we will use a reference data set of a HepG2 cell line supplied with this package. 
+Originating from this object we can now perform various quality control steps. First of all by setting the 
+\textit{createFCboxplots} flag to true, we can generate box plot melting curves of the reference data which are first of all 
+informative of the quality of the reference data and illustrate melting behavior of all proteins without any treatment.
+
+Calling the function will generate a couple of output files in the indicated output directory. 
+\begin{itemize}
+\item The \texttt{tppRefData.RData} file ist the most important one. This is the file that has to be referenced by indication of a system path to this file when calling functions to generate the 2D-TPP spline plots and perform an F test. When loaded in \R{} the object \texttt{tppRefData} represents a list with the following elements:
+{\setlength\itemindent{25pt} \item tppCfgTable: the TPP-TR configtable which was used for generating this object}
+{\setlength\itemindent{25pt} \item sumResTable a list of two elements:}
+{\setlength\itemindent{35pt} \item detail: the exact result data from the TR analysis and}
+{\setlength\itemindent{35pt} \item summary: a summary of the analyzed TR data comprising the median and standard deviation values of the measurements at the different temperatures (encoded by the isobaric labels) }
+{\setlength\itemindent{35pt} \item temperatures: a table listing the temperatures which were used in the TR experiment in the different replicates}
+{\setlength\itemindent{35pt} \item lblsByTemp: a table matching each temperature to an isobaric label}
+\item An excel file which summarizes the data present in \texttt{tppRefData} on different sheets
+\item Textfiles representing the sheets of the excel file as plain text 
+\item \texttt{normalizedData.RData} containing the TPP-TR data after normalization
+\item \texttt{resultTable.RData} containing the TPP-TR analysis result table
+\end{itemize}
+
+Secondly, we can generate plots which visualize the melting point temperatures of the 2D-TPP data in comparison to the TR 
+reference data. Here we demonstrate this function on a subset of the proteins:
+<<pE50plots, eval = TRUE, warning = FALSE>>=
+# set the system path for the HepG2 TR reference data set:
+trRef <- file.path(system.file("data", package="TPP"), "HepG2_trRefData.RData") 
+
+plotData <- (ccr2dResults %>% filter(!is.na(compound_effect)) %>% 
+  arrange(representative))[1:10,]
+pEC50QC <- tpp2dPlotQCpEC50(resultTable = plotData,
+                            resultPath = resultPath,
+                            trRef = trRef,
+                            idVar = "representative")
+@
+We have therefore used the \textit{ccr2dResults} data frame which we previously generated by invoking the TPP-CCR routine and 
+the the respective configTable.
+
+Moreover, we can generate plots that visualize the distributions of fold changes over the different treatment concentrations 
+and temperatures and how the normalization affected them (of course only if we previously performed a normalization). 
+The function automatically also visualizes various other characteristics of the data, such as how proteins behave in 
+neighboring temperatures which are multiplexed. It can be invoked as follows: 
+
+<<qcHists, eval = TRUE, warning=FALSE>>=
+tpp2dPlotQChist(configFile = config_tpp2d,
+                resultTable = ccr2dResults,
+                resultPath = resultPath,
+                trRef = trRef)
+@
+
+\subsection{Spline fits of treatment effects over temperature}
+In order to access whether the drug treatment has a significant impact on altering the thermal stability of specific proteins a function was implemented which illustrates the course of stability of a certain protein over different temperatures based on a reference data set. A natural cubic spline fitted to the reference data is then used to infer the relative stability curves of proteins with different concentrations of treatment which are in turn fitted by natural cubic splines. The cubic spline with $n$ degrees of freedom on $[a, b]$ obeys:
+
+\begin{itemize}
+\item $S(x) \in C^{2} [a, b]$
+\item $a = t_{0} < t_{1} < ... < t_{n} = b$
+\end{itemize}
+and:
+\begin{equation}
+S(x) = 
+\begin{dcases}
+S_{0}(x) = a_{0}x^{3} + b_{0}x^{2} + c_{0}x + d_{0}, &  t_{0} \leq x \leq t_{1} \\
+S_{1}(x) = a_{1}x^{3} + b_{1}x^{2} + c_{1}x + d_{1}, &  t_{1} \leq x \leq t_{2} \\
+\cdot  \\
+\cdot  \\
+\cdot  \\
+S_{n-1}(x) = a_{n-1}x^{3} + b_{n-1}x^{2} + c_{n-1}x + d_{n-1}, &  t_{n-1} \leq x \leq t_{n}
+\end{dcases}
+\end{equation} \\
+
+a \textit{natural cubic spline} additionally contrains that it's function has to be linear beyond the boundary knots with constrains that both the first and the last section of the cubic spline has to be linear.
+
+The function to perform this analysis can be invoked by:
+<<splineFitting, eval = TRUE, warning = FALSE>>=
+trRef <- file.path(system.file("data", package="TPP"), "HepG2_trRefData.RData")
+
+analysisResults <- tpp2dSplineFitAndTest(data_2D = normData2d, 
+                                         trRefDataPath = trRef, 
+                                         idVar = "representative",
+                                         fcStr = "norm_rel_fc_protein_", 
+                                         refFcStr = "norm_rel_fc_protein_",
+                                         doPlot = FALSE,
+                                         resultPath = resultPath)
+
+@
+% \begin{center}
+% \includegraphics[width=0.5\textwidth]{\Sexpr{resultPath}/plots/IPI00289601_10_2D_TPP_spline_plots.pdf}
+% \end{center}
+
+Moreover, these fits can be used then, in order to access confidence on whether the curves fitting the relative treatment 
+data points represent the data better than a model which does not distinguish between the different treatment concentrations. 
+The confidence assessment is thereby based on a moderated F statistic adapted from a method by Storey and others 
+\cite{Storey2005} which they developed for microarray time course data. 
+The method calculates a moderated F statistic following:
+\begin{equation}
+F = \frac{\mathrm{SS_{0}} - \mathrm{SS_{1}}}{\widetilde{s}^{2}(\sigma^{2}, \mathrm{df_{2}})}
+\end{equation}
+with $\mathrm{SS_{0}}$ representing the sum of squares of the null model (fitting the data without distinguishing between different treatment concentrations) and $\mathrm{SS_{1}}$ those of the full model (which fits the data by in this case 5 different splines for every treatment concentration respectively). With $\widetilde{s}^{2}$ representing the empirical Bayes estimator for $\mathrm{SS_{1}}$, with $\mathrm{df_{2}} = n - \nu_{1}$, where $\nu_{1}$ denoted the parameters of the full model and $n$ denotes the number of data points.
+
+<<fTest, eval=TRUE>>=
+analysisResults %>% filter(representative == "IPI00289601.10") %>%
+  select(temperature, p_NPARC, p_adj_NPARC)
+@
+
+By defining the \texttt{methods} argument to include \texttt{"splineFit"}, one 
+prompts the main function \texttt{analyze2DTPP} to directly perform spline fits and a 
+moderated F-test for each protein in the data set.  
+
+\bibliography{TPP_references}
+\clearpage
+\end{document}

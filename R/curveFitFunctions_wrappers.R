@@ -1,7 +1,6 @@
 fitMeltCurves <- function(xMat, yDF, colPrefix, startPars, maxAttempts, expNames, 
                           protID, verbose){
-  ## Invoke melting curve fitting for each protein
-  
+  ## Fit melting curves for experiment to a single protein
   if (verbose) message("Fitting melting curves for protein: ", protID)
   
   ## Obtain data for model fit:
@@ -54,9 +53,7 @@ fitMeltCurves <- function(xMat, yDF, colPrefix, startPars, maxAttempts, expNames
 }
 
 fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbose){
-  ## Invoke dose-response curve fitting for each protein
-
-    ## 1. Preparation:
+  ## 1. Preparation:
   flagConv = flagOutsideConcRange = pEC50qualCheckCol <- FALSE
   pec50 = pec50_final = slope = r2 <- NA
   concBds <- guessDRparamBoundaries(dose)

@@ -1,11 +1,13 @@
-fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0=TRUE){
-  ## Fit melting curve to a vector of TPP-TR measurements
-
+fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0 = TRUE){
+  ## Fit sigmoidal model to a vector of TPP-TR measurements
   strSigm <- fctSigmoidTR(deriv=0)
   fitFct <- as.formula(paste("y ~", strSigm))
   varyPars <- 0
   attempts <- 0
+  
+  ## For parameter re-sampling in case of non-convergence:
   repeatLoop <- TRUE
+  set.seed(123) # make results reproducible
   
   ## Check if number of non-missing values is sufficient
   ## (NLS can only handle data with at least three non-missing values)
@@ -33,7 +35,7 @@ fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0=TRUE){
 
 fitSigmoidCCR <- function(xVec, yVec, hill_init, pec50_init, slopeBounds, 
                           concBounds){
-  ## Fit dose response curve to a vector of TPP-CCR measurements
+  ## Fit sigmoidal model to a vector of TPP-CCR measurements
   
   ## Prepare model fit:
   strSigm <- fctSigmoidCCR()

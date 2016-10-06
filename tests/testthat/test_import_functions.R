@@ -28,6 +28,7 @@ test_that(desc="confgCheck", code={
 test_that(desc="confgCheck_expColNULL", code={
   hdacTR_config$Experiment <- NULL
   expect_error(importCheckConfigTable(infoTable=hdacTR_config, type="TR"))
+  expect_error(importCheckConfigTable(infoTable=hdacTR_config, type="2D"))
 })
 
 test_that(desc="'confgCheck_expColConvertAlnum", code={

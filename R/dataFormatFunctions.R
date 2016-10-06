@@ -1,33 +1,67 @@
 eSetsToLongTable_fc <- function(data){
-  ## Extract fold changes from expressionSets and store in long tables
   
   expNames <- names(data)
   longTabFC <- c()
+  
   for (en in expNames){
     datTmp <- data[[en]]
     
     # Retrieve protein ids, pData, fData and fold changes:
     ids <- featureNames(datTmp)
-    pDatWide <- pData(datTmp)
-    fcWide  <- data.frame(id=ids, exprs(datTmp))
+    fcMatrix <- exprs(datTmp)
+    pDatWide <- pData(datTmp) %>% data.frame
+    if(any(grepl("concentration", colnames(pDatWide)))){
+      pDatWide <- pDatWide %>% mutate(timeVec = concentration) 
+    }
+    if (any(grepl("temperature", colnames(pDatWide)))){
+      pDatWide <- pDatWide %>% mutate(timeVec = temperature)
+    } 
     
-    # Long table of fold changes:
-    labelVals <- pDatWide[,2]
-    fcLong <- reshape(data=fcWide, direction="long", timevar="labelValue",
-                      varying=list(sampleNames(datTmp)), v.names="foldChange",
-                      times=labelVals, idvar="id")
-    fcLong$labelName <- mapvalues(fcLong$labelValue, from=labelVals, to=pDatWide$label)
-    fcLong$experiment <- en
-    fcLong$id <- as.character(fcLong$id)
+    
+    ## If data was normalized, add suffix 'norm_' to the fold change column 
+    ## names. Normalized data is recognized by the values of the normalization 
+    ## coefficients in the fold change column annotation.
+    flagIsNormalized <- any(!is.na(pDatWide$normCoeff))
+    if (flagIsNormalized) {
+      colnames(fcMatrix) <- paste("norm", colnames(fcMatrix), sep="_")
+    }
+    
+    ## Create wide table of fold changes with ID column:
+    fcWide  <- data.frame(id = ids, fcMatrix)
+    
+    # Convert to long table of fold changes:
+    labelVals <- pDatWide$timeVec
+    labelNames <- pDatWide$label
+    fcLong <- reshape(data = fcWide, 
+                      direction = "long", 
+                      timevar = "labelValue",
+                      varying = list(colnames(fcMatrix)), 
+                      v.names = "foldChange",
+                      times = labelVals, 
+                      idvar = "id") %>%
+      mutate(labelName = mapvalues(labelValue, 
+                                   from = labelVals, to = labelNames),
+             colName = mapvalues(labelValue, 
+                                 from = labelVals, to = colnames(fcMatrix))) %>%
+      mutate(labelName = as.character(labelName),
+             experiment = en,
+             id = as.character(id))
+    # New version using tidyr::gather instead of stats::reshape (to do):
+    # fcWide2  <- data.frame(exprs(datTmp))
+    # fcLong2 <- fcWide %>%
+    #   mutate(id = factor(ids)) %>%
+    #   gather_("variable", "y", colnames(fcWide)) %>%
+    #   mutate(experiment = factor(en), variable = factor(variable))
     longTabFC <- rbind(longTabFC, fcLong)
   }
-  longTabFC <- arrange(longTabFC, id)
+  
+  longTabFC <- longTabFC  %>%
+    arrange(id) %>% 
+    mutate_if(is.character, factor)  
   return(longTabFC)
 }
 
 eSetsToLongTable_fData <- function(data){
-  ## Extract feature data from expressionSets and store in long tables
-  
   expNames <- names(data)
   longTabAnnot <- c()
   for (en in expNames){
@@ -39,21 +73,26 @@ eSetsToLongTable_fData <- function(data){
     
     # Long table of fold changes:
     colnames(fDatWide) <- gsub("([^[:alnum:]])", "_", colnames(fDatWide))
-    fDatLong <- reshape(data=data.frame(id=ids, fDatWide), 
-                        direction="long", timevar="variable",
-                        varying=list(colnames(fDatWide)), v.names="value",
-                        times=colnames(fDatWide), idvar="id")
-    fDatLong$experiment <- en
-    fDatLong$id <- as.character(fDatLong$id)
+    fDatLong <- fDatWide %>%
+      mutate(id = ids) %>%
+      mutate_all(as.character) %>%
+      gather_("variable", "value", colnames(fDatWide)) %>%
+      mutate(experiment = en)
     longTabAnnot <- rbind(longTabAnnot, fDatLong)
   }
-  longTabAnnot <- arrange(longTabAnnot, id)
+  
+  longTabAnnot <- longTabAnnot %>% 
+    arrange(id) %>%
+    mutate(id = factor(id),
+           experiment = factor(experiment),
+           variable = factor(variable))
+  
   return(longTabAnnot)
 }
 
+
 retrieveDataFromESets_TR <- function(data){
-  ## Merge row annotations and fold changes from different expressionSets
-  ## containing TR data
+  ## Merge row annotation data and fold changes over all experiments
   
   ## 1. Preparation
   expNames<- names(data)
@@ -63,7 +102,6 @@ retrieveDataFromESets_TR <- function(data){
   ## 2. Iterate over all experiments and retrieve data
   for (en in expNames){
     setTmp <- data[[en]]
-    
     
     ## Split annotation data (stored as featureData in the expressionSets) into
     ## a data frame of melting curve parameters, model information (boolean
@@ -84,13 +122,11 @@ retrieveDataFromESets_TR <- function(data){
     cols6 <- "plot"
     cols3 <- setdiff(colnames(fDat), c(cols1,cols2, cols6))
     
-    
     ## Split featureData into separate data frames:
     df1  <- as.data.frame(fDat[, cols1])
     df2  <- as.data.frame(fDat[, cols2])
     df3  <- as.data.frame(fDat[, cols3])
     df6  <- subset(fDat, select=cols6)
-    
     
     ## Retrieve fold change matrix from current expressionSet and convert to 
     ## data frame:
@@ -170,9 +206,9 @@ retrieveDataFromESets_TR <- function(data){
               plotCol      = merged6))
 }
 
+
 retrieveDataFromESets_CCR <- function(data){
-  ## Merge row annotations and fold changes from different expressionSets
-  ## containing CCR data
+  ## Merge row annotation data and fold changes over all experiments
   
   ## 1. Preparation
   expNames<- names(data)

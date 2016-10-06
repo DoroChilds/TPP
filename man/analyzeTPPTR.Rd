@@ -5,12 +5,13 @@
 \title{Analyze TPP-TR experiment}
 \usage{
 analyzeTPPTR(configTable, data = NULL, resultPath = NULL,
-  idVar = "gene_name", fcStr = "rel_fc_", ciStr = NULL, naStrs = c("NA",
-  "n/d", "NaN", "<NA>"), qualColName = "qupm", normalize = TRUE,
+  methods = c("meltcurvefit", "splinefit"), idVar = "gene_name",
+  fcStr = "rel_fc_", ciStr = NULL, naStrs = c("NA", "n/d", "NaN", "<NA>"),
+  qualColName = "qupm", normalize = TRUE,
   normReqs = tpptrDefaultNormReqs(), ggplotTheme = tppDefaultTheme(),
-  nCores = "max", startPars = c(Pl = 0, a = 550, b = 10),
+  nCores = "max", startPars = c(Pl = 0, a = 550, b = 10), splineDF = 4,
   maxAttempts = 500, plotCurves = TRUE, fixedReference = NULL,
-  pValMethod = "maxQuant", pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
+  pValMethod = "robustZ", pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
   pValParams = list(binWidth = 300), verbose = FALSE, xlsxExport = TRUE)
 }
 \arguments{
@@ -24,6 +25,11 @@ instead of specifying the file path in the \code{configTable} argument.}
 
 \item{resultPath}{location where to store melting curve plots, intermediate 
 results, and the final results table.}
+
+\item{methods}{statistical methods for modeling melting behaviour and detecting 
+significant differences between experimental conditions. Ich more than one 
+method are specified, results will be computed for each and concatenated in 
+the result talble (default: meltcurvefit).}
 
 \item{idVar}{character string indicating which data column provides the 
 unique identifiers for each protein.}
@@ -57,6 +63,8 @@ normalization set.}
 \item{startPars}{start values for the melting curve parameters. Will be 
 passed to function \code{\link{nls}} for curve fitting.}
 
+\item{splineDF}{degrees of freedom for natural spline fitting.}
+
 \item{maxAttempts}{maximal number of curve fitting attempts if model does not
 converge.}
 
@@ -68,7 +76,7 @@ If NULL (default), the experiment with the best R2 when fitting a melting
 curve through the median fold changes is chosen as the reference.}
 
 \item{pValMethod}{Method for p-value computation. Currently restricted to 
-'maxQuant' (see Cox & Mann (2008)).}
+'robustZ' (see Cox & Mann (2008)).}
 
 \item{pValFilter}{optional list of filtering criteria to be applied before 
 p-value computation.}
@@ -126,19 +134,47 @@ Invokes the following steps: \enumerate{ \item Import data using the
   \item{Label columns: } each isobaric label names a column that contains the
   temperatures administered for the label in the individual experiments. }
   
+  The argument \code{methods} can be one of the following:
+  More than one method can be specified. For example, parametric testing of 
+  melting points and nonparametric spline-based goodness-of-fit tests can be 
+  performed seqeuentially in the same analysis. The results are then written 
+  to separate columns of the output table.
+  
+  If \code{methods} contains "meltcurvefit", melting curve plots will be 
+  stored in a subfolder with name \code{Melting_Curves} at the location 
+  specified by \code{resultPath}.
+  If \code{methods} contains "splinefit", plots of the natural spline fits will be 
+  stored in a subfolder with name \code{Spline_Fits} at the location 
+  specified by \code{resultPath}.
+  
   The argument \code{nCores} could be either 'max' (use all available cores) 
   or an upper limit of CPUs to be used.
   
-  The melting curve plots will be stored in a subfolder with name 
+  If \code{doPlot = TRUE}, melting curve plots are generated seperately for 
+  each protein and stored in separate pdfs.
+  Each file is named by the unique protein identifier. Filenames are
+  truncated to 255 characters (requirement by most operation systems). 
+  Truncated filenames are indicated by the suffix "_truncated[d]", where [d] 
+  is a unique number to avoid redundancies.
+  All melting curve plots are stored in a subfolder with name 
   \code{Melting_Curves} at the location specified by \code{resultPath}.
   
   If the melting curve fitting procedure does not converge, it will be 
   repeatedly started from perturbed starting parameters (maximum iterations 
   defined by argument \code{maxAttempts}).
+  
+  Argument \code{splineDF} specifies the degrees of freedom for natural
+  spline fitting. As a single numeric value, it is directly passed on to the
+  \code{splineDF} argument of \code{splines::ns}. Experience shows that
+  \code{splineDF = 4} yields good results for TPP data sets with 10
+  temperature points. It is also possible to provide a numeric vector. In
+  this case, splines are fitted for each entry and the optimal value is
+  chosen per protein using Akaike's Information criterion.
 }
 \examples{
 data(hdacTR_smallExample)
-tpptrResults <- analyzeTPPTR(configTable=hdacTR_config, data=hdacTR_data, nCores=1)
+tpptrResults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
+                methods = "splinefit", nCores = 1)
 
 }
 \references{

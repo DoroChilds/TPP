@@ -3,6 +3,12 @@
 #'   repeatedly started from perturbed starting parameters (maximum iterations 
 #'   defined by argument \code{maxAttempts})
 #'   
+#'   If \code{doPlot = TRUE}, melting curves are be plotted in individual files
+#'   per protein. Each file is named by its unique identifier. Filenames are
+#'   truncated to 255 characters (requirement by most operation systems). 
+#'   Truncated filenames are indicated by the suffix "_truncated[d]", where [d] 
+#'   is a unique number to avoid redundancies.
+#'   
 #' @return A list of ExpressionSets storing the data together with the melting
 #'   curve parameters for each experiment.
 #'   Each ExpressionSet contains the measured fold changes, as well as row and
@@ -18,11 +24,11 @@
 #' tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 #' normalizedData <- tpptrNorm$normData
 #' hdacSubsets <- lapply(normalizedData, 
-#'                       function(d) d[grepl("HDAC", featureNames(d))])
+#'                       function(d) d[grepl("HDAC", Biobase::featureNames(d))])
 #' tpptrFittedHDACs <- tpptrCurveFit(hdacSubsets, nCores=1)
 #' # Show estimated parameters for vehicle and treatment experiments:
-#' pData(featureData(tpptrFittedHDACs[["Vehicle_1"]]))
-#' pData(featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
+#' Biobase::pData(Biobase::featureData(tpptrFittedHDACs[["Vehicle_1"]]))
+#' Biobase::pData(Biobase::featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
 #' 
 #' @param data list of \code{ExpressionSet}s with protein fold changes for curve
 #'   fitting.
@@ -73,7 +79,19 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
       dir.create(file.path(resultPath, plotDir), recursive=TRUE)
     }
     ## File names for melting curve plots: Replace special characters by '_'.
-    fNames<-paste("meltCurve_",gsub("([^[:alnum:]])","_",protIDs),".pdf",sep="")
+    fNames <- paste0("meltCurve_",gsub("([^[:alnum:]])","_", protIDs))
+
+    # limit file name length to 255 characters to avoid crashes on most filesystems:
+    maxLen <- 255 - nchar(".pdf") - nchar("_truncated") - nchar(as.character(length(fNames)))
+    tooLong <- nchar(fNames) > maxLen
+    cropSuffix <- paste0("_truncated", 1:sum(tooLong))
+    fNames <- sapply(fNames, function(fTmp) {
+      fNew <- substr(fTmp, 1, min(maxLen, nchar(fTmp)))
+    }, simplify = TRUE, USE.NAMES = FALSE)
+    fNames[tooLong] <- paste0(fNames[tooLong], cropSuffix)
+    fNames <- paste0(fNames, ".pdf")
+    
+    
     plotPathsFull <- file.path(plotDir, fNames)
   } else {
     plotPathsFull <- rep("", length(protIDs))
@@ -133,7 +151,7 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
   # if nCores == 1 use serial execution via lapply
   # if nCores > 1 use the foreach package for multicore execution
   if (nCores > 1) {
-    doParallel::registerDoParallel(cores=nCores)
+    doParallel::registerDoParallel(cores = nCores)
     
     # fitMeltCurves <- function(xMat, yDF, startPars, maxAttempts, expNames, 
     # protID, verbose)

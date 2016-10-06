@@ -50,6 +50,9 @@ tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
   allCols <- colnames(tab)
   
   ## Remove plot column from TPP-TR output if it only contains missing values:
+  if (!any(grepl("plot", colnames(tab)))){
+    tab$plot <- NA
+  }
   if (all(is.na(tab$plot))){
     tab <- subset(tab, select=!(allCols %in% "plot"))    
     allCols <- colnames(tab)
@@ -57,7 +60,7 @@ tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
   
   
   ## Sort proteins in alphabetical order:
-  tab <- arrange(df=tab, tab$Protein_ID)
+  tab <- arrange(tab, Protein_ID)
   
   ## Create workbook and fill with table columns:
   wb <- createWorkbook()

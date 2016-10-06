@@ -1,5 +1,6 @@
 #' @title Plot dose response curves
-#' @description \code{tppccrPlotCurves} plots the logistic dose response curves, as well as the underlying fold
+#' @description \code{tppccrPlotCurves} plots the logistic dose response curves, 
+#' as well as the underlying fold
 #'   change measurements for each TPP-CCR experiment in a study.
 #' @param data list of expressionSet objects containing protein fold changes, as 
 #' well as fitted curve parameters.
@@ -40,10 +41,13 @@
 #' \code{DoseResponse_Curves} at the location specified by \code{resultPath}.
 #' 
 #' @return A list of expressionSet objects storing fold changes,
-#' as well as row and column metadata. In each expressionSet \code{S}, the fold changes
+#' as well as row and column metadata. In each expressionSet \code{S}, the fold 
+#' changes
 #'   can be accessed by \code{exprs(S)}. Protein expNames can be accessed by 
-#'   \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
-#'   returned by \code{S$label} and \code{S$concentration}. Paths to the produced plots are stored in code{featureData(S)$plot}.
+#'   \code{featureNames(S)}. Isobaric labels and the corresponding 
+#'   concentrations are 
+#'   returned by \code{S$label} and \code{S$concentration}. Paths to the 
+#'   produced plots are stored in code{featureData(S)$plot}.
 #'  
 #' @examples
 #' data(hdacCCR_smallExample)
@@ -52,8 +56,8 @@
 #' tppccrNorm <- tppccrNormalize(data=tppccrData)
 #' tppccrTransformed <- tppccrTransform(data=tppccrNorm)
 #' tppccrFitted <- tppccrCurveFit(data=tppccrTransformed, nCores=1)
-#' protein1_to_5 <- sapply(tppccrFitted, function(d) d[1:5,])
-#' tppccrPlotted <- tppccrPlotCurves(data=protein1_to_5, resultPath=getwd(), nCores=1)
+#' hdacSubset <- sapply(tppccrFitted, function(d)d[grepl("HDAC", rownames(d)),])
+#' tppccrPlotted <- tppccrPlotCurves(hdacSubset, resultPath=getwd(), nCores = 1)
 #' 
 #' @seealso \code{\link{tppccrCurveFit}},\code{\link{tppDefaultTheme}}
 #' 
@@ -76,7 +80,7 @@ tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
                                                   "ExpressionSet"), TRUE, FALSE)
     if (isESetList) {
       fcTable <- eSetsToLongTable_fc(data)
-      colnames(fcTable)[grep("labelValue", colnames(fcTable))] <- "concentration"
+      colnames(fcTable)[grep("labelValue",colnames(fcTable))] <- "concentration"
       
       fDatTable <- eSetsToLongTable_fData(data)
       parNames <- drCurveParamNames(names=TRUE, info=FALSE)
@@ -89,8 +93,10 @@ tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
   }
   
   ## 2. Ignore proteins with NA fold changes only
-  idsValid <- unique(fcTable[which(!is.na(fcTable$foldChange)),]$id)
-  fcFiltered <- subset(fcTable, id %in% idsValid)
+  idsValid <- fcTable %>% select(id, foldChange) %>% na.omit %>% 
+    extract2("id") %>% unique %>% as.character
+  fcFiltered <- subset(fcTable, id %in% idsValid) %>% 
+    mutate(id = factor(as.character(id)))
   
   ## 3. Start parallelized DR plotting over all proteins:
   fcSplit  <- split(fcFiltered, fcFiltered$id)
@@ -111,27 +117,35 @@ tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
   t1 <- Sys.time()
   if (nCores == 1){
     plotFileNames <- foreach(pID=names(fcSplit), .combine=rbind, .inorder=FALSE, 
-                             .verbose=FALSE)  %do%
-      plotDRCurve(protID  = pID,
-                  fcDF    = fcSplit[[pID]],
-                  parDF   = parSplit[[pID]], 
-                  plotDir = file.path(resultPath, plotDir),
-                  allExp  = expNames,
-                  addLegend = addLegend,
-                  plotCols = plotCols,
-                  verbose = verbose)
+                             .verbose=FALSE)  %do% {
+                               fcDF    = fcSplit[[pID]]
+                               parDF   = parSplit[[pID]]
+                               plotDRCurve(protID  = pID,
+                                           fcDF    = fcDF,
+                                           parDF   = parDF,
+                                           plotDir = file.path(resultPath, 
+                                                               plotDir),
+                                           allExp  = expNames,
+                                           addLegend = addLegend,
+                                           plotCols = plotCols,
+                                           verbose = verbose)
+                             }
   } else if (nCores > 1){
     doParallel::registerDoParallel(cores=nCores)
     plotFileNames <- foreach(pID=names(fcSplit), .combine=rbind, .inorder=FALSE, 
-                             .verbose=FALSE)  %dopar%
-      plotDRCurve(protID  = pID, 
-                  fcDF    = fcSplit[[pID]],
-                  parDF   = parSplit[[pID]], 
-                  plotDir = file.path(resultPath, plotDir),
-                  allExp  = expNames,
-                  addLegend = addLegend, 
-                  plotCols = plotCols,
-                  verbose = verbose)
+                             .verbose=FALSE)  %dopar% {
+                               fcDF    = fcSplit[[pID]]
+                               parDF   = parSplit[[pID]]
+                               plotDRCurve(protID  = pID,
+                                           fcDF    = fcDF,
+                                           parDF   = parDF,
+                                           plotDir = file.path(resultPath, 
+                                                               plotDir),
+                                           allExp  = expNames,
+                                           addLegend = addLegend, 
+                                           plotCols = plotCols,
+                                           verbose = verbose)
+                             }
     stopImplicitCluster()
   }
   timeDiff <- Sys.time()-t1
@@ -145,7 +159,8 @@ tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
   if (!is.null(data)){
     for (e in expNames){
       datTmp <- data[[e]]
-      plotDF <- join(data.frame("Protein_ID"=featureNames(datTmp)), plotFileNames, 
+      plotDF <- join(data.frame("Protein_ID"=featureNames(datTmp)), 
+                     plotFileNames, 
                      by="Protein_ID")
       featureData(data[[e]])$plot <- as.character(plotDF$path)
     }

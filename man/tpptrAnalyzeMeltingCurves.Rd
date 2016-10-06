@@ -5,7 +5,7 @@
 \title{Analyze fitted curve parameters to detect significant shifts in 
   melting points.}
 \usage{
-tpptrAnalyzeMeltingCurves(data, pValMethod = "maxQuant",
+tpptrAnalyzeMeltingCurves(data, pValMethod = "robustZ",
   pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
   pValParams = list(binWidth = 300))
 }
@@ -14,7 +14,7 @@ tpptrAnalyzeMeltingCurves(data, pValMethod = "maxQuant",
 featureData fields contain the fitted melting curve parameters.}
 
 \item{pValMethod}{Method for p-value computation. Currently restricted to
-'maxQuant' (see Cox & Mann (2008)).}
+'robustZ' (see Cox & Mann (2008)).}
 
 \item{pValFilter}{optional list of filtering criteria to be applied before 
 p-value computation.}
@@ -32,7 +32,7 @@ Compute p-values for the pairwise comparisons of melting curve
 \details{
 The \code{pValParams} argument is a list that can contain optional parameters 
   for the chosen p-value computation \code{pValMethod}. The following options are
-  available: \enumerate{ \item \code{pValMethod = "maxQuant"}:
+  available: \enumerate{ \item \code{pValMethod = "robustZ"}:
   
   \code{pValParams=list(binWidth=[your_binWidth])}.}
 }

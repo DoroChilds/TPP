@@ -1,8 +1,5 @@
 findJointP <- function(data){
-  ## Find proteins that commonly occur in all experiments. They resulting 
-  ## intersect is stored in the variable jointP. It will be used for 
-  ## cross-experiment normalization.
-
+  ## Find proteins that commonly occur in all experiments.
   message("Detecting intersect between treatment groups (jointP).")
   grNames <- names(data)
 

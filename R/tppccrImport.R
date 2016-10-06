@@ -103,7 +103,7 @@ tppccrImport <- function(configTable, data=NULL, idVar="gene_name",
   ## Convert given concentrations to log scale for curve fitting and plotting:
   for (expName in names(dataListFiltered)){
     datTmp <- dataListFiltered[[expName]]
-    concTmp <- log10(datTmp$concentration * 10^-6)
+    concTmp <- log10(as.numeric(as.character(datTmp$concentration)) * 10^-6)
     concTmp[is.infinite(concTmp)] <- -15  
     dataListFiltered[[expName]]$concentration <- concTmp
   }

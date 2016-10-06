@@ -77,7 +77,7 @@
 #' @param fcCutoff Cutoff for highest compound concentration fold change.
 #' @param slopeBounds Bounds on the slope parameter for dose response curve 
 #'   fitting.
-#' @param plotCurves boolan value indicating whether dose response curves should
+#' @param plotCurves boolean value indicating whether dose response curves should
 #'   be plotted. Deactivating plotting decreases runtime.
 #' @param verbose print name of each fitted or plotted protein to the command 
 #' line as a means of progress report.
@@ -125,7 +125,7 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
   }
   
   ## ---------------------------------------------------------------------------
-  ## 3) Noramlize to lowest concentrations and transform fold changes to [0,1]
+  ## 3) Normalize to lowest concentrations and transform fold changes to [0,1]
   datNormToRef   <- tppccrNormalizeToReference(data=datNorm)
   datTransformed <- tppccrTransform(data=datNormToRef, fcCutoff=fcCutoff, 
                                     fcTolerance=fcTolerance)
@@ -159,7 +159,7 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
       }
       tppExport(tab=resultTable, file=file.path(pathExcel, "results_TPP_CCR.xlsx"), expNames=expNames, expColors=expColors)
     } else {
-      warning("Cannot produce xlsx output because no result path is specified.")
+      message("Cannot produce xlsx output because no result path is specified.")
     }
   }
   

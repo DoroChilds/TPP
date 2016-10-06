@@ -32,15 +32,15 @@ tppccrNorm <- tppccrNormalize(data=tppccrData)
 tppccrNormToRef <- tppccrNormalizeToReference(data=tppccrNorm, refCol=1)
 # Obtain results per replicate:
 refTransf_replicate1 <- tppccrNormToRef$Panobinostat_1
-head(exprs(refTransf_replicate1))
+head(Biobase::exprs(refTransf_replicate1))
 # Perform transformation:
 tppccrTransformed <- tppccrTransform(data=tppccrNormToRef)
 # Obtain transformed measurements per replicate:
 transf_replicate1 <- tppccrTransformed$Panobinostat_1
 transf_replicate2 <- tppccrTransformed$Panobinostat_2
 # Inspect transformed data in replicate 1:
-effects_replicate1 <- featureData(transf_replicate1)$compound_effect
-newData_repl1 <- data.frame(exprs(transf_replicate1), 
+effects_replicate1 <- Biobase::featureData(transf_replicate1)$compound_effect
+newData_repl1 <- data.frame(Biobase::exprs(transf_replicate1), 
                               Type=effects_replicate1)[!is.na(effects_replicate1),]
                               
 }

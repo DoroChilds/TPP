@@ -41,8 +41,8 @@ tppccrTransformed <- tppccrTransform(data=tppccrNorm)
 transf_replicate1 <- tppccrTransformed$Panobinostat_1
 transf_replicate2 <- tppccrTransformed$Panobinostat_2
 # Inspect transformed data in replicate 1:
-effects_replicate1 <- featureData(transf_replicate1)$compound_effect
-newData_repl1 <- data.frame(exprs(transf_replicate1), 
+effects_replicate1 <- Biobase::featureData(transf_replicate1)$compound_effect
+newData_repl1 <- data.frame(Biobase::exprs(transf_replicate1), 
                               Type=effects_replicate1)[!is.na(effects_replicate1),]
                               
 }

@@ -1,5 +1,6 @@
 export(analyzeTPPCCR)
 export(analyzeTPPTR)
+export(analyze2DTPP)
 export(tppDefaultTheme)
 export(tppExport)
 export(tppQCPlotsCorrelateExperiments)
@@ -15,19 +16,59 @@ export(tpptrCurveFit)
 export(tpptrDefaultNormReqs)
 export(tpptrImport)
 export(tpptrNormalize)
+export(tpptrSplineFitAndTest)
+export(tpptrFitSplines)
+export(tpptrPlotSplines)
+export(tpptrFTest)
+export(tpptrTidyUpESets)
+export(tpp2dEvalConfigTable) # ?
+export(tpp2dImportData)
+export(tpp2dComputeFoldChanges)
+export(tpp2dDoMedianNorm)
+export(tpp2dPlotCCRAllCurves)
+export(tpp2dPlotCCRGoodCurves)
+export(tpp2dPlotCCRSingleCurves)
+export(tpp2dCreateCCRConfigFile)
+export(tpp2dRunTPPCCR)
+export(tpp2dCalcFractAbundance) # specialized function
+export(tpp2dAddAdditionalInfo) # specialized function -> how often stabilized?
+export(tpp2dExport)
+export(tpp2dCreateTPPTRreference)  # initialize objec
+export(tpp2dTRReferenceObject) # define object
+export(tpp2dPlotQCpEC50)
+export(tpp2dPlotQChist)
+export(tpp2dSplineFitAndTest)
+export(tpp2dCreateReport)
+export(tpp2dMerge2dRef) # specialized function -> add reference Tm to 2D output
+export(tpp2dExportPlots)
+import(Biobase, except = combine) # conflict with gridExtra::combine
 import(ggplot2)
-import(Biobase)
-import(plyr)
+import(grid)
+import(gridExtra, except = combine)
+import(dplyr)
+import(magrittr, except = extract)
+import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with dplyr
 import(openxlsx)
 import(VennDiagram)
-import(VGAM)
-importFrom(grid, grid.newpage, grid.draw, gpar, textGrob, gTree) # grid::unit ist also required, but alreay imported by ggplot2, version 2.0.0.
-importFrom(gridExtra, arrangeGrob, grid.arrange)
+import(VGAM, except = c(fill, AICc)) # conflict with tidyr's fill, and sme's AICc
+import(splines)
+import(tidyr)
+importFrom(MASS, rlm)
+importFrom(rmarkdown, render)
+importFrom(knitr, kable)
+importFrom(limma, squeezeVar)
 importFrom(parallel, detectCores, stopCluster)
 importFrom(doParallel, registerDoParallel, stopImplicitCluster)
-importFrom(foreach, '%dopar%', '%do%')
-importFrom(foreach, foreach)
+importFrom(foreach, '%dopar%', '%do%', foreach)
 importFrom(reshape2, melt)
 importFrom(nls2, nls2)
 importFrom(RColorBrewer, brewer.pal)
 importFrom(RCurl, url.exists)
+importFrom(sme, AICc)
+importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")  # The following lines are recommendations from R CMD check
+importFrom("stats", "as.formula", "complete.cases", "contrasts", "lm",
+           "median", "na.exclude", "na.omit", "nls", "p.adjust", "pf",
+           "qnorm", "quantile", "reshape", "runif", "sd", "setNames",
+           "sigma", "uniroot")
+importFrom("utils", "combn", "packageVersion", "read.delim",
+           "read.table", "write.table")

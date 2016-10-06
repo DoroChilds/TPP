@@ -1,6 +1,5 @@
 paramsSigmoid <- function(model, xRange, y){
-  ## Compute melting curve and fit parameters for sigmoidal model.
-  
+  ## Compute melting curve and fit parameters for sigmoidal model
   ## 1) Obtain parameter 'a':
   a <- coef(model)[["a"]]
   ## 2) Obtain parameter 'b':

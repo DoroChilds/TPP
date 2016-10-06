@@ -1,7 +1,6 @@
 plotNormCurves <- function(modelList, xMat, fcMat, r2Vec, nNormP, plotTheme){
   ## Plot QC plot to visualize curve fit of normalization curves to fold change
   ## medians.
-
   message("Creating QC plots to illustrate median curve fits.")
   grNames <- names(modelList)
   yMax <- 1.25
@@ -42,12 +41,12 @@ plotNormCurves <- function(modelList, xMat, fcMat, r2Vec, nNormP, plotTheme){
   p <- p + ggtitle(bquote(atop("Normalization curves", atop(.(subtitle)))))
   p <- p + xlab(paste('Temperature [\U00B0', 'C]', sep='')) + 
     ylab("Median fold change")
-  p <- p + geom_line(data=plotDF_curves, 
+  p <- p + geom_line(data=plotDF_curves, na.rm = TRUE,
                      aes_string(x="Temperature", y="FoldChange", 
                                 colour="condition"), size=1 )
-  p <- p + geom_point(data=plotDF_points, 
+  p <- p + geom_point(data=plotDF_points, na.rm = TRUE, size = 4,
                       aes_string(x="Temperature", y="FoldChange", 
-                                 colour="condition"), na.rm=TRUE, size=4)
+                                 colour="condition"))
   p <- p + geom_text(data=plotDF_anno, 
                      aes_string(x="xPos", y="yPos", label="lab"))
   p <- p + facet_wrap(facets=~condition)

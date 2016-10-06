@@ -2,10 +2,9 @@ plotMeltingCurve <- function(modelList, listUpper=NULL, listLower=NULL,
                              xMat, fcMat, curvePars, protID, 
                              filename, plotTheme, expConditions, expComps, 
                              addLegend, useCI){
-  ## Plot melting curves (one plot per protein).
   
-  # Retrieving options via getOptions doesn't work with parallel execution
-  # therefore options are passed as variables.
+  # retrieving options via getOptions doesn't work with parallel execution
+  # therefore options are passed as variables
   
   ## Produce a ggplot to vizualise fitted melting curves and their parameters.
   if(all(is.na(fcMat))){
@@ -120,20 +119,20 @@ plotMeltingCurve <- function(modelList, listUpper=NULL, listLower=NULL,
         scale_fill_manual(values=plotCols)
     }
     
-    p <- p + geom_line(data=plotData1, size=1,
+    p <- p + geom_line(data=plotData1, size=1, na.rm = TRUE,
                        aes_string(x="Temperature", y="FoldChange", 
                                   colour="Group", linetype="Group"))
 
     
-    p <- p + geom_point(data=plotData2, na.rm=TRUE,
+    p <- p + geom_point(data=plotData2, na.rm = TRUE,
                         aes_string(x="Temperature", y="FoldChange", 
                                    colour="Group"))
-    p <- p + geom_point(data=plotData3, shape=4, size=5, 
-                        show_guide=FALSE, na.rm=TRUE,
-                        aes_string(x="xMP", y="yMP", colour="Group"))
+    p <- p + geom_point(data=plotData3, shape = 4, size = 5, 
+                        show.legend = FALSE, na.rm = TRUE,
+                        aes_string(x = "xMP", y = "yMP", colour = "Group"))
     
-    p <- addTableToPlot(plotObj=p, tableDF=tableDF, meltVar="condition", 
-                        clrs=plotCols)
+    p <- addTableToPlot(plotObj = p, tableDF = tableDF, meltVar = "condition", 
+                        clrs = plotCols)
    
     # print(p)
      
@@ -145,8 +144,6 @@ plotMeltingCurve <- function(modelList, listUpper=NULL, listLower=NULL,
 }
 
 plotDRCurve <- function(protID, fcDF, parDF, plotDir, allExp, addLegend, plotCols, verbose){
-  ## Plot dose-response curves (one plot per protein).
-  
   if (verbose) {
     message("Creating plot for protein ", protID)
   }
@@ -190,9 +187,9 @@ plotDRCurve <- function(protID, fcDF, parDF, plotDir, allExp, addLegend, plotCol
     p <- p + theme(legend.position="none")      
   }
   p <- p + xlab("cpd. conc. (log M)") + ylab("normalized apparent stability" )
-  p <- p + geom_point(data=fcDF, na.rm=TRUE, size=4,
+  p <- p + geom_point(data=fcDF, na.rm = TRUE, size=4,
                       mapping=aes(x=concentration, y=foldChange, colour=experiment))
-  p <- p + geom_line(data=drCurves, mapping=aes(x=x, y=y, colour=experiment))
+  p <- p + geom_line(data=drCurves, na.rm = TRUE, mapping=aes(x=x, y=y, colour=experiment))
   p <- addTableToPlot(plotObj=p, tableDF=plotTable, meltVar = "condition", clrs=plotCols)  
   
   fName <- paste("drCurve_", gsub("([^[:alnum:]])", "_", protID),".pdf", sep="")

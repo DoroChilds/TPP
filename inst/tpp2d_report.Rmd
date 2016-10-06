@@ -1,0 +1,93 @@
+---
+title: "2D-TTP analysis report"
+output: pdf_document
+---
+
+
+This 2D-TPP analysis was executed on `r format(Sys.time(), "%a %b %d %X %Y")` on machine `r Sys.info()["nodename"]` with the following parameters:
+
+```{r functions, warning=FALSE, echo=FALSE, message=FALSE, results='asis'}
+str_break <- function(x, width = 80L) {
+   n <- nchar(x)
+   if (n <= width) {
+      return(x)
+   }
+   n1 <- seq(1L, n, by = width)
+   n2 <- seq(width, n, by = width)
+   if (n %% width != 0) {
+      n2 = c(n2, n)
+   }
+   
+   substring(x, n1, n2)
+}
+```
+
+## Analyzed experiments
+```{r configTable, echo=FALSE}
+
+if ("Path" %in% colnames(configTable)){
+  tab1 <- configTable %>%
+  select(Compound, Experiment, Temperature, Path)
+  kable(tab1)
+}else {
+    tab1 <- configTable %>%
+  select(Compound, Experiment, Temperature)
+  kable(tab1)
+}
+
+
+tab2 <- melt(extractConc(configTable))
+# find respective reference columns
+tab2$ref <- sapply(rownames(tab2), function(rn){
+  ref <- unique(configTable$RefCol[which(configTable[[rn]]!="-")])
+  return(ref)
+})
+colnames(tab2) <- c("Concentration [uM]", "Reference label")
+kable(tab2, row.names=TRUE)
+
+```
+
+## Configuration file
+```{r configFile, echo=FALSE}
+print(configFile)
+```
+
+## User defined settings
+```{r settings, echo=FALSE}
+if (is.null(fcStr)){
+  fcStr <- "none"
+}
+if (is.null(fcStrUpdated)){
+  fcStrUpdated <- "none"
+}
+if (is.null(addCol)){
+  addCol <- "none"
+}
+
+
+param <- c("Protein identifier", "Fold change suffix", 
+           "Updated Fold change suffix (after normalization)", "Intensity value suffix", 
+           "Median normalization", "Added columns", "R2 cutoff", "Fold change cutoff",
+           "Slope bounds", "Chosen methods for analysis", "TR reference data set")
+variab <- c(idVar, fcStr, fcStrUpdated, intensityStr, normalize, addCol, r2Cutoff, fcCutoff, 
+            paste(as.character(slopeBounds), collapse=","), paste(methods, sep=" "),  trRef)
+
+tab <- data.frame(param, variab)
+colnames(tab) <- c("Parameter", "Setting")
+kable(tab)
+```
+
+## Applied R version
+```{r Rversion, echo=FALSE}
+rver <- sessionInfo()[["R.version"]][["version.string"]]
+print(rver)
+```
+
+## Applied R packages
+```{r Rpakages, echo=FALSE}
+pnames <- loadedNamespaces()
+pvers <- unlist(lapply(pnames, function(pn) as.character(packageVersion(pn))))
+ptab <- data.frame(pnames, pvers)
+colnames(ptab) <- c("Package", "Version")
+kable(ptab)
+```

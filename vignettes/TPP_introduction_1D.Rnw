@@ -1,6 +1,6 @@
-%\VignetteIndexEntry{TPP_introduction}
-%\VignettePackage{TPP}
-%\VignetteEngine{knitr::knitr}
+% \VignetteEngine{knitr::knitr}
+% \VignetteIndexEntry{TPP_introduction_1D}
+% \VignettePackage{TPP}
 \documentclass[10pt,a4paper,twoside]{article}
 
 \usepackage[utf8]{inputenc}
@@ -8,20 +8,20 @@
 \usepackage{forloop}
 
 %\pagestyle{empty}
-<<style, echo=FALSE, results='asis'>>=
+<<style-knitr, eval=TRUE, echo=FALSE, results='asis'>>=
 BiocStyle::latex()
 @
 
-\bioctitle[TPP]{Introduction to the \Rpackage{TPP} package for analyzing Thermal Proteome Profiling experiments}
-\author{Dorothee Childs\\
+\bioctitle[TPP]{Introduction to the \Rpackage{TPP} package for analyzing Thermal Proteome Profiling data: Temperature range (TR) or concentration compound range (CCR) experiments}
+\author{Dorothee Childs, Nils Kurzawa\\
 European Molecular Biology Laboratory (EMBL),
 \\ Heidelberg, Germany\\
 \texttt{dorothee.childs@embl.de}}
 
-\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2015-10-16)}
+\date{\Rpackage{TPP} version \Sexpr{packageDescription("TPP")$Version} (Last revision 2016-09-28)}
 
 \begin{document}
-<<opts, include=FALSE>>=
+<<opts, include=FALSE, echo=FALSE>>=
 knitr::opts_chunk$set(concordance=TRUE, 
                       eval = TRUE,
                       cache = TRUE,
@@ -34,10 +34,21 @@ knitr::opts_chunk$set(concordance=TRUE,
 \maketitle
 
 \begin{abstract}
-Detecting the binding partners of a drug is one of the biggest challenges in drug research. Thermal Proteome Profiling (TPP) addresses this question by combining the cellular thermal shift assay concept \cite{molina2013} with mass spectrometry based proteome-wide protein quantitation \cite{savitski2014tracking}. Thereby, drug-target interactions can be inferred from changes in the thermal stability of a protein upon drug binding, or upon downstream cellular regulatory events, in an unbiased manner.
+Detecting the binding partners of a drug is one of the biggest challenges in drug research. 
+Thermal Proteome Profiling (TPP) addresses this question by combining the 
+cellular thermal shift assay concept \cite{molina2013} with mass spectrometry 
+based proteome-wide protein quantitation \cite{savitski2014tracking}. Thereby, 
+drug-target interactions can be inferred from changes in the thermal stability 
+of a protein upon drug binding, or upon downstream cellular regulatory events, 
+in an unbiased manner.
 
-The analysis of TPP experiments requires several data analytic and statistical modeling steps \cite{franken2015}. The package \Rpackage{TPP} facilitates this process by providing exectuable workflows that conduct all necessary steps. This vignette explains the use of the package. For details about the statistical methods, please refer to the papers \cite{savitski2014tracking, franken2015}.
-% cite Nature Protocols paper, when available
+The analysis of TPP experiments requires several data analytic and statistical 
+modeling steps \cite{franken2015}. 
+The package \Rpackage{TPP} facilitates this process by providing exectuable 
+workflows that conduct all necessary steps. 
+This vignette explains the use of 
+the package. For details about the statistical methods, please refer to the papers 
+\cite{savitski2014tracking, franken2015}.
 %\footnote{An example workflow that reproduces the results of paper \cite{franken2015} is described in the accompanying Vignette: "TPP analysis workflow: \textit{Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors}".}.
 \end{abstract}
 
@@ -55,6 +66,13 @@ The installed package can be loaded by
 library("TPP")
 @
 
+For the data manipulations in this vignette, we also load the \Rpackage{dplyr}
+and \Rpackage{magrittr} packages:
+<<helperPackages, message = FALSE>>=
+library("dplyr", quietly = TRUE)
+library("magrittr", quietly = TRUE)
+@
+
 \subsection{Special note for Windows users}
 The \Rpackage{TPP} package uses the \Rpackage{openxlsx} package to produce Excel 
 output \cite{openxlsx}. \Rpackage{openxlsx} requires a zip application to be 
@@ -64,7 +82,7 @@ application ist not installed by default, but is available, for example, via
 application, you can still use the 'TPP' package and access its results via the 
 dataframes produced by the main functions. 
 
-\section{TPP-TR and TPP-CCR analysis}
+\subsection{TPP-TR and TPP-CCR analysis}
 The \Rpackage{TPP} package performs two analysis workflows:
 \begin{enumerate}
 \item \textbf{Analysis of temperature range (TR) experiments:} TPP-TR experiments combine the cellular thermal shift assay (CETSA) approach with high-throughput mass spectrometry (MS). They provide protein abundance measurements at increasing temperatures for different treatment conditions. The data analysis comprises cross-experiment normalization, melting curve fitting, and the statistical evaluation of the estimated melting points in order to detect shifts induced by drug binding.
@@ -78,8 +96,8 @@ The function \Rfunction{analyzeTPPTR} executes the whole workflow from data impo
 
 Before you can start your analysis, you need to specify information about your experiments: 
 \begin{itemize}
-  \item The mandatory information comprises a unique experiment name, as well as the isobaric labels and corresponding temperature values for each experiment. 
-  \item Optionally, you can also specify a condition for each experiment (treatment or vehicle), as well as an arbitrary number of comparisons. Comparisons are pairs of experiments whose melting points will be compared in order to detect significant shifts.
+\item The mandatory information comprises a unique experiment name, as well as the isobaric labels and corresponding temperature values for each experiment. 
+\item Optionally, you can also specify a condition for each experiment (treatment or vehicle), as well as an arbitrary number of comparisons. Comparisons are pairs of experiments whose melting points will be compared in order to detect significant shifts.
 \end{itemize}
 
 The package retrieves this information from a configuration table that you need to specify before starting the analysis. This table can either be a data frame that you define in your R session, or a spreadsheet in .xlsx or .csv format. In a similar manner, the measurements themselves can either be provided as a list of data frames, or imported directly from files during runtime.
@@ -90,6 +108,7 @@ It contains an illustrative subset of a larger dataset which was obtained by TPP
 First, we load the data:
 <<load_tr_data>>=
 data("hdacTR_smallExample")
+ls()
 @
 This command loads two objects: 
 \begin{enumerate}
@@ -125,8 +144,7 @@ summary(hdacTR_data)
 @
 They contain between \Sexpr{min(sapply(hdacTR_data, nrow))} and \Sexpr{max(sapply(hdacTR_data, nrow))} proteins each:
 <<dataStatsTP>>=
-data.frame(hdacTR_config[, c("Experiment", "Condition")],
-           "No.of Proteins"=sapply(hdacTR_data, nrow), row.names=NULL)
+data.frame(Proteins = sapply(hdacTR_data, nrow))
 @
 
 Each of the four data frames in \texttt{hdacTR\_data} stores protein measurements in a
@@ -164,8 +182,12 @@ Afterwards, we will produce plots for individual proteins of interest. Note that
 
 We start the workflow by typing
 <<analyzeTR>>=
-TRresults <- analyzeTPPTR(configTable=hdacTR_config, data=hdacTR_data, nCores=2,
-                          resultPath=resultPath, plotCurves=FALSE) 
+TRresults <- analyzeTPPTR(configTable = hdacTR_config, 
+                          methods = "meltcurvefit",
+                          data = hdacTR_data, 
+                          nCores = 2,
+                          resultPath = resultPath, 
+                          plotCurves = FALSE) 
 @
 This performs the melting curve fitting procedure in parallel on a maximum of two CPUs (requirement for package vignettes). Without specifying the \texttt{nCores} argument, fitting is performed by default on the maximum number of CPUs on your device.
 
@@ -219,7 +241,7 @@ properties which can be used for normalization or processing of the package outp
 The function \Rfunction{tpptrImport} imports the data and converts it into 
 \Rclass{ExpressionSets}:
 <<trImport, message=TRUE>>=
-trData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
+trData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 @
 The resulting object \Robject{trData} is a list of \Rclass{ExpressionSet}s for 
 each experimental condition and replicate. Going back to the example data shown 
@@ -254,25 +276,32 @@ By default, \Rfunction{tpptrNormalize} applies the filtering criteria in \Rfunct
 Because our example data was produced by \Rpackage{isobarQuant}, we can use the default settings here.
 
 We normalize the imported data as follows:
-<<trNormalization, message=TRUE>>=
+<<trNormalization, message = TRUE>>=
 normResults <- tpptrNormalize(data=trData)
 trDataNormalized <- normResults[["normData"]]
 @
 
 \subsubsection{Melting curve fitting}
 Next we fit and plot melting curves for the detected HDAC targets.
-We first select the corresponding rows from the imported data:
+We first select the corresponding rows from the imported data. The data
+are stored as \texttt{expressionSet} objects from the \Rpackage{Biobase} 
+package. It provides a range of functions to access and manipulate texttt{expressionSet} objects. Examples are the functions \texttt{featureNames}, \texttt{pData}, or 
+\texttt{featureData}. In order to use them outside of the TPP package 
+namespace, we first import the \Rpackage{Biobase} package:
 <<trSelectHDACs>>=
-trDataHDAC <- lapply(trDataNormalized, function(d) d[featureNames(d) %in% hdac_targets,])
+library(Biobase, quietly = TRUE)
+trDataHDAC <- lapply(trDataNormalized, function(d) 
+  d[featureNames(d) %in% hdac_targets,])
 @
 
 We fit melting curves for these proteins using the function \Rfunction{tpptrCurveFit}:
-<<trFitHDAC, message=TRUE>>=
-trDataHDAC <- tpptrCurveFit(data=trDataHDAC, resultPath=resultPath, nCores=1)
+<<trFitHDAC, message = TRUE>>=
+trDataHDAC <- tpptrCurveFit(data = trDataHDAC, resultPath = resultPath, nCores = 1)
 @
+
 The melting curve parameters are now stored within the \texttt{featureData} of the \Rclass{ExpressionSet}s. For example, the melting curves estimated for the Vehicle group have the following parameters:
 <<fittedMeltPars>>=
-pData(featureData(trDataHDAC[["Vehicle_1"]]))[,1:5]
+pData(Biobase::featureData(trDataHDAC[["Vehicle_1"]]))[,1:5]
 @
 
 The melting curve plots were stored in subdirectory \texttt{Melting\_Curves} in \texttt{resultPath}. You can browse this directory and inspect the melting curves and their parameters. In the following, you can see the plots that were placed in this directory for the \Sexpr{length(hdac_targets)} detected targets: 
@@ -298,31 +327,52 @@ load(file.path(resultPath, "dataObj", "fittedData.RData"), verbose=TRUE)
 @
 This loaded the object \Robject{trDataFitted}, which is a list of \Rclass{ExpressionSet}s in which the melting curve parameters have already been stored in the \texttt{featureData} by \Rfunction{tpptrCurveFit}.
 
-Now we start the curve parameter evaluation, trying a new bin width of 200 instead of the default value 300:
-<<trPvals, message=TRUE>>=
-bNew <- 200
-print(sapply(trDataFitted, annotation))
-TRresultsBNew <- tpptrAnalyzeMeltingCurves(data=trDataFitted, 
-                                           pValParams=list(binWidth=bNew,
-                                                           minR2=0.8, 
-                                                           maxPlateau=0.3))
+Now we start the curve parameter evaluation, this time applying less rigorous 
+filters on the quality of the fitted curves (defined by the minimum $R^2$), and
+their long-term melting behaviour (constrained by the maximum plateu paramter):
+<<trPvals, message=TRUE, cache=TRUE>>=
+minR2New <- 0.5 # instead of 0.8
+maxPlateauNew <- 0.7 # instead of 0.3
+newFilters <- list(minR2 = minR2New, 
+                   maxPlateau = maxPlateauNew)
+TRresultsNew <- tpptrAnalyzeMeltingCurves(data = trDataFitted, 
+                                          pValFilter = newFilters)
 @
 
-We can then compare the outcome to the results that we previously obtained with a bin width of 300:
+We can then compare the outcome to the results that we previously obtained with 
+\texttt{minR2 = 0.8} and \texttt{maxPlateau = 0.3}:
 <<compBWidth>>=
-tr_targetsBNew <- subset(TRresultsBNew, fulfills_all_4_requirements)$Protein_ID
-onlyB300 <- setdiff(tr_targets, tr_targetsBNew)
-onlyBNew <- setdiff(tr_targetsBNew, tr_targets)
-print(onlyB300)
-print(onlyBNew)
+tr_targetsNew <- subset(TRresultsNew, fulfills_all_4_requirements)$Protein_ID
+targetsGained <- setdiff(tr_targetsNew, tr_targets)
+targetsLost <- setdiff(tr_targets, tr_targetsNew)
+print(targetsGained)
+print(targetsLost)
 @
-%We observe that decreasing the bin width by \Sexpr{300 - bNew} leads to the detection of \Sexpr{length(onlyBNew)} new target protein\Sexpr{ifelse(length(as.character(onlyBNew))==1, "", "s")}, while \Sexpr{length(as.character(onlyB300))} of the previous targets \Sexpr{ifelse(length(as.character(onlyB300))==1, "is", "are")} now omitted.
+We observe that relaxing the filters before p-value calculation leads to the 
+detection of \Sexpr{length(targetsGained)} new target 
+protein\Sexpr{ifelse(length(as.character(targetsGained))==1, "", "s")}, 
+while \Sexpr{length(as.character(targetsLost))} of the previous targets 
+\Sexpr{ifelse(length(as.character(targetsLost))==1, "is", "are")} now omitted.
+This illustrates the trade-off we are facing when defining the filters: on the 
+one hand, relaxing the filters enables more proteins, and hence, more true 
+targets, to be considered for testing. On the other hand, inlcuding poor fits 
+increases the variability in the data and reduces the power during hypothesis 
+testing. This observation motivated the implementation of an alternative 
+spline-based approach for fitting and testing ("non-parametric analysis of 
+response curves", (NPARC)), which was newly introduced in 
+version 3.0.0 of the \texttt{TPP} package. For more information, please check 
+the vignette \texttt{NPARC\_analysis\_of\_TPP\_TR\_data}:
+<<nparcVignette, eval = FALSE>>=
+browseVignettes("TPP")
+@
 
 \subsubsection{Output table}
 Finally, we export the new results to an Excel spreadsheet: 
-%Because this process can be time consuming for a large dataset, we only export the detected potential targets:
-<<trExport, message=TRUE>>=
-tppExport(tab=TRresultsBNew, file=file.path(resultPath, paste("targets_binWidth",bNew,".xlsx",sep="")))
+Because this process can be time consuming for a large dataset, we only export 
+the detected potential targets:
+<<trExport, message=TRUE, eval=FALSE>>=
+tppExport(tab = TRresultsNew, 
+          file = file.path(resultPath, "targets_newFilters.xlsx"))
 @
 
 \subsection{Analyzing data not produced by the accompanying \Rpackage{isobarQuant} package}\label{sec:TR_with_nonIsobQuant_Data}
@@ -353,9 +403,12 @@ This command loads two objects: the configuration tables for two replicates (\te
 
 \subsection{Starting the whole workflow by \Rfunction{analyzeTPPCCR}}
 We start the workflow for replicate 1 by typing
-<<analyzeCCR>>=
-CCRresults <- analyzeTPPCCR(configTable=hdacCCR_config[1,], data=hdacCCR_data[[1]],
-                            resultPath=resultPath, plotCurves=FALSE, nCores=1) 
+<<analyzeCCR, cache=TRUE>>=
+CCRresults <- analyzeTPPCCR(configTable = hdacCCR_config[1,], 
+                            data = hdacCCR_data[[1]],
+                            resultPath = resultPath, 
+                            plotCurves = FALSE,
+                            nCores = 2) 
 @
 
 The following proteins passed the criteria of displaying a clear response to the treatment, and enabling curve fitting with $R^2 > 0.8$:
@@ -366,7 +419,7 @@ print(ccr_targets)
 
 \Sexpr{length(grep("HDAC", ccr_targets))} of the selected proteins belong to the HDAC family. Because Panobinostat is known to act as an HDAC inhibitor, we select them for further investigation. 
 <<ccrHDACTargets>>=
-hdac_targets <- grep("HDAC", ccr_targets, value=TRUE)
+hdac_targets <- grep("HDAC", ccr_targets, value = TRUE)
 print(hdac_targets)
 @
 
@@ -377,20 +430,20 @@ The following section explains how to invoke the individual steps of the workflo
 The function \Rfunction{tppccrImport} imports the data and converts it into an 
 \Rclass{ExpressionSet}:
 <<ccrImport, message=TRUE>>=
-ccrData <- tppccrImport(configTable=hdacCCR_config[1,], data=hdacCCR_data[[1]])
+ccrData <- tppccrImport(configTable = hdacCCR_config[1,], data = hdacCCR_data[[1]])
 @
 
 \subsubsection{Data normalization}
 Currently, the \Rpackage{TPP} package offers normalization by fold change medians 
 for TPP-CCR experiments. We normalize the imported data by
 <<ccrNormalization, message=TRUE>>=
-ccrDataNormalized <- tppccrNormalize(data=ccrData)
+ccrDataNormalized <- tppccrNormalize(data = ccrData)
 @
 
 \subsubsection{Data transformation}
 We next have to specify the type of response for each protein, and transform the data accordingly:
 <<ccrTransform, message=TRUE>>=
-ccrDataTransformed <- tppccrTransform(data=ccrDataNormalized)[[1]]
+ccrDataTransformed <- tppccrTransform(data = ccrDataNormalized)[[1]]
 @
 
 \subsubsection{Dose response curve fitting}
@@ -401,9 +454,9 @@ ccrDataHDAC <- ccrDataTransformed[match(hdac_targets, featureNames(ccrDataTransf
 @
 
 We fit dose response curves for these proteins using the function \Rfunction{tppccrCurveFit}:
-<<ccrFitHDAC, message=TRUE>>=
-ccrDataFittedHDAC <- tppccrCurveFit(data=list(Panobinostat_1=ccrDataHDAC), nCores=1)
-tppccrPlotCurves(ccrDataFittedHDAC, resultPath=resultPath, nCores=1)
+<<ccrFitHDAC, message=TRUE, cache=TRUE>>=
+ccrDataFittedHDAC <- tppccrCurveFit(data=list(Panobinostat_1 = ccrDataHDAC), nCores = 1)
+tppccrPlotCurves(ccrDataFittedHDAC, resultPath = resultPath, nCores = 1)
 @
 This function produces a table that contains the dose response curve parameters and additional information about each protein:
 <<fittedDRPars>>=
@@ -426,6 +479,7 @@ The dose response curve plots were stored in subdirectory \texttt{DoseResponse\_
 % \begin{itemize}
 % \item \texttt{normalized\_to\_lowest\_conc}: Fold changes normalized to the values at the lowest concentration. This ensures that the transformed values always range from $0$ to $1$. If the value at the lowest concentration is $0$, a small constant ($1e-15$) is added to prevent division by zero.
 % \end{itemize}
+\clearpage
 
 \bibliography{TPP_references}
 \end{document}

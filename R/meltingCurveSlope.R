@@ -1,6 +1,5 @@
 meltingCurveSlope <- function(model, xInfl){
-  ## Compute melting point slope of sigmoidal model.
-  
+  ## Compute melting point slope of sigmoidal model
   if (class(model)!="try-error" & !is.na(xInfl)){
     ## Define expressions for first derivative of sigmoid function:
     strDeriv1  <- fctSigmoidTR(deriv=1)

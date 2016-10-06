@@ -30,13 +30,17 @@ means of progress report.}
 }
 \value{
 A list of expressionSet objects storing fold changes,
-as well as row and column metadata. In each expressionSet \code{S}, the fold changes
+as well as row and column metadata. In each expressionSet \code{S}, the fold 
+changes
   can be accessed by \code{exprs(S)}. Protein expNames can be accessed by 
-  \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
-  returned by \code{S$label} and \code{S$concentration}. Paths to the produced plots are stored in code{featureData(S)$plot}.
+  \code{featureNames(S)}. Isobaric labels and the corresponding 
+  concentrations are 
+  returned by \code{S$label} and \code{S$concentration}. Paths to the 
+  produced plots are stored in code{featureData(S)$plot}.
 }
 \description{
-\code{tppccrPlotCurves} plots the logistic dose response curves, as well as the underlying fold
+\code{tppccrPlotCurves} plots the logistic dose response curves, 
+as well as the underlying fold
   change measurements for each TPP-CCR experiment in a study.
 }
 \details{
@@ -72,8 +76,8 @@ tppccrData <- tppccrImport(configTable=hdacCCR_config,
 tppccrNorm <- tppccrNormalize(data=tppccrData)
 tppccrTransformed <- tppccrTransform(data=tppccrNorm)
 tppccrFitted <- tppccrCurveFit(data=tppccrTransformed, nCores=1)
-protein1_to_5 <- sapply(tppccrFitted, function(d) d[1:5,])
-tppccrPlotted <- tppccrPlotCurves(data=protein1_to_5, resultPath=getwd(), nCores=1)
+hdacSubset <- sapply(tppccrFitted, function(d)d[grepl("HDAC", rownames(d)),])
+tppccrPlotted <- tppccrPlotCurves(hdacSubset, resultPath=getwd(), nCores = 1)
 
 }
 \seealso{

@@ -5,7 +5,7 @@
 #' data(hdacCCR_smallExample)
 #' tppccrData <- tppccrImport(configTable=hdacCCR_config, data = hdacCCR_data)
 #' tppccrNorm <- tppccrNormalize(data=tppccrData)
-#' head(exprs(tppccrNorm[[1]]))
+#' head(Biobase::exprs(tppccrNorm[[1]]))
 #' 
 #' @return List of expressionSet objects storing the normalized fold changes, as well as 
 #'   row and column metadata. In each expressionSet \code{S}, the fold changes

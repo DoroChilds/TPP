@@ -1,8 +1,4 @@
 pValFct_addMPdiff_and_MinSlope_Columns <- function(expNameV, expNameT, parDF){
-  ## Helper function for p-value calculation:
-  ## Compute melting point differences and minimal slopes, and attach to data 
-  ## frame with fitted melting curve parameters.
-  
   mpV <- parDF[, paste("meltPoint", expNameV, sep="_")]
   mpT <- parDF[, paste("meltPoint", expNameT, sep="_")]
   slV <- parDF[, paste("slope", expNameV, sep="_")]
@@ -24,7 +20,6 @@ pValFct_addMPdiff_and_MinSlope_Columns <- function(expNameV, expNameT, parDF){
 computeMinimalSlopes <- function(xV, xT){
   ## Determine the minimum of the melting curve slopes estimated for Vehicle and 
   ## Treatment group for each protein.
-  
   minSlopes <- pmin(xV, xT)
   return(minSlopes)
 }
@@ -32,7 +27,6 @@ computeMinimalSlopes <- function(xV, xT){
 computeMPdiffs <- function(xV, xT){
   ## Determine the difference in melting points estimated for Vehicle and 
   ## Treatment group for each protein.
-  
   mpDiffs <- xT - xV
   return(mpDiffs)
 }

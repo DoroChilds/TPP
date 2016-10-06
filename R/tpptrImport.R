@@ -53,6 +53,10 @@
 #' @param qualColName character string indicating which column can be used for 
 #'   additional quality criteria when deciding between different non-unique 
 #'   protein identifiers.
+#' @param outputFormat output format. Either "eSetList" to obtain output in the 
+#'  same way as previously (will be deprecated soon), or "tidy" to obtain a 
+#   tidy table of fold changes (the recommended setting).
+
 #' @return A list of ExpressionSets storing the imported data for experiment.
 #'   Each ExpressionSet contains the measured fold changes, as well as row and
 #'   column metadata. In each ExpressionSet \code{S}, the fold changes can be
@@ -65,11 +69,17 @@
 
 tpptrImport <- function(configTable, data=NULL, idVar="gene_name", 
                         fcStr="rel_fc_", naStrs=c("NA", "n/d", "NaN"), 
-                        qualColName="qupm"){
-  
-  eSetList <- importTR_main(configTable=configTable, data=data, idVar=idVar, 
-                            fcStr=fcStr, naStrs=naStrs, qualColName=qualColName,
-                            type="TR")
+                        qualColName="qupm", outputFormat = "eSetList"){
+  if (outputFormat == "eSetList"){
+    # warning("The outputFormat 'eSetList' is deprecated and will be removed soon.\n  Use outputFormat='tidy' instead.")
+    out <- importTR_main(configTable=configTable, data=data, idVar=idVar, 
+                              fcStr=fcStr, naStrs=naStrs, qualColName=qualColName,
+                              type="TR")
     
-  return(eSetList)
+  } else if (outputFormat == "tidy"){
+    out <- importTR_tidy(configTable = configTable, data = data, idVar = idVar, 
+                         fcStr = fcStr, naStrs = naStrs, qualColName = qualColName,
+                         type = "TR")
+  }
+  return(out)
 }

@@ -1,7 +1,4 @@
 createComparisonTable <- function(infoTable){
-  ## Create a table that summarizes the experiment-wise comparisons
-  ## specified by the user.
-  
   compRows <- grepl("comparison", rownames(infoTable), ignore.case=TRUE)
   
   if (any(compRows)){

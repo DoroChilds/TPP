@@ -1,8 +1,5 @@
 qcPlotFct_VennWrapper <- function(resultTab, expNames, grConditions, compDF, 
                                   minR2){  
-  ## Invoke Venn diagram computation to compare protein numbers per experiment,
-  ## as well as their overlap.
-  
   ## --------------------------------------------------------------------------
   ## I) Create a Venn diagram of protein numbers in all experiments
   ## --------------------------------------------------------------------------
@@ -36,8 +33,6 @@ qcPlotFct_VennWrapper <- function(resultTab, expNames, grConditions, compDF,
 
 qcPlotFct_CreateVenn <- function(dataTab, grNames, compDF, mainTxt, method, 
                                  minR2){
-  ## Create Venn diagram.
-  
   idList     <- list()
   filterList <- list()
   
@@ -107,8 +102,6 @@ qcPlotFct_CreateVenn <- function(dataTab, grNames, compDF, mainTxt, method,
 }
 
 qcPlotFct_invokeBottleplots <- function(resultTable, compDF){
-  ## Invoke QC plots to compare melting point differences to minimal slopes
-  ## for each fitted melting curve.
   alpha = 0.05 # significance level
   
   ## Retrieve experiment names and annotation:
@@ -147,7 +140,7 @@ qcPlotFct_invokeBottleplots <- function(resultTable, compDF){
 
 qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHit, 
                                  expName1, expName2, addHist, yLimVec){ 
-  ## Generate QC plots to compare melting point differences to minimal slopes.
+  ## Create 'bottle plot' and histogram of minimal slopes
   
   ## Create dataframe to be passed to ggplot function:
   plotDf <- data.frame(mpDiffs=mpDiffs, minSlopes=minSlopes)
@@ -205,7 +198,7 @@ qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHi
     return(scatterPlot)
   } else{
     histPlot <- ggplot()
-    histPlot <- histPlot + geom_histogram(data=plotDf, 
+    histPlot <- histPlot + geom_histogram(data=plotDf, na.rm = TRUE,
                                           aes_string(x="minSlopes"), 
                                           binwidth=abs(diff(yLimVec))/100) 
     histPlot <- histPlot + coord_flip()
@@ -217,8 +210,7 @@ qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHi
     histPlot <- histPlot + xlab(NULL) + ylab("Count\n\n\n")
     
     ## Save plot:
-    combinedPlot <- suppressWarnings(arrangeGrob(scatterPlot, histPlot, ncol=2, 
-                                                 widths=c(3,1)))
+    combinedPlot <- arrangeGrob(scatterPlot, histPlot, ncol=2, widths=c(3,1))
     titleObj <- textGrob(paste(expName1, "vs.", expName2), 
                          gp=gpar(fontsize=20,fontface='bold'), just="top")
     
@@ -227,8 +219,6 @@ qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHi
 }
 
 qcPlotFctVennTable <- function(plotIDs, allIDs){
-  ## Create table to be added below the Venn diagram.
-  
   tableDF = data.frame()
   for(name in names(allIDs)){
     lmntsIn <- length(plotIDs[[name]])
@@ -243,8 +233,6 @@ qcPlotFctVennTable <- function(plotIDs, allIDs){
 
 qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames, 
                                     minR2, expConds){
-  ## Generate QC plots with melting point histograms.
-  
   if (length(expNames) > 1){
     combis <- combn(expNames,2)
     numCompares <- ncol(combis)  
@@ -294,7 +282,8 @@ qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames,
       tmpDF = data.frame('diff' = as.numeric(mpDiff), 'comparison'= compName)
       
       p = ggplot(data = tmpDF)
-      p = p + stat_bin(aes(x=diff), colour='black', alpha=0.3, geom="bar", binwidth=0.2)
+      p = p + stat_bin(aes(x = diff), na.rm = TRUE, colour = 'black', 
+                       alpha = 0.3, geom = "bar", binwidth = 0.2)
       xLabels <- seq(-10,10,by = 5)
       p = p + scale_x_continuous(limits=c(-15,15), breaks=xLabels, labels=xLabels)
       p = p + theme(legend.position="bottom")
@@ -314,13 +303,14 @@ qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames,
     }
     
     p = ggplot(data = diffDF)
-    p = p + stat_bin(aes(x=diff, colour=comparison, fill=comparison), 
-                     alpha = 0.05, geom="area", binwidth=0.2, 
-                     position=position_dodge(width = 0))
-    p = p + stat_bin(aes(x=diff, colour=comparison), 
-                     geom="line", binwidth=0.2, position=position_dodge(width = 0))
+    p = p + stat_bin(aes(x = diff, colour = comparison, fill = comparison), 
+                     na.rm = TRUE, alpha = 0.05, geom = "area", binwidth = 0.2, 
+                     position = position_dodge(width = 0))
+    p = p + stat_bin(aes(x = diff, colour = comparison), 
+                     na.rm = TRUE, geom = "line", binwidth = 0.2, 
+                     position = position_dodge(width = 0))
     xLabels <- seq(-10,10,by = 5)
-    p = p + scale_x_continuous(limits=c(-15,15), breaks=xLabels, labels=xLabels)
+    p = p + scale_x_continuous(limits=c(-15,15), breaks = xLabels, labels = xLabels)
     p = p + theme(legend.position="bottom")
     p = p + guides(colour = guide_legend(nrow = max(1, floor(numCompares/2) ))) 
     p = p + xlab('melting point difference')

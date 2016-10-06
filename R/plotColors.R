@@ -1,7 +1,7 @@
 plotColors <- function(expConditions, comparisonNums){
-  ## Create matching color pairs for vehicle and treatment groups.
-  
+  ## Create matching color pairs for vehicle and treatment groups
   groupColors <- FALSE
+  
   if (all(!is.na(expConditions))){
     condLevels <- sort(unique(expConditions))
     compLevels  <- sort(unique(comparisonNums))

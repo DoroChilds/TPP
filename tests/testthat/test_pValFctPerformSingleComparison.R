@@ -8,7 +8,7 @@ test_that("Invoke p-value computation for a single comparison (should work)", {
   i <- !refFilteredOut
   newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)],
                                          mpdiff=refMpDiff[which(i)], 
-                                         method="maxQuant", 
+                                         method="robustZ", 
                                          control=list(binWidth=300),
                                          comparisonName = "T_vs_V")
   expect_equal(newP, refP[i], label = "Computed p-values")
@@ -18,7 +18,7 @@ test_that("No valid melting point difference", {
   i <- !refFilteredOut
   newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
                                          mpdiff=rep(NA, length(refMinSl)), 
-                                         method="maxQuant", 
+                                         method="robustZ", 
                                          control=list(binWidth=300),
                                          comparisonName = "T_vs_V")
   expect_equal(newP, rep(NA_real_, length(refMinSl)), label = "Computed p-values")
@@ -34,13 +34,12 @@ test_that("No valid melting point difference", {
 #                                              comparisonName = "T_vs_V"))
 #   expect_error(newP)
 # })
-# Removed unit test that causes R CMD check to crash  since the latest update of package 'testthat'.
 
 test_that("Given binWidth too big", {
   i <- !refFilteredOut
   expect_warning(pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
                                                 mpdiff=refMpDiff[which(i)], 
-                                                method="maxQuant", 
+                                                method="robustZ", 
                                                 control=list(binWidth=3500),
                                                 comparisonName = "T_vs_V"))
 })

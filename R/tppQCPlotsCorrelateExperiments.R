@@ -74,7 +74,7 @@ No plot produced."
           dfPlot <- merge(df1, df2)
           xy = geom_abline(intercept=0, slope=1, linetype=1, colour="red")
           p <- ggplot(dfPlot, aes_string(x="fc1", y="fc2"))
-          p <- p + geom_point(alpha=0.2, na.rm=TRUE) + xy
+          p <- p + geom_point(alpha=0.2, na.rm = TRUE) + xy
           p <- p + facet_wrap("temperature")
         }
         p <- p + scale_x_continuous(limits = c(0, 1.5)) + 

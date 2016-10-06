@@ -1,7 +1,7 @@
 pValFctPerformSingleComparison <- function(minsl, mpdiff, method, control, 
                                            comparisonName){
   if (sum(!is.na(mpdiff)) > 0){
-    if (method=="maxQuant"){
+    if (method=="robustZ"){
       ## Compute p-values as described in the MaxQuant paper.
       binWidth = control$binWidth
       nMinSl <- sum(!is.na(minsl))
@@ -17,7 +17,7 @@ pValFctPerformSingleComparison <- function(minsl, mpdiff, method, control,
       }
       
     } else {
-      stop("Currently, we can only compute p-values with method 'maxQuant'.")
+      stop("Currently, we can only compute p-values with method 'robustZ'.")
     }
   } else {
     pVals <- rep(NA_real_, length(mpdiff))

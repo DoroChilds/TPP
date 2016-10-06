@@ -30,10 +30,10 @@ importFct_df_to_eSet <- function(dataframe=NULL, labels,
   rownames(dataframe) <- dataframe[,idVar]
   
   ## Retrieve fold changes (FC) and sort them by temperature/ concentration:
-  fcRaw <- importFct_extractFCs(datDF=dataframe, colsFC=fcCols)
-#     fcRefNorm <- importFct_normalizeToReference(foldChanges=fcRaw, 
-#                                                 refCol=which.min(labelValues))
-
+  fcRaw <- importFct_extractFCs(datDF=dataframe, colsFC=fcCols, type=type)
+  #     fcRefNorm <- importFct_normalizeToReference(foldChanges=fcRaw, 
+  #                                                 refCol=which.min(labelValues))
+  
   ## Retrieve protein annotation columns:  
   colsAnnot <- setdiff(colnames(dataframe), colnames(fcRaw))
   datAnnot <- subset(dataframe, select=colsAnnot)
@@ -80,12 +80,10 @@ importFct_df_to_eSet <- function(dataframe=NULL, labels,
   return(fcSet)
 }
 
-importFct_extractFCs <- function(datDF, colsFC){
-  ## Extract fold change columns from the imported data tables and return them 
-  ## in a matrix.
-  
+importFct_extractFCs <- function(datDF, colsFC, type){
   datFC           <- subset(datDF, select=colsFC)
-  datFCNum        <- colwise(as.numeric)(datFC)
+  datFCChar        <- colwise(as.character)(datFC)
+  datFCNum        <- colwise(as.numeric)(datFCChar)
   fcMat           <- as.matrix(datFCNum)
   rownames(fcMat) <- rownames(datFC)
   if (all(is.na(fcMat))){
@@ -105,7 +103,7 @@ importFct_fcCols <- function(datDF, fcPrefix, labelSuffix){
   if (any(is.na(fcColPos))){
     errormsg <- paste("Could not find column(s) '", 
                       paste(colsFC[is.na(fcColPos)], collapse="', '"), 
-                      "'. Please speficy the correct fold change column prefix and isotope labels.", 
+                      "'. Please specificy the correct fold change column prefix and isotope labels.", 
                       sep="")
     stop(errormsg)
   } else {
@@ -145,7 +143,10 @@ importFct_removeDuplicates = function(inDF, refColName, nonNAColNames, qualColNa
 }
 
 importFct_makeUniqueIDs = function(inDF, idColName, expName){
-  ## Replace missing values in the ID column by a unique character string
+  ## Make sure that a column with the name stored in idVar exists:
+  if (!any(colnames(inDF) == idColName)){
+    stop("idVar Column '", idColName, "' not found in dataset '", expName, "'.")
+  }
   
   idColumn <- as.character(inDF[,idColName])
   countSuffix <- seq(1:length(idColumn[is.na(idColumn)]))
@@ -155,8 +156,6 @@ importFct_makeUniqueIDs = function(inDF, idColName, expName){
 }
 
 importFct_create_pData <- function(labels, labelValues, fcCols, type){
-  ## Create phenodata for the expression sets.
-  
   if (type == "TR"){
     dataTmp <- data.frame("label"=labels, "temperature"=labelValues, 
                           "normCoeff"=NA, stringsAsFactors=FALSE, 
@@ -179,8 +178,6 @@ importFct_create_pData <- function(labels, labelValues, fcCols, type){
 }
 
 importFct_create_fData <- function(dat, type, fcRaw){
-  ## Create feature data for the expression sets.
-  
   if (type == "TR"){
     pars <- meltCurveParamNames(TRUE, TRUE)
     
@@ -202,3 +199,5 @@ importFct_create_fData <- function(dat, type, fcRaw){
   rowInfo <- AnnotatedDataFrame(data=dat, varMetadata=metaTmp)
   return(rowInfo)
 }
+
+

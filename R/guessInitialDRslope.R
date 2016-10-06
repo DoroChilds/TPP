@@ -11,9 +11,11 @@ guessInitialDRslope <- function(dose, response, hill_bds, cpd_effect) {
   for(i in 1:(length(response)-2)) {
     x <- dose[i:(i+2)]
     y <- response[i:(i+2)]
-    fit <- lm(y~x)
-    slope <- coef(fit)[2]
-    slopes <- c(slopes, slope)
+    m = try(fit <- lm(y~x))
+    if(class(m) != "try-error"){
+      slope <- coef(fit)[2]
+      slopes <- c(slopes, slope)
+    }
   }
   
   # extract slope:

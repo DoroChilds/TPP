@@ -5,7 +5,8 @@
 \title{Import TPP-TR datasets for analysis by the \code{\link{TPP}} package.}
 \usage{
 tpptrImport(configTable, data = NULL, idVar = "gene_name",
-  fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN"), qualColName = "qupm")
+  fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN"), qualColName = "qupm",
+  outputFormat = "eSetList")
 }
 \arguments{
 \item{configTable}{either a dataframe or the path to a spreadsheet. In both 
@@ -29,6 +30,9 @@ When reading data from file, this value will be passed on to the argument
 \item{qualColName}{character string indicating which column can be used for 
 additional quality criteria when deciding between different non-unique 
 protein identifiers.}
+
+\item{outputFormat}{output format. Either "eSetList" to obtain output in the 
+same way as previously (will be deprecated soon), or "tidy" to obtain a}
 }
 \value{
 A list of ExpressionSets storing the imported data for experiment.
