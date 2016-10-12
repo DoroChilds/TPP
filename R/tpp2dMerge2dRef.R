@@ -9,9 +9,8 @@
 #' @param trRef character string of a valid system path to a TPP-TR reference 
 #' RData object
 #' @param idVar character string matching the column containing the unique protein 
-#' indentifiers
+#' identifiers
 #' 
-#' @export
 tpp2dMerge2dRef <- function(data.table=NULL, trRef=NULL, idVar="representative"){
   if (!is.null(data.table) && !is.null(trRef)){
     # load trRef

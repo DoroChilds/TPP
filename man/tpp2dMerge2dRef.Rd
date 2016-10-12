@@ -13,7 +13,7 @@ tpp2dMerge2dRef(data.table = NULL, trRef = NULL, idVar = "representative")
 RData object}
 
 \item{idVar}{character string matching the column containing the unique protein 
-indentifiers}
+identifiers}
 }
 \value{
 A data frame with results merged from 2D-TPP and TPP-TR reference

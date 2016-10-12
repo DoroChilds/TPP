@@ -18,7 +18,6 @@
 #' @param qualColName character string indicating which column contain protein 
 #'  identification quality measures 
 #' 
-#' @export
 tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, trRef=NULL, 
                             fcStr=NULL, idVar="representative", qualColName="qupm"){
   message("Creating QC histograms...")  

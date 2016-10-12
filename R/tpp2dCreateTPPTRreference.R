@@ -28,7 +28,6 @@
 #'  identification quality measures 
 #' @param normalize boolean argument stating whether the data should be normalized or not
 #' 
-#' @export
 tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, resultPath=NULL, outputName=NULL, 
                                       createFCboxplots=FALSE, idVar="representative", 
                                       fcStr="rel_fc_protein_", qualColName="qupm", 

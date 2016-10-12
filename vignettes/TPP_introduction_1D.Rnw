@@ -24,7 +24,7 @@ European Molecular Biology Laboratory (EMBL),
 <<opts, include=FALSE, echo=FALSE>>=
 knitr::opts_chunk$set(concordance=TRUE, 
                       eval = TRUE,
-                      cache = TRUE,
+                      cache = FALSE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,

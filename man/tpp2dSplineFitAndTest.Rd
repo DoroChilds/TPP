@@ -41,23 +41,4 @@ None
 Fit splines through TR reference dataset and extrapolates relative 2D-TPP datapoints, 
  then compares spline fits of different treatments with non-treatment with an f-test
 }
-\examples{
-data(panobinostat_2DTPP_smallExample)
-config_tpp2d <- panobinostat_2DTPP_config
-data_tpp2d <- panobinostat_2DTPP_data
-trRef <- file.path(system.file("data", package="TPP"), "HepG2_trRefData.RData")
-data2d <- tpp2dImportData(configTable = config_tpp2d,
- data = data_tpp2d, fcStr = NULL)
-fcData2d <- tpp2dComputeFoldChanges(configTable = config_tpp2d,
-                                    dataTable = data2d,
-                                    intensityStr="sumionarea_protein_")
-normData2d <- tpp2dDoMedianNorm(configTable = config_tpp2d,
-                                dataTable = fcData2d)
-analysisResults <- tpp2dSplineFitAndTest(data_2D = normData2d,
-                                         trRefDataPath = trRef,
-                                         fcStr = "norm_rel_fc_protein_",
-                                         refFcStr = "norm_rel_fc_protein_",
-                                         doPlot = FALSE)
-  
-}
 

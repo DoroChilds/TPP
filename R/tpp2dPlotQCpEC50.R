@@ -13,7 +13,6 @@
 #' @param idVar character string indicating how the column that contains the unique protein 
 #'  identifiers is called
 #' 
-#' @export
 tpp2dPlotQCpEC50 <- function(resultTable=NULL, resultPath=NULL, trRef=NULL, 
                              idVar="representative"){
   message("Creating melting point vs. pEC50 QC plots...")  

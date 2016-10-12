@@ -24,9 +24,4 @@ A TPP-TR reference object
 \description{
 Definition of a TPP-TR reference object
 }
-\examples{
-trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
-tpp2dTRReferenceObject(tppRefDataPath=trRef)
-
-}
 

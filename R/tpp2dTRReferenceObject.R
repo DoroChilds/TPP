@@ -4,9 +4,6 @@
 #'  
 #' @return A TPP-TR reference object
 #' 
-#' @examples 
-#' trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
-#' tpp2dTRReferenceObject(tppRefDataPath=trRef)
 #'
 #' @param tppRefData TPP-TR reference object that can be directly passed to the function
 #' @param tppRefDataPath character string containing a system path to a RData file containing an
@@ -15,7 +12,6 @@
 #' @param qualColName character string indicating which column contain protein 
 #'  identification quality measures
 #' 
-#' @export
 tpp2dTRReferenceObject <- function(tppRefData=NULL, tppRefDataPath=NULL, fcStr="norm_rel_fc_protein_", qualColName="qupm"){
   
   # pre-define variables to prevent NOTE by devtools::check()

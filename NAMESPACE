@@ -33,13 +33,7 @@ export(tpp2dRunTPPCCR)
 export(tpp2dCalcFractAbundance) # specialized function
 export(tpp2dAddAdditionalInfo) # specialized function -> how often stabilized?
 export(tpp2dExport)
-export(tpp2dCreateTPPTRreference)  # initialize objec
-export(tpp2dTRReferenceObject) # define object
-export(tpp2dPlotQCpEC50)
-export(tpp2dPlotQChist)
-export(tpp2dSplineFitAndTest)
 export(tpp2dCreateReport)
-export(tpp2dMerge2dRef) # specialized function -> add reference Tm to 2D output
 export(tpp2dExportPlots)
 import(Biobase, except = combine) # conflict with gridExtra::combine
 import(ggplot2)
