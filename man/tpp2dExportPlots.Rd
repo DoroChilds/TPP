@@ -4,12 +4,12 @@
 \alias{tpp2dExportPlots}
 \title{Export plots for 2D-TPP experiment.}
 \usage{
-tpp2dExportPlots(plotList, outPath, type = "none")
+tpp2dExportPlots(plotList, resultPath, type = "none")
 }
 \arguments{
 \item{plotList}{list of ggplots returned from one of the plotting functions}
 
-\item{outPath}{path for storing results}
+\item{resultPath}{path for storing results}
 
 \item{type}{character string specifying which type of plot is to be exported}
 }

@@ -8,16 +8,16 @@
 #' \code{tpp2dPlotCCRSingleCurves}
 #' 
 #' @param plotList list of ggplots returned from one of the plotting functions 
-#' @param outPath path for storing results 
+#' @param resultPath path for storing results 
 #' @param type character string specifying which type of plot is to be exported
-tpp2dExportPlots <- function(plotList, outPath, type="none"){
+tpp2dExportPlots <- function(plotList, resultPath, type="none"){
   # check whether path does exist
-  # if (file.exists(outPath)){ # new
+  # if (file.exists(resultPath)){ # new
   # define path to store plots
-  plotPath <- file.path(outPath, "plots")
+  plotPath <- file.path(resultPath, "plots")
   if (!file.exists(plotPath)){
     # create plots dir if not existing 
-    dir.create(file.path(outPath, "plots"), recursive = TRUE)
+    dir.create(file.path(resultPath, "plots"), recursive = TRUE)
   }
   # loop over all plots and generate single pdfs
   invisible(lapply(names(plotList), function(pl){
@@ -69,7 +69,7 @@ tpp2dExportPlots <- function(plotList, outPath, type="none"){
     }
   }))
   # }else{ # new
-  #   stop("Please specify a valid argument for 'outPath'!")
+  #   stop("Please specify a valid argument for 'resultPath'!")
   # }
   return(NULL)
 }
