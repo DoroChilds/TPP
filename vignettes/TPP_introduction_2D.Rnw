@@ -26,7 +26,7 @@ European Molecular Biology Laboratory (EMBL),
 <<opts, include=FALSE, echo=FALSE>>=
 knitr::opts_chunk$set(concordance = TRUE, 
                       eval = TRUE,
-                      cache = TRUE,
+                      cache = FALSE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,
@@ -175,7 +175,7 @@ If we haven't computed fold changes from the raw "sumionarea" data, as it is the
 
 <<ttp2dComputeFC2, eval=TRUE>>=
 fcData2d <- tpp2dComputeFoldChanges(configTable = config_tpp2d,
-                                    dataTable = data2d, 
+                                    data = data2d, 
                                     intensityStr="sumionarea_protein_")
 
 @
@@ -190,7 +190,7 @@ We can then normalize the data by performing a median normalization on the fold 
 
 <<ttp2dDoMedianNorm2, eval=TRUE>>=
 normData2d <- tpp2dDoMedianNorm(configTable = config_tpp2d,
-                                dataTable = fcData2d)
+                                data = fcData2d)
 
 head(normData2d)
 # we have to update our fcStr, if we want the normalized columns to be used in the folloeing analysis
@@ -207,7 +207,7 @@ To run the TPP-CCR main function on our 2D-TPP data we now invoke:
 
 <<tpp2dRunTPPCCR2, eval=TRUE, warning=FALSE>>=
 ccr2dResults <- tpp2dRunTPPCCR(configFile = config_ccr, 
-                               dataTable = normData2d, 
+                               data = normData2d, 
                                fcStr = fcStrUpdated, 
                                idVar = "unique_ID")
 @
@@ -216,7 +216,7 @@ Now we can plot the curves for any of the proteins for which at least one CCR cu
 
 <<tpp2dPlotGoodCurves, eval=TRUE, warning=FALSE>>=
 goodCurves <- tpp2dPlotCCRGoodCurves(configTable = config_tpp2d, 
-                                     dataTable = ccr2dResults, 
+                                     data = ccr2dResults, 
                                      idVar = "representative",
                                      fcStr = fcStrUpdated)
 @
@@ -232,7 +232,7 @@ And we can also plot the single curves for each of the proteins with:
 
 <<plotSingleCurves, eval=TRUE, fig.show='hide', fig.height=6, fig.width=7.5 >>=
 singleCurve <- tpp2dPlotCCRSingleCurves(configTable = config_tpp2d, 
-                                        dataTable = ccr2dResults, 
+                                        data = ccr2dResults, 
                                         idVar = "representative",
                                         fcStr = fcStrUpdated)
 singleCurve[["IPI00289601.10"]][["54"]]

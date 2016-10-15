@@ -5,13 +5,13 @@
 \title{Calculate fractional abundance and DMSO ratio of successive sumionareas  
   (usage of function is only reasonable when at least two temperatures are multiplexed!)}
 \usage{
-tpp2dCalcFractAbundance(configTable = NULL, dataTable = NULL,
+tpp2dCalcFractAbundance(configTable = NULL, data = NULL,
   intensityStr = NULL, idVar = NULL)
 }
 \arguments{
 \item{configTable}{data frame that specifies important details of the TPP-CCR experiment.}
 
-\item{dataTable}{data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).}
+\item{data}{data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).}
 
 \item{intensityStr}{character string indicating which columns contain the sumionarea values.}
 
@@ -30,7 +30,7 @@ Calculates fractional abundance and DMSO ratio of successive sumionareas and
   data("panobinostat_2DTPP_smallExample")
   load(system.file("example_data/2D_example_data/fractAbundInData.RData", package="TPP"))
   fracAbund <- tpp2dCalcFractAbundance(configTable = panobinostat_2DTPP_config, 
-                dataTable = fractAbundInData,
+                data = fractAbundInData,
                 intensityStr = "sumionarea_protein_", 
                 idVar = "representative")
  

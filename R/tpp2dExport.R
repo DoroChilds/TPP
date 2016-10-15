@@ -6,7 +6,7 @@
 #' data("panobinostat_2DTPP_smallExample")
 #' load(system.file("example_data/2D_example_data/shortData2d.RData", package="TPP"))
 #' # tpp2dExport(configTable = panobinostat_2DTPP_config, tab=shortData2d, 
-#' #             outPath=getwd(), 
+#' #             resultPath=getwd(), 
 #' #             idVar="representative", fcStr="norm_rel_fc_protein_", 
 #' #             intensityStr="sumionarea_protein_", addCol=NULL)
 #'
@@ -14,7 +14,7 @@
 #' 
 #' @param configTable data frame that specifies important details of the 2D-TPP experiment
 #' @param tab Table with results of the 2D-TPP analysis.
-#' @param outPath path for storing results table
+#' @param resultPath path for storing results table
 #' @param idVar character string indicating how the column that contains the unique protein 
 #'  identifiers is called
 #' @param fcStr character string indicating how columns that contain the actual 
@@ -28,12 +28,12 @@
 #' 
 #' 
 #' @export
-tpp2dExport <- function(configTable=NULL, tab=NULL, outPath=NULL, idVar=NULL, fcStr=NULL, 
+tpp2dExport <- function(configTable=NULL, tab=NULL, resultPath=NULL, idVar=NULL, fcStr=NULL, 
                         intensityStr=NULL, addCol=NULL, normalizedData=FALSE, trRef=NULL){
   if (is.null(fcStr)){
     fcStr <- "rel_fc_protein_"
   }
-  fileName <- file.path(outPath, paste(format(Sys.time(),"%Y-%m-%d"), "results_2D_TPP.xlsx", 
+  fileName <- file.path(resultPath, paste(format(Sys.time(),"%Y-%m-%d"), "results_2D_TPP.xlsx", 
                                 sep="_"))
   message("Writing results to file: ", fileName)
   # Boolean columns: Convert TRUE/FALSE to "Yes"/"No" values
@@ -82,7 +82,7 @@ tpp2dExport <- function(configTable=NULL, tab=NULL, outPath=NULL, idVar=NULL, fc
   tab <- tab[, c(colOrder, restCol)]
   
   ## Generate plot-link columns for each protein
-  tab <- tpp2dGeneratePlotLinkCols(tab, outPath, idVar, trRef)
+  tab <- tpp2dGeneratePlotLinkCols(tab, resultPath, idVar, trRef)
   allCols <- colnames(tab)
   
   # define excel styles

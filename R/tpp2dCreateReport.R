@@ -10,7 +10,7 @@
 #' @param configFile character string containing a valid system path to a file which summarizes 
 #'  the experimental details of the 2D-TPP experiment or respective data frame
 #' @param configTable data frame summarizing the experimental details of the 2D-TPP experiment
-#' @param resultTable output data frame from an 2D-TPP analysis
+#' @param data output data frame from an 2D-TPP analysis
 #' @param idVar unique protein identifier prefix
 #' @param fcStr fold change identifier prefix
 #' @param intensityStr intensity values prefix
@@ -31,13 +31,16 @@
 #'  been performed 
 #' 
 #' @export
-tpp2dCreateReport <- function(resultPath=NULL, configFile=NULL, documentType="html_document",
+tpp2dCreateReport <- function(data = NULL, configFile = NULL,
+                              resultPath=NULL, documentType="html_document",
                               configTable=NULL, normalize=TRUE, methods=c(""),
-                              resultTable=NULL, idVar=NULL, fcStr = "rel_fc_protein",
+                              idVar=NULL, fcStr = "rel_fc_protein",
                               fcStrUpdated = "norm_rel_fc_protein_", 
                               intensityStr=NULL, addCol=NULL,
                               fcTolerance=NA, r2Cutoff=NA, fcCutoff=NA, slopeBounds=c(NA,NA),
                               fTest=FALSE, trRef="none"){
+  
+  resultTable <- data
   
   if(!is.null(resultPath) && file.exists(resultPath)){
     message("Creating report...\n")

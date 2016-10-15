@@ -9,12 +9,12 @@
 #' @examples 
 #'   load(system.file("example_data/2D_example_data/referenceCCRConfig.RData", package="TPP"))
 #'   load(system.file("example_data/2D_example_data/exampleRunCCRInput.RData", package="TPP"))
-#'   CCRresults <- tpp2dRunTPPCCR(configFile=exampleCCRConfig, dataTable=exampleRunCCRInput, 
+#'   CCRresults <- tpp2dRunTPPCCR(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
 #'                                idVar="unique_ID")
 #'   
 #' @param configFile list of dataframes, that specifies important details of the 2D-TPP 
 #'   experiment for each temperature. 
-#' @param dataTable data.frame, that contains the data of the 2D-TPP 
+#' @param data data.frame, that contains the data of the 2D-TPP 
 #'   experiment for each temperature. 
 #' @param nCores numeric value stating how many cores are to be used for computation
 #' @param naStrs character vector indicating missing values in the data table. 
@@ -33,27 +33,27 @@
 #' @param fcTolerance tolerance for the fcCutoff parameter. See details.
 #'   
 #' @export
-tpp2dRunTPPCCR <- function(configFile, dataTable, nCores=1, 
+tpp2dRunTPPCCR <- function(configFile, data, nCores=1, 
                            naStrs=c("NA", "n/d", "NaN", "<NA>"), 
                            fcStr="norm_rel_fc_protein_", 
                            idVar=NULL, nonZeroCols="qupm",
                            r2Cutoff=0.8,  fcCutoff=1.5, slopeBounds=c(1,50),
                            fcTolerance=0.1){
   
-  if (is.null(configFile) || is.null(dataTable)){
-    stop("Please specifiy valid dataframes for the arguments configTable and dataTable!")
+  if (is.null(configFile) || is.null(data)){
+    stop("Please specifiy valid dataframes for the arguments configTable and data!")
   }else if (is.null(idVar) || !is.character(idVar)){
     stop("Please specify a valid character string for idVar!")
-  }else if (!idVar %in% colnames(dataTable)){
+  }else if (!idVar %in% colnames(data)){
     stop("Please specify an idVar character string argument that represents a suffix of one of 
-         the column names of your dataTable!")
-  }else if (length(dataTable[[idVar]])!=length(unique(dataTable[[idVar]]))){
+         the column names of your data!")
+  }else if (length(data[[idVar]])!=length(unique(data[[idVar]]))){
     stop("Please indicate an idVar character string that matches a column with unique identifiers!")
   }else{
     message(paste("Performing TPP-CCR dose response curve fitting and generating result table...", 
                   sep=" "))
     CCRresult <- suppressMessages(analyzeTPPCCR(configTable=configFile, 
-                                                data=as.data.frame(dataTable), nCores=nCores, 
+                                                data=as.data.frame(data), nCores=nCores, 
                                                 resultPath=NULL, plotCurves=FALSE, fcStr=fcStr, 
                                                 naStrs=naStrs, xlsxExport=FALSE,idVar=idVar, 
                                                 nonZeroCols=nonZeroCols, normalize=FALSE, 

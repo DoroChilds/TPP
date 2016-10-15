@@ -4,12 +4,12 @@
 \alias{tpp2dDoMedianNorm}
 \title{Median normalization of protein fold changes of 2D-TPP data}
 \usage{
-tpp2dDoMedianNorm(configTable, dataTable, fcStr = "rel_fc_protein_")
+tpp2dDoMedianNorm(configTable, data, fcStr = "rel_fc_protein_")
 }
 \arguments{
 \item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
 
-\item{dataTable}{data frame that contains the data for the 2D-TPP experiment}
+\item{data}{data frame that contains the data for the 2D-TPP experiment}
 
 \item{fcStr}{character string indicating how columns that will contain the actual 
 fold change values will be called. The suffix \code{fcStr} will be pasted in front of
@@ -27,7 +27,7 @@ Normalizes fold changes retrieved from 2D-TPP experiment by dividing by the medi
   load(system.file("example_data/2D_example_data/referenceFcData.RData", package="TPP"))
   data("panobinostat_2DTPP_smallExample")
   NormData2d <- tpp2dDoMedianNorm(configTable = panobinostat_2DTPP_config, 
-                                    dataTable=headData2dFc,
+                                    data=headData2dFc,
                                     fcStr="rel_fc_protein_")
   
 }

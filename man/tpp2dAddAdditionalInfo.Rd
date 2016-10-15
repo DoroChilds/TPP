@@ -4,16 +4,16 @@
 \alias{tpp2dAddAdditionalInfo}
 \title{Add additional info to 2D-TPP CCR output data}
 \usage{
-tpp2dAddAdditionalInfo(data.table = NULL, idVar = "representative")
+tpp2dAddAdditionalInfo(data, idVar = "representative")
 }
 \arguments{
-\item{data.table}{ouput table returned by the \code{tpp2dRunTPPCCR} function}
+\item{data}{ouput table returned by the \code{tpp2dRunTPPCCR} function}
 
 \item{idVar}{character string indicating which column of the data table contains unique
 protein ids}
 }
 \value{
-A data.frame to which additional data like how often a protein has been (de-)stabilized
+A data frame to which additional data like how often a protein has been (de-)stabilized
  has been attached
 }
 \description{
@@ -22,7 +22,7 @@ Adds additional info to 2D-TPP CCR output data, like counts on how often a
 }
 \examples{
 load(system.file("example_data/2D_example_data/shortCCRresults.RData", package="TPP"))
-shortCCRresults <- tpp2dAddAdditionalInfo(data.table = shortCCRresults, idVar="representative")
+shortCCRresults <- tpp2dAddAdditionalInfo(data = shortCCRresults, idVar="representative")
 
 }
 

@@ -4,13 +4,13 @@
 \alias{tpp2dPlotCCRAllCurves}
 \title{Plot all 2D-TPP CCR curves}
 \usage{
-tpp2dPlotCCRAllCurves(configTable = NULL, dataTable = NULL, idVar = NULL,
+tpp2dPlotCCRAllCurves(configTable = NULL, data = NULL, idVar = NULL,
   fcStr = "rel_fc_protein_", verbose = FALSE)
 }
 \arguments{
 \item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
 
-\item{dataTable}{ouput table returned by the \code{tpp2dRunTPPCCR} function}
+\item{data}{data frame returned by the \code{tpp2dRunTPPCCR} function}
 
 \item{idVar}{character string indicating which data column provides the 
 unique identifiers for each protein.}

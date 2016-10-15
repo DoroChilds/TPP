@@ -8,12 +8,12 @@
 #'   data("panobinostat_2DTPP_smallExample")
 #'   load(system.file("example_data/2D_example_data/fractAbundInData.RData", package="TPP"))
 #'   fracAbund <- tpp2dCalcFractAbundance(configTable = panobinostat_2DTPP_config, 
-#'                 dataTable = fractAbundInData,
+#'                 data = fractAbundInData,
 #'                 intensityStr = "sumionarea_protein_", 
 #'                 idVar = "representative")
 #'  
 #' @param configTable data frame that specifies important details of the TPP-CCR experiment.
-#' @param dataTable data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).
+#' @param data data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).
 #' @param intensityStr character string indicating which columns contain the sumionarea values.
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
@@ -22,18 +22,18 @@
 #'   and DMSO1 vs DMSO2 ratio
 #'   
 #' @export
-tpp2dCalcFractAbundance <- function(configTable=NULL, dataTable=NULL, intensityStr=NULL, idVar=NULL){
+tpp2dCalcFractAbundance <- function(configTable=NULL, data=NULL, intensityStr=NULL, idVar=NULL){
   message("Calculating fractional abundance and DMSO1 vs. DMSO2 ratio...")
   # determine adjacent temperature pairs
   compound <- as.character(configTable$Compound[1])
   all.temps <- configTable$Temperature
   temps.num <- length(all.temps)
   temp.pairs <- split(all.temps, as.factor(sort(rank(all.temps)%%(temps.num/2))))
-  intensity.cols <- grep(intensityStr, colnames(dataTable))
+  intensity.cols <- grep(intensityStr, colnames(data))
   # loop over all proteins and calculate fractional abundance for each adjacent temperature pair
-  subset.list <- lapply(unique(dataTable[[idVar]]), function(prot){
+  subset.list <- lapply(unique(data[[idVar]]), function(prot){
     # subset data according to only one protein
-    CCR.subset <- dataTable[which(dataTable[[idVar]] == prot),]
+    CCR.subset <- data[which(data[[idVar]] == prot),]
     if (nrow(CCR.subset) == temps.num){
       # loop over all temp pairs and calc DMSO1/DMSO2
       temp.ratios <- sapply(temp.pairs, function(t.pair){

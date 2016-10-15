@@ -4,7 +4,7 @@
 \alias{tpp2dExport}
 \title{Produce Excel table of 2D-TPP experiment.}
 \usage{
-tpp2dExport(configTable = NULL, tab = NULL, outPath = NULL,
+tpp2dExport(configTable = NULL, tab = NULL, resultPath = NULL,
   idVar = NULL, fcStr = NULL, intensityStr = NULL, addCol = NULL,
   normalizedData = FALSE, trRef = NULL)
 }
@@ -13,7 +13,7 @@ tpp2dExport(configTable = NULL, tab = NULL, outPath = NULL,
 
 \item{tab}{Table with results of the 2D-TPP analysis.}
 
-\item{outPath}{path for storing results table}
+\item{resultPath}{path for storing results table}
 
 \item{idVar}{character string indicating how the column that contains the unique protein 
 identifiers is called}
@@ -41,7 +41,7 @@ Produce Excel table of 2D-TPP experiment analysis results.
 data("panobinostat_2DTPP_smallExample")
 load(system.file("example_data/2D_example_data/shortData2d.RData", package="TPP"))
 # tpp2dExport(configTable = panobinostat_2DTPP_config, tab=shortData2d, 
-#             outPath=getwd(), 
+#             resultPath=getwd(), 
 #             idVar="representative", fcStr="norm_rel_fc_protein_", 
 #             intensityStr="sumionarea_protein_", addCol=NULL)
 

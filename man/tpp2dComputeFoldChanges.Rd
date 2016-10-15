@@ -4,13 +4,13 @@
 \alias{tpp2dComputeFoldChanges}
 \title{Compute 2D-TPP fold changes}
 \usage{
-tpp2dComputeFoldChanges(configTable = NULL, dataTable = NULL,
+tpp2dComputeFoldChanges(configTable = NULL, data = NULL,
   intensityStr = NULL, fcStr = "rel_fc_protein_")
 }
 \arguments{
 \item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
 
-\item{dataTable}{dataframe that contain the data for the 2D-TPP experiment}
+\item{data}{dataframe that contain the data for the 2D-TPP experiment}
 
 \item{intensityStr}{character string indicating which columns contain the actual 
 sumionarea values. Those column names containing the suffix \code{intensityStr} 
@@ -32,7 +32,7 @@ Computes fold changes by calculating fold changes of the sumionarea
 data("panobinostat_2DTPP_smallExample")
 load(system.file("example_data/2D_example_data/referenceReadInData.RData", package="TPP"))
 exampleFoldChanges <- tpp2dComputeFoldChanges(configTable = panobinostat_2DTPP_config, 
-                                              dataTable = headData2d, 
+                                              data = headData2d, 
                                               intensityStr = "sumionarea_protein_")  
                                  
 }

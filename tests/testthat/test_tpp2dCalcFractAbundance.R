@@ -3,7 +3,7 @@
 
 # test_that("evalFractAbund", code={
 #   fracAbund <- tpp2dCalcFractAbundance(configTable = panobinostat_2DTPP_config, 
-#                                        dataTable = fractAbundInData,
+#                                        data = fractAbundInData,
 #                                      intensityStr = "sumionarea_protein_", 
 #                                      idVar = "representative")
 #   expect_true(is.numeric(fracAbund$total_sumionarea_fraction))

@@ -19,7 +19,7 @@
 #' singleCurves[["IPI00289601.10"]][[1]] 
 #' 
 #' @param configTable data frame that specifies important details of the 2D-TPP experiment
-#' @param dataTable ouput table returned by the \code{tpp2dRunTPPCCR} function
+#' @param data ouput table returned by the \code{tpp2dRunTPPCCR} function
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
 #' @param fcStr character string indicating which columns contain the actual 
@@ -28,7 +28,7 @@
 #' @param verbose boolean variable stating whether a print description of problems/success for 
 #'  plotting of each protein should be printed
 #' @export
-tpp2dPlotCCRSingleCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
+tpp2dPlotCCRSingleCurves <- function(configTable=NULL, data=NULL, idVar=NULL,
                                      fcStr="rel_fc_protein_", verbose=FALSE){
 
   # pre-define global variables
@@ -40,10 +40,10 @@ tpp2dPlotCCRSingleCurves <- function(configTable=NULL, dataTable=NULL, idVar=NUL
   ## remove the compound name from the result table columns. To avoid confusion, 
   ## throw an error if more than one compound names were in use # new
   if (length(compound) == 1){
-    oldCols <- colnames(dataTable)
+    oldCols <- colnames(data)
     patternToRemove <- paste0("_", gsub("[^[:alnum:]]", "_", compound))
     newCols <- gsub(patternToRemove, "", oldCols)
-    colnames(dataTable) <- newCols
+    colnames(data) <- newCols
   } else {
     stop("Can currently only handle config tables with one compound name.
          Compound names detected in your config table: '", 
@@ -51,9 +51,9 @@ tpp2dPlotCCRSingleCurves <- function(configTable=NULL, dataTable=NULL, idVar=NUL
   }
   
   # loop over all detected proteins and create data.frame for each of them
-  singlePlotList <- lapply(unique(dataTable[[idVar]]), function(prot){
+  singlePlotList <- lapply(unique(data[[idVar]]), function(prot){
     
-    CCRsamp <- dataTable[which(dataTable[[idVar]] == prot),]
+    CCRsamp <- data[which(data[[idVar]] == prot),]
     
     # extract only those rows which passed the filter criteria
     CCR.subset <- CCRsamp[which(unlist(CCRsamp["passed_filter"])),]
@@ -130,6 +130,6 @@ tpp2dPlotCCRSingleCurves <- function(configTable=NULL, dataTable=NULL, idVar=NUL
     }
   })
   
-  names(singlePlotList) <- unique(dataTable[[idVar]])
+  names(singlePlotList) <- unique(data[[idVar]])
   return(singlePlotList)
 }

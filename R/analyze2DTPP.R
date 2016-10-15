@@ -119,7 +119,7 @@ analyze2DTPP <- function(configFile = NULL, data = NULL,
     if (is.null(fcStr)){
       fcStr <- "rel_fc_protein_"
     }
-    Data2d <- tpp2dComputeFoldChanges(configTable=configTable, dataTable=Data2d, 
+    Data2d <- tpp2dComputeFoldChanges(configTable=configTable, data=Data2d, 
                                       intensityStr=intensityStr) 
     
   }else if (is.null(fcStr)){
@@ -129,7 +129,7 @@ analyze2DTPP <- function(configFile = NULL, data = NULL,
   
   # do median normalization of fold changes 
   if (normalize){
-    NormData2d <- tpp2dDoMedianNorm(configTable=configTable, dataTable=Data2d, fcStr=fcStr)
+    NormData2d <- tpp2dDoMedianNorm(configTable=configTable, data=Data2d, fcStr=fcStr)
     
     # Make sure the TPP-CCR routine uses the correct columns, when there was 
     # normalization before:
@@ -153,7 +153,7 @@ Please check your data quality and consider pre-filtering!")
   
   # calculate fractioncal abundance per curve
   if (fractAbund){
-    NormData2d <- tpp2dCalcFractAbundance(configTable=configTable, dataTable=NormData2d, 
+    NormData2d <- tpp2dCalcFractAbundance(configTable=configTable, data=NormData2d, 
                                           intensityStr=intensityStr, idVar=idVar)
   }
   
@@ -163,7 +163,7 @@ Please check your data quality and consider pre-filtering!")
     
     # run TPP-CCR
     analysisResults <- tpp2dRunTPPCCR(configFile = CCR2dConfig, 
-                                      dataTable = NormData2d, 
+                                      data = NormData2d, 
                                       nCores = nCores, 
                                       fcStr = fcStrUpdated, 
                                       idVar = "unique_ID", 
@@ -175,21 +175,21 @@ Please check your data quality and consider pre-filtering!")
     
     if (plotAll){
       # generate joint plots for all proteins detected
-      plotList <- tpp2dPlotCCRAllCurves(configTable=configTable, dataTable=analysisResults, 
+      plotList <- tpp2dPlotCCRAllCurves(configTable=configTable, data=analysisResults, 
                                         idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
       tpp2dExportPlots(plotList=plotList, outPath=resultPath, type="all")
     }
     if (plotAllR2){
       # generate joint plots for all proteins detected with sufficient R2
-      plotGoodList <- tpp2dPlotCCRGoodCurves(configTable=configTable, dataTable=analysisResults, 
+      plotGoodList <- tpp2dPlotCCRGoodCurves(configTable=configTable, data=analysisResults, 
                                              idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
       tpp2dExportPlots(plotList=plotGoodList, outPath=resultPath, type="good")
     }
     if (plotSingle){
       # generate single plots for all protein in each condition fitted with sufficient R2
-      plotSingleList <- tpp2dPlotCCRSingleCurves(configTable=configTable, dataTable=analysisResults, 
+      plotSingleList <- tpp2dPlotCCRSingleCurves(configTable=configTable, data=analysisResults, 
                                                  idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
       tpp2dExportPlots(plotList=plotSingleList, outPath=resultPath, type="single")
@@ -218,12 +218,12 @@ Please check the file path you have specified for trRef!")
   
   # add additional information e.g. how often protein was stabilized/destabilized if desired
   if (addInfo){
-    analysisResults <- tpp2dAddAdditionalInfo(data.table = analysisResults)
+    analysisResults <- tpp2dAddAdditionalInfo(data = analysisResults)
   }
   
   # add TR reference columns to result table
   if (!is.null(trRef) && file.exists(trRef)){
-    analysisResults <-tpp2dMerge2dRef(data.table = analysisResults, 
+    analysisResults <-tpp2dMerge2dRef(data = analysisResults, 
                                       trRef = trRef, idVar = idVar)
   }
   

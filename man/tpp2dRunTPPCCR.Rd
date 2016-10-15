@@ -4,8 +4,8 @@
 \alias{tpp2dRunTPPCCR}
 \title{Run TPP-CCR analysis for 2D-TPP experiment}
 \usage{
-tpp2dRunTPPCCR(configFile, dataTable, nCores = 1, naStrs = c("NA", "n/d",
-  "NaN", "<NA>"), fcStr = "norm_rel_fc_protein_", idVar = NULL,
+tpp2dRunTPPCCR(configFile, data, nCores = 1, naStrs = c("NA", "n/d", "NaN",
+  "<NA>"), fcStr = "norm_rel_fc_protein_", idVar = NULL,
   nonZeroCols = "qupm", r2Cutoff = 0.8, fcCutoff = 1.5,
   slopeBounds = c(1, 50), fcTolerance = 0.1)
 }
@@ -13,7 +13,7 @@ tpp2dRunTPPCCR(configFile, dataTable, nCores = 1, naStrs = c("NA", "n/d",
 \item{configFile}{list of dataframes, that specifies important details of the 2D-TPP 
 experiment for each temperature.}
 
-\item{dataTable}{data.frame, that contains the data of the 2D-TPP 
+\item{data}{data.frame, that contains the data of the 2D-TPP 
 experiment for each temperature.}
 
 \item{nCores}{numeric value stating how many cores are to be used for computation}
@@ -51,7 +51,7 @@ Performs analysis of a TPP-CCR experiment by invoking the routine
 \examples{
   load(system.file("example_data/2D_example_data/referenceCCRConfig.RData", package="TPP"))
   load(system.file("example_data/2D_example_data/exampleRunCCRInput.RData", package="TPP"))
-  CCRresults <- tpp2dRunTPPCCR(configFile=exampleCCRConfig, dataTable=exampleRunCCRInput, 
+  CCRresults <- tpp2dRunTPPCCR(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
                                idVar="unique_ID")
   
 }

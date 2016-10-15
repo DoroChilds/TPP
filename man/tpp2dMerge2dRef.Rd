@@ -4,10 +4,10 @@
 \alias{tpp2dMerge2dRef}
 \title{Merge 2D-TPP result data with TPP-TR reference data}
 \usage{
-tpp2dMerge2dRef(data.table = NULL, trRef = NULL, idVar = "representative")
+tpp2dMerge2dRef(data = NULL, trRef = NULL, idVar = "representative")
 }
 \arguments{
-\item{data.table}{dataframe containing the 2D-TPP results}
+\item{data}{dataframe containing the 2D-TPP results}
 
 \item{trRef}{character string of a valid system path to a TPP-TR reference 
 RData object}

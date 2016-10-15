@@ -19,7 +19,7 @@
 #' 
 #' 
 #' @param configTable data frame that specifies important details of the 2D-TPP experiment
-#' @param dataTable ouput table returned by the \code{tpp2dRunTPPCCR} function
+#' @param data data frame returned by the \code{tpp2dRunTPPCCR} function
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
 #' @param fcStr character string indicating which columns contain the actual 
@@ -28,7 +28,7 @@
 #' @param verbose boolean variable stating whether a print description of problems/success for 
 #'  plotting of each protein should be printed
 #' @export
-tpp2dPlotCCRAllCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
+tpp2dPlotCCRAllCurves <- function(configTable=NULL, data=NULL, idVar=NULL,
                                   fcStr="rel_fc_protein_", verbose=FALSE){
   
   # pre-define global variables
@@ -42,9 +42,9 @@ tpp2dPlotCCRAllCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
   color.vals <- generateColors4Temps(configTable)
   
   # loop over all detected proteins and create data.frame for each of them
-  plotList <- lapply(unique(dataTable[[idVar]]), function(prot){
+  plotList <- lapply(unique(data[[idVar]]), function(prot){
     
-    CCRsamp <- dataTable[which(dataTable[[idVar]] == prot),]
+    CCRsamp <- data[which(data[[idVar]] == prot),]
     
     # extract only those rows which passed the filter criteria
     CCR.subset <- CCRsamp[which(!is.na(unlist(CCRsamp["slope"]))),]
@@ -121,6 +121,6 @@ tpp2dPlotCCRAllCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
     }
   })
   
-  names(plotList) <- unique(dataTable[[idVar]])
+  names(plotList) <- unique(data[[idVar]])
   return(plotList)
 }

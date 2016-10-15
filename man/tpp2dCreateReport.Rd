@@ -4,19 +4,21 @@
 \alias{tpp2dCreateReport}
 \title{Create Report of 2D-TPP analysis}
 \usage{
-tpp2dCreateReport(resultPath = NULL, configFile = NULL,
+tpp2dCreateReport(data = NULL, configFile = NULL, resultPath = NULL,
   documentType = "html_document", configTable = NULL, normalize = TRUE,
-  methods = c(""), resultTable = NULL, idVar = NULL,
-  fcStr = "rel_fc_protein", fcStrUpdated = "norm_rel_fc_protein_",
-  intensityStr = NULL, addCol = NULL, fcTolerance = NA, r2Cutoff = NA,
-  fcCutoff = NA, slopeBounds = c(NA, NA), fTest = FALSE, trRef = "none")
+  methods = c(""), idVar = NULL, fcStr = "rel_fc_protein",
+  fcStrUpdated = "norm_rel_fc_protein_", intensityStr = NULL,
+  addCol = NULL, fcTolerance = NA, r2Cutoff = NA, fcCutoff = NA,
+  slopeBounds = c(NA, NA), fTest = FALSE, trRef = "none")
 }
 \arguments{
-\item{resultPath}{character string containing a system path to where the report should be 
-written}
+\item{data}{output data frame from an 2D-TPP analysis}
 
 \item{configFile}{character string containing a valid system path to a file which summarizes 
 the experimental details of the 2D-TPP experiment or respective data frame}
+
+\item{resultPath}{character string containing a system path to where the report should be 
+written}
 
 \item{documentType}{character string indicating which document type the report should have
 default: "html_document", alternatives: "pdf_document"}
@@ -26,8 +28,6 @@ default: "html_document", alternatives: "pdf_document"}
 \item{normalize}{boolean flag indicating whether median normalization has been performed}
 
 \item{methods}{vector of characters which indicate which methods have been used}
-
-\item{resultTable}{output data frame from an 2D-TPP analysis}
 
 \item{idVar}{unique protein identifier prefix}
 

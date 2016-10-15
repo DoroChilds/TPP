@@ -20,7 +20,7 @@
 #' goodCurves[["IPI00289601.10"]]
 #' 
 #' @param configTable data frame that specifies important details of the 2D-TPP experiment
-#' @param dataTable ouput table returned by the \code{tpp2dRunTPPCCR} function
+#' @param data data frame returned by the \code{tpp2dRunTPPCCR} function
 #' @param idVar character string indicating which data column provides the 
 #'   unique identifiers for each protein.
 #' @param fcStr character string indicating which columns contain the actual 
@@ -29,7 +29,7 @@
 #' @param verbose boolean variable stating whether a print description of problems/success for 
 #'  plotting of each protein should be printed
 #' @export
-tpp2dPlotCCRGoodCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
+tpp2dPlotCCRGoodCurves <- function(configTable=NULL, data=NULL, idVar=NULL,
                                    fcStr="rel_fc_protein_",  verbose=FALSE){
   
   # pre-define global variables
@@ -43,10 +43,10 @@ tpp2dPlotCCRGoodCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
   ## remove the compound name from the result table columns. To avoid confusion, 
   ## throw an error if more than one compound names were in use # new :
   if (length(compound) == 1){
-    oldCols <- colnames(dataTable)
+    oldCols <- colnames(data)
     patternToRemove <- paste0("_", gsub("[^[:alnum:]]", "_", compound))
     newCols <- gsub(patternToRemove, "", oldCols)
-    colnames(dataTable) <- newCols
+    colnames(data) <- newCols
   } else {
     stop("Can currently only handle config tables with one compound name.
          Compound names detected in your config table: '", 
@@ -55,8 +55,8 @@ tpp2dPlotCCRGoodCurves <- function(configTable=NULL, dataTable=NULL, idVar=NULL,
   
   color.vals <- generateColors4Temps(configTable)
   # extract only those rows which passed the filter criteria
-  filterCol <- grep("passed_filter", colnames(dataTable), value = TRUE) # new
-  dataTableNew <- filter_(dataTable, filterCol)
+  filterCol <- grep("passed_filter", colnames(data), value = TRUE) # new
+  dataTableNew <- filter_(data, filterCol)
   idsFiltered <- unique(dataTableNew[[idVar]])
   
   # loop over all detected proteins and create data.frame for each of them
