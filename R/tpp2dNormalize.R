@@ -6,7 +6,7 @@
 #' @examples 
 #'   load(system.file("example_data/2D_example_data/referenceFcData.RData", package="TPP"))
 #'   data("panobinostat_2DTPP_smallExample")
-#'   NormData2d <- tpp2dDoMedianNorm(configTable = panobinostat_2DTPP_config, 
+#'   NormData2d <- tpp2dNormalize(configTable = panobinostat_2DTPP_config, 
 #'                                     data=headData2dFc,
 #'                                     fcStr="rel_fc_protein_")
 #'   
@@ -20,7 +20,7 @@
 #'   fold change values have been normalized by their median.
 #'   
 #' @export 
-tpp2dDoMedianNorm <- function(configTable, data, fcStr="rel_fc_protein_"){
+tpp2dNormalize <- function(configTable, data, fcStr="rel_fc_protein_"){
   if (!any(grepl(fcStr, colnames(data)))){
     stop("Please specify a valid fcStr suffix matching the fold change columns!")
   } else{
