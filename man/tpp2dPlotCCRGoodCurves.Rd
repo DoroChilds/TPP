@@ -10,7 +10,7 @@ tpp2dPlotCCRGoodCurves(configTable = NULL, data = NULL, idVar = NULL,
 \arguments{
 \item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
 
-\item{data}{data frame returned by the \code{tpp2dRunTPPCCR} function}
+\item{data}{data frame returned by the \code{tpp2dCurveFit} function}
 
 \item{idVar}{character string indicating which data column provides the 
 unique identifiers for each protein.}
@@ -34,11 +34,11 @@ temperatures of for a certain 2D-TPP experiment.
 data("panobinostat_2DTPP_smallExample")
 cfg <- panobinostat_2DTPP_config
 datRaw <- panobinostat_2DTPP_data
-data2d <- tpp2dImportData(cfg, datRaw, fcStr = NULL)
+data2d <- tpp2dImport(cfg, datRaw, fcStr = NULL)
 fcData2d <- tpp2dComputeFoldChanges(cfg, data2d, intensityStr="sumionarea_protein_")
-normData2d <- tpp2dDoMedianNorm(cfg, fcData2d)
+normData2d <- tpp2dNormalize(cfg, fcData2d)
 config_ccr <- tpp2dCreateCCRConfigFile(cfg)
-ccr2dResults <- tpp2dRunTPPCCR(config_ccr, normData2d, idVar = "unique_ID")
+ccr2dResults <- tpp2dCurveFit(config_ccr, normData2d, idVar = "unique_ID")
 goodCurves <- tpp2dPlotCCRGoodCurves(cfg, ccr2dResults, 
                                      idVar = "representative",
                                      fcStr = "norm_rel_fc_protein_")

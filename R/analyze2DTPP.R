@@ -13,10 +13,10 @@
 #' deacetylase inhibitor panobinostat. Nature Chemical Biology (accepted)
 #' 
 #' @details Invokes the following steps: \enumerate{ \item Import data using the
-#'   \code{\link{tpp2dImportData}} function. \item Remove zero sumionarea values. 
+#'   \code{\link{tpp2dImport}} function. \item Remove zero sumionarea values. 
 #'   \item Compute fold changes from raw data (sumionarea) 
 #'   \item Perform normalization by fold 
-#'   change medians (optional) using the \code{\link{tpp2dDoMedianNorm}} function.
+#'   change medians (optional) using the \code{\link{tpp2dNormalize}} function.
 #'   To perform normalization, set argument \code{normalize=TRUE}.}
 #'
 #' @examples 
@@ -110,7 +110,7 @@ analyze2DTPP <- function(configFile = NULL, data = NULL,
   configTable <- tpp2dEvalConfigTable(configFile)
   
   # import data
-  Data2d <- tpp2dImportData(configTable=configTable, data=data, 
+  Data2d <- tpp2dImport(configTable=configTable, data=data, 
                             idVar=idVar, addCol=addCol, intensityStr=intensityStr, 
                             qualColName=qualColName, fcStr=fcStr)
   
@@ -129,7 +129,7 @@ analyze2DTPP <- function(configFile = NULL, data = NULL,
   
   # do median normalization of fold changes 
   if (normalize){
-    NormData2d <- tpp2dDoMedianNorm(configTable=configTable, data=Data2d, fcStr=fcStr)
+    NormData2d <- tpp2dNormalize(configTable=configTable, data=Data2d, fcStr=fcStr)
     
     # Make sure the TPP-CCR routine uses the correct columns, when there was 
     # normalization before:
@@ -162,7 +162,7 @@ Please check your data quality and consider pre-filtering!")
     CCR2dConfig <- tpp2dCreateCCRConfigFile(configTable=configTable)
     
     # run TPP-CCR
-    analysisResults <- tpp2dRunTPPCCR(configFile = CCR2dConfig, 
+    analysisResults <- tpp2dCurveFit(configFile = CCR2dConfig, 
                                       data = NormData2d, 
                                       nCores = nCores, 
                                       fcStr = fcStrUpdated, 
@@ -178,21 +178,21 @@ Please check your data quality and consider pre-filtering!")
       plotList <- tpp2dPlotCCRAllCurves(configTable=configTable, data=analysisResults, 
                                         idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotList, outPath=resultPath, type="all")
+      tpp2dExportPlots(plotList=plotList, resultPath=resultPath, type="all")
     }
     if (plotAllR2){
       # generate joint plots for all proteins detected with sufficient R2
       plotGoodList <- tpp2dPlotCCRGoodCurves(configTable=configTable, data=analysisResults, 
                                              idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotGoodList, outPath=resultPath, type="good")
+      tpp2dExportPlots(plotList=plotGoodList, resultPath=resultPath, type="good")
     }
     if (plotSingle){
       # generate single plots for all protein in each condition fitted with sufficient R2
       plotSingleList <- tpp2dPlotCCRSingleCurves(configTable=configTable, data=analysisResults, 
                                                  idVar=idVar, fcStr=fcStrUpdated)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotSingleList, outPath=resultPath, type="single")
+      tpp2dExportPlots(plotList=plotSingleList, resultPath=resultPath, type="single")
     }
   }else{
     analysisResults <- NormData2d
@@ -230,7 +230,7 @@ Please check the file path you have specified for trRef!")
   # export results
   if (!is.null(resultPath)){
     tpp2dExport(configTable = configTable, tab = analysisResults, 
-                outPath = resultPath, 
+                resultPath = resultPath, 
                 idVar = "Protein_ID", fcStr = fcStr, intensityStr = intensityStr, # new: idVar = "Protein_ID"
                 addCol = addCol, 
                 normalizedData = normalize, trRef = trRef) 

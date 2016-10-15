@@ -10,7 +10,7 @@ tpp2dCreateCCRConfigFile(configTable)
 \item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
 }
 \value{
-A config file of type data.frame which can be used for the tpp2dRunTPPCCR function
+A config file of type data.frame which can be used for the \code{\link{tpp2dCurveFit}} function
 }
 \description{
 Creates a list of config files for the TPP-CCR analysis so that the config files in the 

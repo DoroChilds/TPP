@@ -160,13 +160,13 @@ Using the import function the data is subsequently imported and stored in a sing
 data columns and those that the user likes to take along through the analysis to be displayed together with the results 
 of this workflow.
 <<ttp2dDataImport2, eval=TRUE>>=
-data2d <- tpp2dImportData(configTable = config_tpp2d, 
-                          data = data_tpp2d, 
-                          idVar = "representative", 
-                          fcStr = NULL,
-                          intensityStr = "sumionarea_protein_",
-                          qualColName = c("qupm", "qusm"),
-                          addCol = c("clustername","msexperiment_id"))
+data2d <- tpp2dImport(configTable = config_tpp2d, 
+                      data = data_tpp2d, 
+                      idVar = "representative", 
+                      fcStr = NULL,
+                      intensityStr = "sumionarea_protein_",
+                      qualColName = c("qupm", "qusm"),
+                      addCol = c("clustername","msexperiment_id"))
 
 head(data2d)
 @
@@ -189,7 +189,7 @@ head(fcData2d)
 We can then normalize the data by performing a median normalization on the fold changes, in order to account for experiment specific noise.
 
 <<ttp2dDoMedianNorm2, eval=TRUE>>=
-normData2d <- tpp2dDoMedianNorm(configTable = config_tpp2d,
+normData2d <- tpp2dNormalize(configTable = config_tpp2d,
                                 data = fcData2d)
 
 head(normData2d)
@@ -205,8 +205,8 @@ config_ccr <- tpp2dCreateCCRConfigFile(configTable = config_tpp2d)
 
 To run the TPP-CCR main function on our 2D-TPP data we now invoke:
 
-<<tpp2dRunTPPCCR2, eval=TRUE, warning=FALSE>>=
-ccr2dResults <- tpp2dRunTPPCCR(configFile = config_ccr, 
+<<tpp2dCurveFit, eval=TRUE, warning=FALSE>>=
+ccr2dResults <- tpp2dCurveFit(configFile = config_ccr, 
                                data = normData2d, 
                                fcStr = fcStrUpdated, 
                                idVar = "unique_ID")

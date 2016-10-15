@@ -7,7 +7,7 @@
 tpp2dAddAdditionalInfo(data, idVar = "representative")
 }
 \arguments{
-\item{data}{ouput table returned by the \code{tpp2dRunTPPCCR} function}
+\item{data}{ouput table returned by the \code{tpp2dCurveFit} function}
 
 \item{idVar}{character string indicating which column of the data table contains unique
 protein ids}

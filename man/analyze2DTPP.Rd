@@ -114,10 +114,10 @@ Performs analysis of a 2D-TPP experiment by invoking routines
 }
 \details{
 Invokes the following steps: \enumerate{ \item Import data using the
-  \code{\link{tpp2dImportData}} function. \item Remove zero sumionarea values. 
+  \code{\link{tpp2dImport}} function. \item Remove zero sumionarea values. 
   \item Compute fold changes from raw data (sumionarea) 
   \item Perform normalization by fold 
-  change medians (optional) using the \code{\link{tpp2dDoMedianNorm}} function.
+  change medians (optional) using the \code{\link{tpp2dNormalize}} function.
   To perform normalization, set argument \code{normalize=TRUE}.}
 }
 \examples{

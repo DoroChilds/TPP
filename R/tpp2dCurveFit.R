@@ -9,7 +9,7 @@
 #' @examples 
 #'   load(system.file("example_data/2D_example_data/referenceCCRConfig.RData", package="TPP"))
 #'   load(system.file("example_data/2D_example_data/exampleRunCCRInput.RData", package="TPP"))
-#'   CCRresults <- tpp2dRunTPPCCR(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
+#'   CCRresults <- tpp2dCurveFit(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
 #'                                idVar="unique_ID")
 #'   
 #' @param configFile list of dataframes, that specifies important details of the 2D-TPP 
@@ -33,7 +33,7 @@
 #' @param fcTolerance tolerance for the fcCutoff parameter. See details.
 #'   
 #' @export
-tpp2dRunTPPCCR <- function(configFile, data, nCores=1, 
+tpp2dCurveFit <- function(configFile, data, nCores=1, 
                            naStrs=c("NA", "n/d", "NaN", "<NA>"), 
                            fcStr="norm_rel_fc_protein_", 
                            idVar=NULL, nonZeroCols="qupm",

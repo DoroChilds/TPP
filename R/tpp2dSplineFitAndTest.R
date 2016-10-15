@@ -51,7 +51,7 @@ tpp2dSplineFitAndTest <- function(data_2D, trRefDataPath,
     
     # export spline plots
     message("Exporting plots...")
-    tpp2dExportPlots(plotList = splinePlots, outPath = resultPath, type = "spline")
+    tpp2dExportPlots(plotList = splinePlots, resultPath = resultPath, type = "spline")
     message("Done.")
   }else{
     message("Spline plots could not be saved, as no valid resultPath was indicated!")
