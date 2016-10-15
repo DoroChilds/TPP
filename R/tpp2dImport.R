@@ -8,7 +8,7 @@
 #' 
 #' @examples 
 #'   data("panobinostat_2DTPP_smallExample")
-#'   tpp2dResults <- tpp2dImportData(configTable = panobinostat_2DTPP_config, 
+#'   tpp2dResults <- tpp2dImport(configTable = panobinostat_2DTPP_config, 
 #'                              data = panobinostat_2DTPP_data, fcStr = NULL)
 #' 
 #' @param configTable dataframe, or character object with the path to a file, 
@@ -32,7 +32,7 @@
 #'   to be attached to the data frame throughout the analysis 
 #' 
 #' @export
-tpp2dImportData <- function(configTable=NULL, data=NULL, idVar="representative", 
+tpp2dImport <- function(configTable=NULL, data=NULL, idVar="representative", 
                             addCol=c("clustername", "msexperiment_id"),
                             intensityStr="sumionarea_protein_", qualColName=c("qupm","qusm"),
                             fcStr="rel_fc_protein_"){
