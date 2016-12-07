@@ -36,7 +36,15 @@ tpp2dNormalize <- function(configTable, data, fcStr="rel_fc_protein_"){
           return(norm.col)
         }
       })
-      norm.df <- data.frame(norm.list[!sapply(norm.list, is.null)])
+      
+      nonNullFields <- norm.list[!sapply(norm.list, is.null)]
+      
+      # Create data frame from list
+      # Caution: Set check.names = FALSE. Otherwise, special characters in column 
+      # names are converted to '_' without warning -> can be problematic if
+      # concentrations were imported from config file in scientific format. 
+      # I.e. colname 'rel_fc_7.0000000000000007E-2' becomes 'rel_fc_7.0000000000000007E_2'
+      norm.df <- data.frame(nonNullFields, check.names = FALSE) 
       
       return(norm.df)
     }))
