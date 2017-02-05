@@ -7,25 +7,38 @@
 #'   protein.
 #'   
 #' @examples 
-#'   load(system.file("example_data/2D_example_data/referenceCCRConfig.RData", package="TPP"))
-#'   load(system.file("example_data/2D_example_data/exampleRunCCRInput.RData", package="TPP"))
-#'   CCRresults <- tpp2dCurveFit(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
-#'                                idVar="unique_ID")
+#' # Preparation:
+#' data(panobinostat_2DTPP_smallExample)
+#' 
+#' # Import data:
+#' datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+#'                       data = panobinostat_2DTPP_data,
+#'                       idVar = "representative",
+#'                       addCol = "clustername",
+#'                       intensityStr = "sumionarea_protein_",
+#'                       nonZeroCols = "qusm")
+#' 
+#' # Compute fold changes:
+#' datFC <- tpp2dComputeFoldChanges(data = datIn)
+#'
+#' # Perform median normalization:
+#' datNorm <- tpp2dNormalize(data = datFC)
+#' 
+#' # View updated attributes. Now contain field 'fcStrNorm' indicating prefix
+#' # of the fold change columns after normalization.
+#' attr(datNorm, "importSettings")["fcStrNorm"]
+#' 
+#' # Perform dose response curve fitting and pEC50 calculation:
+#' datFit <- tpp2dCurveFit(data = datNorm)
 #'   
-#' @param configFile list of dataframes, that specifies important details of the 2D-TPP 
-#'   experiment for each temperature. 
-#' @param data data.frame, that contains the data of the 2D-TPP 
+#' @param configFile DEPCRECATED
+#' @param data data frame that contains the data of the 2D-TPP 
 #'   experiment for each temperature. 
 #' @param nCores numeric value stating how many cores are to be used for computation
-#' @param naStrs character vector indicating missing values in the data table. 
-#'   When reading data from file, this value will be passed on to the argument
-#' @param fcStr character string indicating which columns contain the actual 
-#'   fold change values. Those column names containing the suffix \code{fcStr} 
-#'   will be regarded as containing fold change values.
-#' @param idVar character string indicating which data column provides the 
-#'   unique identifiers for each protein.
-#' @param nonZeroCols character string indicating a column that will be used for
-#'   filtering out zero values.
+#' @param naStrs DEPCRECATED
+#' @param fcStr DEPCRECATED
+#' @param idVar DEPCRECATED
+#' @param nonZeroCols DEPCRECATED
 #' @param r2Cutoff Quality criterion on dose response curve fit.
 #' @param fcCutoff Cutoff for highest compound concentration fold change.
 #' @param slopeBounds Bounds on the slope parameter for dose response curve 
@@ -33,36 +46,131 @@
 #' @param fcTolerance tolerance for the fcCutoff parameter. See details.
 #'   
 #' @export
-tpp2dCurveFit <- function(configFile, data, nCores=1, 
-                           naStrs=c("NA", "n/d", "NaN", "<NA>"), 
-                           fcStr="norm_rel_fc_protein_", 
-                           idVar=NULL, nonZeroCols="qupm",
-                           r2Cutoff=0.8,  fcCutoff=1.5, slopeBounds=c(1,50),
-                           fcTolerance=0.1){
+tpp2dCurveFit <- function(configFile = NULL, 
+                          data, 
+                          nCores = 1, 
+                          naStrs = NULL, 
+                          fcStr = NULL, 
+                          idVar = NULL, 
+                          nonZeroCols = NULL,
+                          r2Cutoff = 0.8,  
+                          fcCutoff = 1.5, 
+                          slopeBounds = c(1,50),
+                          fcTolerance = 0.1){
   
-  if (is.null(configFile) || is.null(data)){
-    stop("Please specifiy valid dataframes for the arguments configTable and data!")
-  }else if (is.null(idVar) || !is.character(idVar)){
-    stop("Please specify a valid character string for idVar!")
-  }else if (!idVar %in% colnames(data)){
-    stop("Please specify an idVar character string argument that represents a suffix of one of 
-         the column names of your data!")
-  }else if (length(data[[idVar]])!=length(unique(data[[idVar]]))){
-    stop("Please indicate an idVar character string that matches a column with unique identifiers!")
-  }else{
-    message(paste("Performing TPP-CCR dose response curve fitting and generating result table...", 
-                  sep=" "))
-    CCRresult <- suppressMessages(analyzeTPPCCR(configTable=configFile, 
-                                                data=as.data.frame(data), nCores=nCores, 
-                                                resultPath=NULL, plotCurves=FALSE, fcStr=fcStr, 
-                                                naStrs=naStrs, xlsxExport=FALSE,idVar=idVar, 
-                                                nonZeroCols=nonZeroCols, normalize=FALSE, 
-                                                r2Cutoff=r2Cutoff, fcCutoff=fcCutoff, 
-                                                slopeBounds=slopeBounds,fcTolerance=fcTolerance))
-    # reformat colnames
-    compound <- as.character(configFile$Experiment)
-    colnames(CCRresult) <- sub(paste("*_", compound, sep=""), "", colnames(CCRresult))
-    message("Done.")
-    return(CCRresult) 
+  if (!missing(configFile)){
+    warning("`configFile` is deprecated.", call. = TRUE)
   }
+  
+  if (!missing(naStrs)){
+    warning("`naStrs` is deprecated.", call. = TRUE)
+  }
+  
+  if (!missing(fcStr)){
+    warning("`fcStr` is deprecated.", call. = TRUE)
+  }
+  
+  if (!missing(idVar)){
+    warning("`idVar` is deprecated.", call. = TRUE)
+  }
+  
+  if (!missing(nonZeroCols)){
+    warning("`nonZeroCols` is deprecated.", call. = TRUE)
+  }
+  
+  # Check for missing function arguments
+  checkFunctionArgs(match.call(), c("data"))
+  
+  
+  # Obtain config table used for data import (stored as attribute of imported data):
+  configTable <- attr(data, "configTable")
+  
+  # Obtain settings used for data import (stored as attribute of imported data):
+  importSettings <- attr(data, "importSettings")
+  
+  uniqueIdCol <- importSettings$uniqueIdCol
+  
+  # Check whether uniqueIdCol has class character.
+  if (is.null(uniqueIdCol)){
+    stop("attr(data, 'uniqueIdCol') must contain a field named 'uniqueIdCol'.")
+  } else if (!is.character(uniqueIdCol)){
+    stop("attr(data, 'importSettings')$uniqueIdCol must be of class character.")
+  } else {
+    message("Looking for unique ID column: '", uniqueIdCol, "'")
+  }
+  
+  if (!uniqueIdCol %in% colnames(data)){
+    stop("Please specify an uniqueIdCol character string argument that represents a suffix of one of 
+         the column names of your data!")
+  } else if (length(data[[uniqueIdCol]])!=length(unique(data[[uniqueIdCol]]))){
+    stop("Please indicate an uniqueIdCol character string that matches a column with unique identifiers!")
+  }
+  
+  nonZeroCols <- importSettings$nonZeroCols
+  
+  # Check whether nonZeroCols are valid column names.
+  if (is.null(nonZeroCols)){
+    stop("attr(data, 'importSettings') must contain a field named 'nonZeroCols'.")
+  } else if (!is.character(nonZeroCols)){
+    stop("attr(data, 'importSettings')$nonZeroCols must be of class character.")
+  } else {
+    message("Looking for nonZeroCols: '", nonZeroCols, "'")
+  }
+  
+  if (!all(nonZeroCols %in% colnames(data))){
+    stop("The given QC columns (specified by attr(data, 'importSettings')$nonZeroCols) were not found in the column names of 'data'.")
+  }
+  
+  
+  # Choose correct fold change column prefix (automatically detects whether
+  # to use the prefix for normalized columns).
+  finalFcPrefix <- obtain_fcStr_from_df_annotation(dat = data)
+  
+  message("Performing TPP-CCR dose response curve fitting and generating result table...")
+  
+  # create CCR config file list
+  cfgIn <- convert_2D_cfgTable_to_CCR_cfgTable(configTable = configTable)
+  
+  # Re-format data as data frame: -> to do: ask Nils for reasons
+  datIn <- as.data.frame(data)
+  
+  CCRresult <- suppressMessages(
+    analyzeTPPCCR(configTable = cfgIn, 
+                  data = datIn, 
+                  nCores = nCores, 
+                  resultPath = NULL, 
+                  plotCurves = FALSE, 
+                  fcStr = finalFcPrefix, 
+                  naStrs=c("NA", "n/d", "NaN", "<NA>"),
+                  qualColName="qupm",
+                  xlsxExport = FALSE, 
+                  idVar = uniqueIdCol, 
+                  nonZeroCols = nonZeroCols, 
+                  normalize = FALSE, 
+                  r2Cutoff = r2Cutoff, 
+                  fcCutoff = fcCutoff, 
+                  slopeBounds = slopeBounds,
+                  fcTolerance = fcTolerance,
+                  ggplotTheme = NULL,
+                  verbose=FALSE)
+  )
+  
+  # Remove compound name suffix from each column of TPPCCR output
+  compound <- as.character(cfgIn$Experiment)
+  allCols <- colnames(CCRresult)
+  newCols <- sub(paste("*_", compound, sep=""), "", allCols)
+  colnames(CCRresult) <- newCols
+  message("Done.")
+  
+  # Transfer attributes to newly created data frame
+  importSettings$r2Cutoff <- r2Cutoff  
+  importSettings$fcCutoff <- fcCutoff
+  importSettings$slopeBounds <- slopeBounds
+  importSettings$fcTolerance <- fcTolerance
+  importSettings$uniqueIdCol <- "Protein_ID"
+  
+  attr(CCRresult, "importSettings") <- importSettings
+  attr(CCRresult, "configTable")    <- configTable
+  
+  return(CCRresult) 
 }

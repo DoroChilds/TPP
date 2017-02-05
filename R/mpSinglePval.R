@@ -4,10 +4,10 @@ mpSinglePval = function(x, r_1, r0, r1, type){
   if(!is.na(x)){
     if(x > r0){
       z = (x - r0) / (r1-r0)
-      p <- 1/2 * VGAM::erfc(z/sqrt(2))
+      p <- VGAM::erfc(z/sqrt(2))
     } else {
       z = (r0 - x) / (r0-r_1)
-      p <- 1/2 * VGAM::erfc(z/sqrt(2))
+      p <- VGAM::erfc(z/sqrt(2))
     }
   } else {
     p <- z <- NA_real_

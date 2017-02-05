@@ -4,36 +4,52 @@
 \alias{tpp2dComputeFoldChanges}
 \title{Compute 2D-TPP fold changes}
 \usage{
-tpp2dComputeFoldChanges(configTable = NULL, data = NULL,
-  intensityStr = NULL, fcStr = "rel_fc_protein_")
+tpp2dComputeFoldChanges(configTable = NULL, data, intensityStr = NULL,
+  fcStr = NULL, newFcStr = "rel_fc_")
 }
 \arguments{
-\item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
+\item{configTable}{DEPRECATED}
 
 \item{data}{dataframe that contain the data for the 2D-TPP experiment}
 
-\item{intensityStr}{character string indicating which columns contain the actual 
-sumionarea values. Those column names containing the suffix \code{intensityStr} 
-will be regarded as containing sumionarea values.}
+\item{intensityStr}{DEPRECATED}
 
-\item{fcStr}{character string indicating how columns that will contain the actual 
-fold change values will be called. The suffix \code{fcStr} will be pasted in front of
+\item{fcStr}{DEPRECATED}
+
+\item{newFcStr}{character string indicating how columns that will contain the actual 
+fold change values will be called. The suffix \code{newFcStr} will be pasted in front of
 the names of the experiments.}
 }
 \value{
-A data.frame with addtional columns with constitute fold changes calculated with 
- respect to the intenstiy values of the zero treatment column
+A data.frame with additional columns with constitute fold changes calculated with 
+ respect to the intensity values of the zero treatment column
 }
 \description{
 Computes fold changes by calculating fold changes of the sumionarea 
  relative to the reference column.
 }
 \examples{
-data("panobinostat_2DTPP_smallExample")
-load(system.file("example_data/2D_example_data/referenceReadInData.RData", package="TPP"))
-exampleFoldChanges <- tpp2dComputeFoldChanges(configTable = panobinostat_2DTPP_config, 
-                                              data = headData2d, 
-                                              intensityStr = "sumionarea_protein_")  
+# Preparation:
+data(panobinostat_2DTPP_smallExample)
+
+# Import data:
+datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+                      data = panobinostat_2DTPP_data,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+
+# View attributes of imported data (experiment infos and import arguments):
+attr(datIn, "importSettings") \%>\% unlist
+attr(datIn, "configTable")
+
+# Compute fold changes:
+datFC <- tpp2dComputeFoldChanges(data = datIn)
+
+# View updated attributes. Now contain field 'fcStrNorm' indicating prefix
+# of the fold change columns after normalization.
+attr(datFC, "importSettings")["fcStr"]
                                  
 }
 

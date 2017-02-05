@@ -4,10 +4,9 @@
 \alias{tpp2dImport}
 \title{Import 2D-TPP data}
 \usage{
-tpp2dImport(configTable = NULL, data = NULL, idVar = "representative",
-  addCol = c("clustername", "msexperiment_id"),
-  intensityStr = "sumionarea_protein_", qualColName = c("qupm", "qusm"),
-  fcStr = "rel_fc_protein_")
+tpp2dImport(configTable = NULL, data = NULL, idVar = "gene_name",
+  addCol = NULL, intensityStr = "signal_sum_", qualColName = "qupm",
+  nonZeroCols = "qssm", fcStr = NULL)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file, 
@@ -32,6 +31,9 @@ will be regarded as containing sumionarea values.}
 additional quality criteria when deciding between different non-unique 
 protein identifiers.}
 
+\item{nonZeroCols}{character string indicating a column that will be used for
+filtering out zero values.}
+
 \item{fcStr}{character string indicating which columns contain the actual 
 fold change values. Those column names containing the suffix \code{fcStr} 
 will be regarded as containing fold change values.}
@@ -45,9 +47,20 @@ Imports data from 2D-TPP experiments by parsing a configTable and reading in
   big data frame comprising all samples with respective fold changes
 }
 \examples{
-  data("panobinostat_2DTPP_smallExample")
-  tpp2dResults <- tpp2dImport(configTable = panobinostat_2DTPP_config, 
-                             data = panobinostat_2DTPP_data, fcStr = NULL)
+# Preparation:
+data(panobinostat_2DTPP_smallExample)
+
+# Import data:
+datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+                      data = panobinostat_2DTPP_data,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+
+# View attributes of imported data (experiment infos and import arguments):
+attr(datIn, "importSettings") \%>\% unlist
+attr(datIn, "configTable")
 
 }
 

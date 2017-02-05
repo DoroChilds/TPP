@@ -6,8 +6,8 @@
 \usage{
 tpp2dCreateReport(data = NULL, configFile = NULL, resultPath = NULL,
   documentType = "html_document", configTable = NULL, normalize = TRUE,
-  methods = c(""), idVar = NULL, fcStr = "rel_fc_protein",
-  fcStrUpdated = "norm_rel_fc_protein_", intensityStr = NULL,
+  methods = c(""), idVar = "gene_name", fcStr = "rel_fc_",
+  fcStrUpdated = "norm_rel_fc_", intensityStr = "signal_sum_",
   addCol = NULL, fcTolerance = NA, r2Cutoff = NA, fcCutoff = NA,
   slopeBounds = c(NA, NA), fTest = FALSE, trRef = "none")
 }
@@ -49,7 +49,7 @@ been performed}
 \item{slopeBounds}{Bounds on the slope parameter for dose response curve 
 fitting}
 
-\item{fTest}{boolean variable stating whether an fTest was peformed}
+\item{fTest}{boolean variable stating whether an fTest was performed}
 
 \item{trRef}{character string containing a valid system path to a previously generated TPP-TR
 reference object}

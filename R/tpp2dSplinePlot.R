@@ -10,23 +10,31 @@
 #' trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
 #' 
 #' @param data_2D result data.frame from a 2D-TPP CCR analysis
-#' @param trData character string with a link to a TPP-TR reference object RData file
+#' @param trRef character string of a valid system path to a TPP-TR reference 
+#' RData object
 #' @param fcStr character string indicating how columns that will contain the actual 
 #'   fold change values will be called. The suffix \code{fcStr} will be pasted in front of
 #'   the names of the experiments.
 #' @param idVar character string indicating name of the columns containing the unique protein 
-#'   identifiers
+#'   identifiers in the 2D data set
+#' @param refIdVar character string indicating name of the columns containing the unique protein 
+#'   identifiers in the reference data set
 #' @param refFcStr character string indicating how columns that will contain the fold change
 #'   values in the reference data set
 #' @param methods vector of character strings that indicate which methods has been used 
-#'   for the previous analysis (default: c("doseRespone"), alternative: c("splineFit") or 
-#'   c("doseRespone", "splineFit"))
+#'   for the previous analysis (default: c("doseResponse"), alternative: c("splineFit") or 
+#'   c("doseResponse", "splineFit"))
 #' @param verbose print description of problems for each protein for which splines fits could 
 #'   not be performed
 #' 
 #' @export
-tpp2dSplinePlot <- function(data_2D=NULL, trData=NULL, fcStr=NULL, idVar=NULL, methods=c("doseResponse", "splineFit"),
-                           refFcStr="norm_rel_fc_protein_", verbose=FALSE){  
+tpp2dSplinePlot <- function(data_2D=NULL, trRef=NULL, fcStr=NULL, idVar=NULL, 
+                            refIdVar = "Protein_ID",
+                            methods=c("doseResponse", "splineFit"),
+                            refFcStr="norm_rel_fc_protein_", verbose=FALSE){  
+  
+  ## to do: replace redundant parts by the function 'plot_2D_data_on_temperature_range'
+  
   if (is.null(idVar)){
     stop("Please specify idVar! A character string matching the column name of unique protein 
          identifiers!")
@@ -34,28 +42,22 @@ tpp2dSplinePlot <- function(data_2D=NULL, trData=NULL, fcStr=NULL, idVar=NULL, m
   
   message("Generating spline plots ...")
   
-  # pre-define global variables
-  passed_filter <- NULL
-  tppRefData <- NULL
-  variable <- NULL
-  condition <- NULL
-  value <- NULL
-  temperature <- NULL
-  tmp <- NULL
-  fc <- NULL
-  temps <- NULL
-  x <- NULL
-  y <- NULL
+  # pre-define variables to prevent NOTE by devtools::check()
+  passed_filter = tppRefData = variable = condition = value = temperature =  
+    uniqueID = tmp = fc = temps = x = y <- NULL
   
   # extract information von TPP-TR reference
-  load(trData)
+  load(trRef)
   detailData <- tppRefData$sumResTable$detail
   lblsByTemp <- tppRefData$lblsByTemp
   
   # loop over all protIDs
-  resultList <- lapply(as.character(unique(data_2D[[idVar]])), function(protID){
+  idVec <- data_2D[[idVar]] %>% as.character %>% unique
+  resultList <- lapply(idVec, function(protID){
     # subset 2D data
-    protData_2D <- data_2D[which(as.character(data_2D[[idVar]])==protID),] 
+    protData_2D <- data_2D %>% rename_("uniqueID" = idVar) %>% 
+      filter(uniqueID == protID)
+    #protData_2D <- data_2D[which(as.character(data_2D[[idVar]])==protID),] 
     if ("doseResponse" %in% methods){
       protData_2D <- protData_2D[, c(grep("normalized_to", colnames(data_2D)), 
                                      grep("temperature", colnames(data_2D)))] 
@@ -64,24 +66,29 @@ tpp2dSplinePlot <- function(data_2D=NULL, trData=NULL, fcStr=NULL, idVar=NULL, m
                                      grep("temperature", colnames(data_2D)))] 
     }
     
-    protData_detail = detailData[which(detailData$Protein_ID==protID),] 
+    protData_detail = detailData %>% rename_("uniqueID" = refIdVar) %>%
+      filter(uniqueID == protID)
+    #[which(detailData$Protein_ID==protID),] 
     if (length(which(!is.na(protData_detail)))<10){
       if (verbose){
-        message(paste("The TR reference dataset does not supply enough data point for", 
+        message(paste("The TR reference dataset does not supply enough data points for", 
                       protID, sep=" ")) 
       }
       return(NULL)
     }else if (!is.null(protData_2D) && nrow(protData_2D)>4){
       # create dataframe 
-      plotData <- do.call(rbind,lapply(as.character(lblsByTemp$lbl), function(l){
+      labelVec <- as.character(lblsByTemp$lbl)
+      plotList <- lapply(labelVec, function(l){
         ptrn = paste(refFcStr, l, "_", sep="")
         idx = grep(ptrn, names(protData_detail))
         lbl = rep(l, length(idx))
         fc = unlist(protData_detail[1, idx])
         tmp = rep(lblsByTemp[which(lblsByTemp$lbl == l), "temp"], length(idx))
         condition = gsub(ptrn, "",  names(protData_detail)[idx])
-        return(data.frame(lbl, tmp, fc, condition))
-      }))
+        dfTmp <- data.frame(lbl, tmp, fc, condition)
+        return(dfTmp)
+      })
+      plotData <- do.call(rbind,plotList)
       
       # remove rows containing NAs
       plotData <- plotData[complete.cases(plotData),]

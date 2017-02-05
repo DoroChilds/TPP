@@ -58,8 +58,9 @@ tpptrAnalyzeMeltingCurves <- function(data, pValMethod="robustZ",
   } else{
     pValCols <- qualCheckCols <- NULL
   }
-  resultTable <- mergeOutputTables_TR(dataList=dataSplit, pValDF=pValCols, 
-                                      qualCheckDF=qualCheckCols)
+  resultTable <- mergeOutputTables_TR(dataList = dataSplit, 
+                                      pValDF = pValCols, 
+                                      qualCheckDF = qualCheckCols)
   
   return(resultTable)
 }

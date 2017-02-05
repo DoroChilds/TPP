@@ -34,7 +34,7 @@ importFct_checkComparisons <- function(confgTable){
   if (length(validCompCols) > 0){
     message("Comparisons will be performed between the following experiments:")
     for (colName in validCompCols){
-      current_compEntries <- confgTable[,colName]
+      current_compEntries <- confgTable[[colName]]
       current_compRows    <- grep("[[:alnum:]]", current_compEntries)
       current_compExps    <- expNames[current_compRows]
       compRef    <- current_compExps[1]

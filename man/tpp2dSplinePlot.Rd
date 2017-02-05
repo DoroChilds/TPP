@@ -4,25 +4,29 @@
 \alias{tpp2dSplinePlot}
 \title{Fit splines and generate ggplot visualizations}
 \usage{
-tpp2dSplinePlot(data_2D = NULL, trData = NULL, fcStr = NULL,
-  idVar = NULL, methods = c("doseResponse", "splineFit"),
-  refFcStr = "norm_rel_fc_protein_", verbose = FALSE)
+tpp2dSplinePlot(data_2D = NULL, trRef = NULL, fcStr = NULL,
+  idVar = NULL, refIdVar = "Protein_ID", methods = c("doseResponse",
+  "splineFit"), refFcStr = "norm_rel_fc_protein_", verbose = FALSE)
 }
 \arguments{
 \item{data_2D}{result data.frame from a 2D-TPP CCR analysis}
 
-\item{trData}{character string with a link to a TPP-TR reference object RData file}
+\item{trRef}{character string of a valid system path to a TPP-TR reference 
+RData object}
 
 \item{fcStr}{character string indicating how columns that will contain the actual 
 fold change values will be called. The suffix \code{fcStr} will be pasted in front of
 the names of the experiments.}
 
 \item{idVar}{character string indicating name of the columns containing the unique protein 
-identifiers}
+identifiers in the 2D data set}
+
+\item{refIdVar}{character string indicating name of the columns containing the unique protein 
+identifiers in the reference data set}
 
 \item{methods}{vector of character strings that indicate which methods has been used 
-for the previous analysis (default: c("doseRespone"), alternative: c("splineFit") or 
-c("doseRespone", "splineFit"))}
+for the previous analysis (default: c("doseResponse"), alternative: c("splineFit") or 
+c("doseResponse", "splineFit"))}
 
 \item{refFcStr}{character string indicating how columns that will contain the fold change
 values in the reference data set}

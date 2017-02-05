@@ -26,7 +26,7 @@ passed to function \code{\link{nls}} for curve fitting.}
 \item{maxAttempts}{maximal number of curve attempts to fit melting curve to 
 fold change medians when computing normalization factors.}
 
-\item{fixedReference}{name of a fixed reference experiment for normaliztion. 
+\item{fixedReference}{name of a fixed reference experiment for normalization. 
 If NULL (default), the experiment with the best R2 when fitting a melting 
 curve through the median fold changes is chosen as the reference.}
 }

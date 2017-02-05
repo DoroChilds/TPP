@@ -54,8 +54,8 @@ The imported dataset has to contain measurements obtained by a
   The dataset can be specified by filename in the \code{configTable} 
   argument, or given directly in the \code{data} argument
   
-  The default settings are adjusted to analyse data of the pyhton package 
-  \code{isobarQuant}. You can also customise them for your own dataset.
+  The default settings are adjusted to analyze data of the python package 
+  \code{isobarQuant}. You can also customize them for your own dataset.
   
   The \code{configTable} argument is a dataframe, or the path to a 
   spreadsheet (tab-delimited text-file without quoted strings, or xlsx format). 

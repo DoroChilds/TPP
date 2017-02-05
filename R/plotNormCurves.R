@@ -8,8 +8,12 @@ plotNormCurves <- function(modelList, xMat, fcMat, r2Vec, nNormP, plotTheme){
   
   ## Prepare data objects for plotting:
   xLen      <- 100
-  xMatLarge <- sapply(grNames, function(g) seq(from=min(xMat[,g]), to=max(xMat[,g]), length.out=xLen))
-  yPred     <- sapply(grNames, function(g) robustNlsPredict(model=modelList[[g]], newdata=list(x=xMatLarge[,g])))
+  xMatLarge <- sapply(grNames, function(g) seq(from=min(xMat[,g]), 
+                                               to=max(xMat[,g]), 
+                                               length.out=xLen))
+  yPred     <- sapply(grNames, function(g) {
+    robustNlsPredict(model=modelList[[g]], newdata=list(x=xMatLarge[,g]))
+    })
   
   plotDF_curves = data.frame()
   plotDF_points = data.frame()
@@ -24,12 +28,12 @@ plotNormCurves <- function(modelList, xMat, fcMat, r2Vec, nNormP, plotTheme){
                           data.frame(Temperature = xMat[, gn], 
                                      FoldChange = fcMat[, gn],
                                      condition = rep(gn, nrow(xMat))))
-    #                                condition = rep(gn, nrow(xMatLarge))))
 
     plotDF_anno <- rbind(plotDF_anno, 
                          data.frame(xPos = max(xMat)*0.95,
                                     yPos = yMax*0.95,
-                                    lab = paste('R\U00B2', '=', signif(r2Vec[gn], 3)),
+                                    lab = paste('R\U00B2', '=', 
+                                                signif(r2Vec[gn], 3)),
                                     condition = gn ))
   }
   

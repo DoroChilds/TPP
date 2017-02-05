@@ -1,4 +1,4 @@
-computeNormFactors <- function(data, startPars, maxAttempts, fixedReference=NULL){
+computeNormFactors <- function(data, startPars, maxAttempts, fixedReference){
   ## Fit sigmoids to median fold changes of each treatment group and determine 
   ## best fit.
   message("Computing normalization coefficients:")
@@ -11,7 +11,13 @@ computeNormFactors <- function(data, startPars, maxAttempts, fixedReference=NULL
   ## Fit sigmoids to each median curve:
   message("2. Fitting melting curves to medians.")
   xMat <- sapply(grNames, function(n) {data[[n]]$temperature}, simplify=TRUE)
-  modelList <- sapply(grNames, function(n){fitSigmoidTR(xVec=xMat[,n], yVec=yMat[,n], startPars=startPars, maxAttempts=maxAttempts)}, simplify=FALSE)
+  modelList <- sapply(grNames, function(n){
+    fitSigmoidTR(xVec = xMat[,n], 
+                 yVec = yMat[,n], 
+                 startPars = startPars, 
+                 maxAttempts = maxAttempts, 
+                 fixT0 = TRUE)
+    }, simplify=FALSE)
   
   ## Melting curve parametes:
   r2 <- sapply(grNames, function(gn) rSquared(model=modelList[[gn]], y=yMat[,gn]))

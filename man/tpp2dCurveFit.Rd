@@ -4,32 +4,25 @@
 \alias{tpp2dCurveFit}
 \title{Run TPP-CCR analysis for 2D-TPP experiment}
 \usage{
-tpp2dCurveFit(configFile, data, nCores = 1, naStrs = c("NA", "n/d", "NaN",
-  "<NA>"), fcStr = "norm_rel_fc_protein_", idVar = NULL,
-  nonZeroCols = "qupm", r2Cutoff = 0.8, fcCutoff = 1.5,
-  slopeBounds = c(1, 50), fcTolerance = 0.1)
+tpp2dCurveFit(configFile = NULL, data, nCores = 1, naStrs = NULL,
+  fcStr = NULL, idVar = NULL, nonZeroCols = NULL, r2Cutoff = 0.8,
+  fcCutoff = 1.5, slopeBounds = c(1, 50), fcTolerance = 0.1)
 }
 \arguments{
-\item{configFile}{list of dataframes, that specifies important details of the 2D-TPP 
-experiment for each temperature.}
+\item{configFile}{DEPCRECATED}
 
-\item{data}{data.frame, that contains the data of the 2D-TPP 
+\item{data}{data frame that contains the data of the 2D-TPP 
 experiment for each temperature.}
 
 \item{nCores}{numeric value stating how many cores are to be used for computation}
 
-\item{naStrs}{character vector indicating missing values in the data table. 
-When reading data from file, this value will be passed on to the argument}
+\item{naStrs}{DEPCRECATED}
 
-\item{fcStr}{character string indicating which columns contain the actual 
-fold change values. Those column names containing the suffix \code{fcStr} 
-will be regarded as containing fold change values.}
+\item{fcStr}{DEPCRECATED}
 
-\item{idVar}{character string indicating which data column provides the 
-unique identifiers for each protein.}
+\item{idVar}{DEPCRECATED}
 
-\item{nonZeroCols}{character string indicating a column that will be used for
-filtering out zero values.}
+\item{nonZeroCols}{DEPCRECATED}
 
 \item{r2Cutoff}{Quality criterion on dose response curve fit.}
 
@@ -49,10 +42,29 @@ Performs analysis of a TPP-CCR experiment by invoking the routine
   for TPP-CCR curve fitting for each temperature of the sample.
 }
 \examples{
-  load(system.file("example_data/2D_example_data/referenceCCRConfig.RData", package="TPP"))
-  load(system.file("example_data/2D_example_data/exampleRunCCRInput.RData", package="TPP"))
-  CCRresults <- tpp2dCurveFit(configFile=exampleCCRConfig, data=exampleRunCCRInput, 
-                               idVar="unique_ID")
+# Preparation:
+data(panobinostat_2DTPP_smallExample)
+
+# Import data:
+datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+                      data = panobinostat_2DTPP_data,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+
+# Compute fold changes:
+datFC <- tpp2dComputeFoldChanges(data = datIn)
+
+# Perform median normalization:
+datNorm <- tpp2dNormalize(data = datFC)
+
+# View updated attributes. Now contain field 'fcStrNorm' indicating prefix
+# of the fold change columns after normalization.
+attr(datNorm, "importSettings")["fcStrNorm"]
+
+# Perform dose response curve fitting and pEC50 calculation:
+datFit <- tpp2dCurveFit(data = datNorm)
   
 }
 

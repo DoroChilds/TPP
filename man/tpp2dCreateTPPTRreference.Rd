@@ -5,8 +5,8 @@
 \title{Create TPP-TR reference for 2D-TPP experiment}
 \usage{
 tpp2dCreateTPPTRreference(trConfigTable = NULL, resultPath = NULL,
-  outputName = NULL, createFCboxplots = FALSE, idVar = "representative",
-  fcStr = "rel_fc_protein_", qualColName = "qupm", normalize = TRUE)
+  outputName = NULL, createFCboxplots = FALSE, idVar = "gene_name",
+  fcStr = "rel_fc_", qualColName = "qupm", normalize = TRUE)
 }
 \arguments{
 \item{trConfigTable}{config file for a reference TR dataset}
@@ -14,7 +14,7 @@ tpp2dCreateTPPTRreference(trConfigTable = NULL, resultPath = NULL,
 \item{resultPath}{character string containing a valid system path to which folder output files 
 will be written}
 
-\item{outputName}{character string which will be used as name of the ouput folder}
+\item{outputName}{character string which will be used as name of the output folder}
 
 \item{createFCboxplots}{boolean flag indicating whether quality control boxplots are to be plotted}
 
@@ -43,7 +43,7 @@ A TPP-TR reference object for a certain cell line with different supporting file
  a table matching each temperature to an isobaric label}
 }
 \description{
-Performs a reference analysis of a TPP-TR experiment amd generates boxplots for
+Performs a reference analysis of a TPP-TR experiment and generates boxplots for
  the distribution of fold changes at the different temperatures if desired.
 }
 

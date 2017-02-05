@@ -1,5 +1,5 @@
 % \VignetteEngine{knitr::knitr}
-% \VignetteIndexEntry{TPP_introduction}
+% \VignetteIndexEntry{TPP_introduction_NPARC}
 % \VignettePackage{TPP}
 \documentclass[10pt,a4paper,twoside]{article}
 
@@ -24,7 +24,7 @@ European Molecular Biology Laboratory (EMBL),
 <<opts, include=FALSE, echo=FALSE>>=
 knitr::opts_chunk$set(concordance=TRUE, 
                       eval = TRUE,
-                      cache = FALSE,
+                      cache = TRUE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,
@@ -34,7 +34,7 @@ knitr::opts_chunk$set(concordance=TRUE,
 \maketitle
 
 \begin{abstract}
-This document demonstrates how to analyze TPP-TR (temperature range) experiments by the NPARC approach. NPARC is a recent extension to the \Rpackage{TPP} package. It offers a novel methodology to model the temperature dependent melting behaviour of each protein, and to detect significant changes in this behaviour due to changes in experimental conditions like drug treatment \cite{savitski2014tracking}.
+This document demonstrates how to analyze TPP-TR (temperature range) experiments by the NPARC approach. NPARC is a recent extension to the \Rpackage{TPP} package. It offers a novel methodology to model the temperature dependent melting behaviour of each protein, and to detect significant changes in this behavior due to changes in experimental conditions like drug treatment \cite{savitski2014tracking}.
 
 In brief, the melting curve of each protein is represented by natural splines, either once for all conditions (null model), or separately for different experimental conditions (alternative model). Condition specific effects are then detected by testing for significant improvements in goodnes-of-fit of the alternative model relative to the null model. % to do: cite our manuscript
 \end{abstract}
@@ -75,7 +75,7 @@ TRresults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data,
                           plotCurves = FALSE) 
 @
 Here, the new methodology is activated by the argument \texttt{method = "splinefit"} (available since package version 3.0.0)
-% This performs the melting curve fitting procedure in parallel on a maximum of two CPUs (requirement for package vignettes). Without specifying the \texttt{nCores} argument, fitting is performed by default on the maximum number of CPUs on your device.
+This performs the spline fitting procedure in parallel on a maximum of two CPUs (requirement for package vignettes). Without specifying the \texttt{nCores} argument, fitting is performed by default on the maximum number of CPUs on your device.
 
 
 

@@ -5,25 +5,63 @@
 #'   creates respective columns which are added two the data frame which is handed over
 #'  
 #' @examples 
-#'   data("panobinostat_2DTPP_smallExample")
-#'   load(system.file("example_data/2D_example_data/fractAbundInData.RData", package="TPP"))
-#'   fracAbund <- tpp2dCalcFractAbundance(configTable = panobinostat_2DTPP_config, 
-#'                 data = fractAbundInData,
-#'                 intensityStr = "sumionarea_protein_", 
-#'                 idVar = "representative")
-#'  
-#' @param configTable data frame that specifies important details of the TPP-CCR experiment.
+#' data(panobinostat_2DTPP_smallExample)
+#' 
+#' # Import data:
+#' datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+#'                       data = panobinostat_2DTPP_data,
+#'                       idVar = "representative",
+#'                       addCol = "clustername",
+#'                       intensityStr = "sumionarea_protein_",
+#'                       nonZeroCols = "qusm")
+#'
+#' # View attributes of imported data (experiment infos and import arguments):
+#' attr(datIn, "importSettings") %>% unlist
+#' attr(datIn, "configTable")
+#' 
+#' # Compute fractional abundance:
+#' datDMSORatio <- tpp2dCalcFractAbundance(data = datIn)
+#' colnames(datDMSORatio)
+#' 
+#' @param configTable DEPCRECATED
 #' @param data data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).
-#' @param intensityStr character string indicating which columns contain the sumionarea values.
-#' @param idVar character string indicating which data column provides the 
-#'   unique identifiers for each protein.
+#' @param intensityStr DEPCRECATED
+#' @param idVar DEPCRECATED
+
 #'  
 #' @return Data frame that was handed over with additional columns of fractional abundance
 #'   and DMSO1 vs DMSO2 ratio
 #'   
 #' @export
-tpp2dCalcFractAbundance <- function(configTable=NULL, data=NULL, intensityStr=NULL, idVar=NULL){
+tpp2dCalcFractAbundance <- function(configTable = NULL, data, 
+                                    intensityStr = NULL, 
+                                    idVar = NULL){
+  
+  if (!missing(configTable)){
+    warning("`configTable` is deprecated.", call. = TRUE)
+  }
+  
+  if (!missing(intensityStr)){
+    warning("`intensityStr` is deprecated.", call. = TRUE)
+  }
+  
+  if (!missing(idVar)){
+    warning("`idVar` is deprecated.", call. = TRUE)
+  }
+  
+  # Check for missing function arguments
+  checkFunctionArgs(match.call(), c("data"))
+  
   message("Calculating fractional abundance and DMSO1 vs. DMSO2 ratio...")
+  
+  # Obtain config table used for data import (stored as attribute of imported data):
+  configTable <- attr(data, "configTable")
+  
+  # Obtain settings used for data import (stored as attribute of imported data):
+  importSettings <- attr(data, "importSettings")
+  intensityStr <- importSettings$intensityStr
+  idVar <- importSettings$proteinIdCol
+  
   # determine adjacent temperature pairs
   compound <- as.character(configTable$Compound[1])
   all.temps <- configTable$Temperature
@@ -61,5 +99,10 @@ tpp2dCalcFractAbundance <- function(configTable=NULL, data=NULL, intensityStr=NU
     }
     return(CCR.subset)
   })
-  return(do.call(rbind, subset.list))
+  
+  out <- do.call(rbind, subset.list)
+  attr(out, "importSettings") <- importSettings
+  attr(out, "configTable")    <- configTable
+  
+  return(out)
 }

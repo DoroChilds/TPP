@@ -5,7 +5,7 @@
 \title{Plot quality control pEC50 plots}
 \usage{
 tpp2dPlotQCpEC50(resultTable = NULL, resultPath = NULL, trRef = NULL,
-  idVar = "representative")
+  idVar = "gene_name")
 }
 \arguments{
 \item{resultTable}{data.frame containing the results of a CCR analysis of 2D-TPP data}

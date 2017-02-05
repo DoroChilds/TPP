@@ -36,7 +36,7 @@
 #' intervals for curve fitting. Default to NULL.
 #' @param resultPath location where to store the melting curve plots.
 #' @param ggplotTheme ggplot theme for melting curve plots.
-#' @param doPlot boolan value indicating whether melting curves should be
+#' @param doPlot boolean value indicating whether melting curves should be
 #'   plotted, or whether just the curve parameters should be returned.
 #' @param startPars start values for the melting curve parameters. Will be
 #'   passed to function \code{\link{nls}} for curve fitting.
@@ -54,6 +54,10 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
                           ggplotTheme=tppDefaultTheme(), doPlot=TRUE, 
                           startPars=c("Pl"=0, "a"=550, "b"=10), 
                           maxAttempts=500, nCores='max', verbose=FALSE){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  p <- NULL
   
   # set parameter if curves are plotted
   #doPlot <- getOption("TPPTR_plot") && !is.null(resultPath)
@@ -160,8 +164,13 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
     # parallel execution with foreach and dopar 
     dfCurvePars <- foreach(p=protIDs, .combine=rbind, .inorder=FALSE, .verbose=FALSE, 
                            .packages = c("ggplot2", "gridExtra")) %dopar% {
-                             tpptrHelperFitandPlot(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
-                                                   addLegend, resultPath, plotPathsFull, useCI, doPlot)
+                             tpptrHelperFitandPlot(p, yMat, xMat, ciMat, 
+                                                   startPars, maxAttempts, 
+                                                   expNames, verbose, 
+                                                   ggplotTheme, grConditions, 
+                                                   compDF, 
+                                                   addLegend, resultPath, 
+                                                   plotPathsFull, useCI, doPlot)
                            }
     
     
@@ -173,8 +182,13 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
     # serial execution with laapply and do.call("rbind", ...) 
     dfCurvePars <- lapply(protIDs, 
                           function(p){          
-                            tpptrHelperFitandPlot(p, yMat, xMat, ciMat, startPars, maxAttempts, expNames, verbose, ggplotTheme, grConditions, compDF, 
-                                                  addLegend, resultPath, plotPathsFull, useCI, doPlot)
+                            tpptrHelperFitandPlot(p, yMat, xMat, ciMat, 
+                                                  startPars, maxAttempts, 
+                                                  expNames, verbose, 
+                                                  ggplotTheme, grConditions, 
+                                                  compDF, 
+                                                  addLegend, resultPath, 
+                                                  plotPathsFull, useCI, doPlot)
                           })
     
     dfCurvePars = do.call('rbind', dfCurvePars)
@@ -182,7 +196,8 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
   
   
   timeDiff <- Sys.time()-t1
-  message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", units(timeDiff), "\n")
+  message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", 
+          units(timeDiff), "\n")
   gc(verbose=FALSE)
   message("Melting curves fitted sucessfully!")  
   
@@ -209,13 +224,18 @@ tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts,
   # Helper function that combines the code for fitting and plotting of melting 
   # curves for parallel or sequential (in lapply) execution
   
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  protID <- NULL
+  
   # retrieving options via getOptions doesn't work with parallel execution
   # therefore options are passed as variables (useCI, doPlot)
   
   yDF = subset(yMat, protID==p)
   
   resFC <- fitMeltCurves(xMat, yDF=yDF, colPrefix = "FC",
-                         startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                         startPars=startPars,maxAttempts=maxAttempts, 
+                         expNames=expNames, 
                          protID=p, verbose=verbose)
   
   # if we ant to use the CIs give the subseit of the CI matrix to the function
@@ -229,11 +249,13 @@ tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts,
     ciDFLower[,-(1:2)] <- yDF[,-(1:2)] - ciDF[,-(1:2)] / 2
     
     resUpper <- fitMeltCurves(xMat, yDF=ciDFUpper, colPrefix = "CI",
-                              startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                              startPars=startPars,maxAttempts=maxAttempts, 
+                              expNames=expNames, 
                               protID=p, verbose=verbose)
     
     resLower <- fitMeltCurves(xMat, yDF=ciDFLower, colPrefix = "CI",
-                              startPars=startPars,maxAttempts=maxAttempts, expNames=expNames, 
+                              startPars=startPars,maxAttempts=maxAttempts, 
+                              expNames=expNames, 
                               protID=p, verbose=verbose)
     
     listUpper = resUpper[[3]]
@@ -248,17 +270,23 @@ tpptrHelperFitandPlot <- function(p, yMat, xMat, ciMat, startPars, maxAttempts,
   }
   
   if(doPlot){
-    pl <- plotMeltingCurve(modelList = resFC[[3]], listUpper = listUpper, listLower = listLower,
-                           xMat = xMat, fcMat = resFC[[2]], curvePars = resFC[[1]], protID = p,
-                           plotTheme = ggplotTheme, expConditions = grConditions, expComps = compDF, 
-                           addLegend = addLegend, useCI=useCI)
+    pl <- plotMeltingCurve(modelList = resFC[[3]], 
+                           listUpper = listUpper, 
+                           listLower = listLower,
+                           xMat = xMat, 
+                           fcMat = resFC[[2]], 
+                           curvePars = resFC[[1]], 
+                           protID = p,
+                           plotTheme = ggplotTheme, 
+                           expConditions = grConditions, 
+                           expComps = compDF, 
+                           addLegend = addLegend, 
+                           useCI=useCI)
     
     if(is.null(pl)){
       plotPathRel <- NA_character_
     } else {
       plotPathRel <- plotPathsFull[p]
-      # ggsave(filename=file.path(resultPath, plotPathRel), pl,width=20, height=25, units="cm")
-      
       pdf(file=file.path(resultPath, plotPathRel), width=7.87, height=9.84, 
           useDingbats=FALSE)
       grid.draw(pl)

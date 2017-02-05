@@ -4,10 +4,10 @@
 \alias{tpp2dAddAdditionalInfo}
 \title{Add additional info to 2D-TPP CCR output data}
 \usage{
-tpp2dAddAdditionalInfo(data, idVar = "representative")
+tpp2dAddAdditionalInfo(data, idVar = "gene_name")
 }
 \arguments{
-\item{data}{ouput table returned by the \code{tpp2dCurveFit} function}
+\item{data}{output table returned by the \code{tpp2dCurveFit} function}
 
 \item{idVar}{character string indicating which column of the data table contains unique
 protein ids}

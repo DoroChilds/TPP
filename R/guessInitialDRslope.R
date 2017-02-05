@@ -1,9 +1,14 @@
 guessInitialDRslope <- function(dose, response, hill_bds, cpd_effect) {
   ## Guess initial Hill slope for logistic curve fit of TPP-CCR experiments.
-
+  
   max_slope <- NA
   slopes <- c()
   perc <- 1
+  
+  # Sort drug and protein concentrations: 
+  o <- order(dose, decreasing = FALSE)
+  dose <- dose[o]
+  response <- response[o]
   
   # move with sliding window of size 3 over concentrations:
   # * fit line to corresponding responses

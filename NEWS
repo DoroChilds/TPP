@@ -115,37 +115,10 @@ Updated package vignette.
 2.1.6 (Jan-18-2016)
  o New CCR output column 'pEC50_quality_check' now reports pec50 values with
    the same sign as the 'pec50' column.
- o Remove importFrom(grid, unit), because unit() is alreay imported by ggplot2 
-   (version 2.0.0.), which caused a warning. 
-   Added dependency ggplot2 (>= 2.0.0) to ensure that grid::unit is still available.
    
-2.1.7 (Jan-22-2016)
- o Bugfixes required after recent ggplot2 update:
-    - Included selective import of the grid::gTree function for QC plots.
-    - Fixed problem with QC-plot histograms to re-activate plotting of contours 
-      in addition to areas.
-
-   
-2.3.1
-Update version number after the new Bioconductor Release 3.3 was launched on 
-https://www.bioconductor.org/packages/release/bioc/html/TPP.html
-The version number stays in accordance with Devel version in the new Release.
-
-2.3.2 (Apr-16-2016)
-Removed unit test that causes R CMD check to crash  since the latest update of package 'testthat'.
-
-2.3.3 (Jun-02-2016)
- o Bugfixes in the functions responsible for filtering by user-specified QC columns (e.g. 'qssm')  for normalization set creation. It is now possible to leave the 'otherRequirements' slot in the normalization criteria empty.
- o Fixed typos in function documentation of 'analyzeTPPTR()'
- o Fixed bug in plotColors for the case when no comparisons are specified
-
-2.3.4 (Jun-20-2016)
- o Improved documentation of non-exported functions by ensuring that there is 
- at least a one-line comment explaining what the function does.
-
 2.99.0 (Oct-06-2016)
- o Major update: Extended package to analyse 2D-TPP experiments
- o Major update: Extended package to analyse TPP-TR experiments by 
+ o Major update: Extended package to analyze 2D-TPP experiments
+ o Major update: Extended package to analyze TPP-TR experiments by 
    "non-parametric analysis of response curves" (NPARC), a non-parametrc 
     spline-based test for treatment effects.
  o Bugfix in 'tpptrCurveFit': restrict file names to 255 characters when creating
@@ -174,3 +147,24 @@ Removed unit test that causes R CMD check to crash  since the latest update of p
 3.1.3 (Dec-07-2016)
  o Bugfix: ensure correct handling of drug concentrations when they are 
            imported in scientific notation (xx.xxE-x)
+
+3.1.4 (Feb-05-2017)
+ o Bugfix: Initialize variables by NULL to prevent "no visible binding for 
+   global variable" NOTE by R CMD check in many functions
+ o Prepare merging with Bioconductor DEVEL by making sure that functions won't crash after the update -> Synchronize interfaces, annotate deprecated argument, add unit tests
+ o Re-introduce deprecated arguments (with warning) for consistency with Bioconductor RELEASE version.
+ o Cosmetic changes to the vignettes
+ o General code revision:
+ - Deprecate functions and arguments, primarily in the newly introduced 2D part.
+
+ o Bugfixes:
+  - sort x and y values before DR curve fitting because the functions for initial parameter estimation are dependent on the correct ordering
+  - fix typos in documentation
+  - Improved memory efficiency for spline fitting
+  - Fixed bug with the display of plot paths in the NPARC output.
+  - Bugfix in Venn diagram creation: supress useless VD logfiles
+
+  - Bugfix in p-value calculation. Filter requirements have been adjusted accordingly.
+ o Bugfixes when simultaneously starting spline fitting and melting curve fitting:
+    - Plot paths in excel output are stored in separate columns for spline and melting curve fits
+    - Combination of result tables no works without generating redundancies

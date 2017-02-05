@@ -34,7 +34,7 @@
 #'   passed to function \code{\link{nls}} for curve fitting.
 #' @param maxAttempts maximal number of curve attempts to fit melting curve to 
 #'   fold change medians when computing normalization factors.
-#' @param fixedReference name of a fixed reference experiment for normaliztion. 
+#' @param fixedReference name of a fixed reference experiment for normalization. 
 #'   If NULL (default), the experiment with the best R2 when fitting a melting 
 #'   curve through the median fold changes is chosen as the reference.
 #' @seealso \code{\link{tpptrImport}}

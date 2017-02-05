@@ -6,209 +6,222 @@
 #' @examples
 #' data(hdacTR_smallExample)
 #' tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
-#' normResults <- tpptrNormalize(data = tpptrData, normReqs = tpptrDefaultNormReqs())
-#' normData_eSets <- normResults$normData
-#' normData_longTable <- tpptrTidyUpESets(normData_eSets)$proteinMeasurements
-#' splineFits <- tpptrFitSplines(data = normData_longTable,
+#' tidyData <- tpptrTidyUpESets(tpptrData)
+#' splineFits <- tpptrFitSplines(data = tidyData, nCores = 1,
 #'                               factorsH1 = "condition", returnModels = TRUE)
 #' testResults <- tpptrFTest(fittedModels = splineFits, doPlot = FALSE)
-#' tpptrPlotSplines(data = normData_longTable, fittedModels = splineFits,
-#'                  factorsH1 = "condition", factorsH0 = c(),
-#'                  testResults = testResults, resultPath = getwd(),
-#'                  plotRanked = TRUE, maxRank = 20)
+#' tpptrPlotSplines(data = tidyData, fittedModels = splineFits,
+#'                  individual = FALSE,
+#'                  testResults = testResults, resultPath = getwd())
 #' 
-#' @param data the data to be plotted.
-#' @param factorsH1 which factors were included in the alternative model?
-#'        (necessary for correct prediction)
-#' @param factorsH0 which factors were included in the null model? 
-#'        (necessary for correct prediction)
+#' @param data long table of proteins measurements that were used for spline fitting.
+#' @param factorsH1 DEPRECATED
+#' @param factorsH0 DEPRECATED
 #' @param fittedModels long table of fitted models. 
 #'        Output of \code{\link{tpptrFitSplines}}.
 #' @param testResults long table of p-values per protein. 
 #'        Output of \code{\link{tpptrFTest}}.
-#' @param resultPath location where to store the spline plots per protein.
-#' @param ggplotTheme ggplot theme for melting curve plots.
-#' @param plotAlphabetical Generate a summary pdf with 20 plots per page in 
-#' alphabetical order?
-#' @param plotRanked Generate a summary pdf with 20 plots per page, ordered by p-value?
-#' @param maxRank if \code{plotRanked = TRUE}, how many of the top hits should 
-#' be plotted (default: 500)?
+#' @param resultPath an optional character vector with the name of the path where the plots should be saved.
+#' @param individual logical. Export each plot to individual files?
+#' @param overview logical. Generate summary pdfs?
+#' @param returnPlots logical. Should the ggplot objects be returned as well?
+#' @param control a list of general settings. 
+#' @param maxRank DEPRECATED
+#' @param highlightBelow DEPRECATED
+#' @param plotIndividual DEPRECATED
+#' @param plotAlphabetical DEPRECATED
+#' Contains the following fields:
+#' \itemize{ 
+#' \item{\code{nCores}: number of CPUs for parallel production of plots per 
+#' protein if \code{individual = TRUE} (default: "max")}
+#' \item{\code{maxRank}: how many of the top hits should 
+#' be plotted if \code{overview = TRUE} (default: 500)} 
+#'  \item{\code{highlightBelow}: maximum adjusted p-value 
+#' for which a protein is highlighted by a different background color if 
+#' \code{overview = TRUE} (default: 0.05)}
+#' }
 #' 
 #' @details Plots of the natural spline fits will be stored in a subfolder with 
 #' name \code{Spline_Fits} at the location specified by \code{resultPath}.
 #' 
-#' @seealso \code{\link{ns}, \link{AICc}, \link{tppDefaultTheme}, 
+#' Exporting each plot to individual files (individual = TRUE) can 
+#' cost runtime and the resulting files can be tedious to browse. 
+#' If you just want to browse the results, use \code{overview = TRUE} 
+#' instead.
+#' 
+#' If \code{overview = TRUE}, two summary PDFs are created that enable quick 
+#' browsing through all results.  They contain the plots in alphacetical order 
+#' (\code{splineFit_alphabetical.pdf}), or ranked by p-values 
+#' (\code{splineFit_top_xx.pdf}, where xx is the maximum rank defined by 
+#' \code{overviewSettings$maxRank}). 
+#' 
+#' 
+#' @seealso \code{\link{ns}, \link{AICc}, 
 #' \link{tpptrFitSplines}, \link{tpptrFTest}}
 #' @export
-tpptrPlotSplines <- function(data, factorsH1, factorsH0 = c(), 
+tpptrPlotSplines <- function(data, factorsH1 = NULL, factorsH0 = NULL, 
                              fittedModels, testResults,
-                             resultPath, ggplotTheme = tppDefaultTheme(),
-                             plotAlphabetical = FALSE, 
-                             plotRanked = TRUE, maxRank = 500){
-  theme_set(ggplotTheme)
-  a = 0.05
-  highlTxt <- paste("adjusted p-value <=", a) 
+                             resultPath = NULL,
+                             individual = TRUE,
+                             overview = FALSE,
+                             returnPlots = FALSE,
+                             control = list(nCores = "max",
+                                            maxRank = 500, 
+                                            highlightBelow = 0.05),
+                             maxRank = NULL, highlightBelow = NULL,
+                             plotIndividual = NULL, plotAlphabetical = NULL){
   
-  ## Define output directory and create it, if necessary:
-  plotDir <- "Spline_Fits"
-  if (!file.exists(file.path(resultPath, plotDir))){
-    dir.create(file.path(resultPath, plotDir), recursive=TRUE)
+  # Check for missing function arguments
+  checkFunctionArgs(match.call(), 
+                    c("data", "fittedModels", "testResults"))
+  
+  if (!missing(factorsH1)) 
+    warning("`factorsH1` is deprecated", call. = TRUE)
+  
+  if (!missing(factorsH0)) 
+    warning("`factorsH0` is deprecated", call. = TRUE)
+  
+  if (!missing(maxRank)) 
+    warning("`maxRank` is deprecated", call. = TRUE)
+  
+  if (!missing(highlightBelow)) 
+    warning("`highlightBelow` is deprecated", call. = TRUE)
+  
+  if (!missing(plotIndividual)) 
+    warning("`plotIndividual` is deprecated", call. = TRUE)
+  
+  if (!missing(plotAlphabetical)) 
+    warning("`plotAlphabetical` is deprecated", call. = TRUE)
+  
+  if (!("uniqueID" %in% colnames(data)))
+    stop("'data' must contain a column called 'uniqueID'")
+  
+  if (!("uniqueID" %in% colnames(fittedModels)))
+    stop("'fittedModels' must contain a column called 'uniqueID'")
+  
+  if (!("uniqueID" %in% colnames(testResults)))
+    stop("'testResults' must contain a column called 'uniqueID'")
+  
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  uniqueID = p_NPARC = p_adj_NPARC = splineDF = p.adjStr = pageByP = pageByID =
+    textString = path <- NULL
+  
+  ## If export to files is desired, define paths first
+  doPlot <- !is.null(resultPath)
+  
+  if (doPlot){
+    
+    plotDir <- file.path(resultPath,"Spline_Fits")
+    
+  } else {
+    
+    plotDir <- NULL
+    
+    if (!returnPlots){
+      warning("'resultPath' is set to NULL and 'returnPlots' is set to FALSE. With these settings, no output will be produced and the plots will be lost.", call. = TRUE)
+    }
   }
   
-  ## Predict values across the whole range of the independent variable 
-  ## (avoids re-fitting by geom_smooth):
-  compFactorDF <- data %>% select_(factorsH1) %>% distinct %>% 
-    mutate_(colorCol = factorsH1) %>% mutate(colorCol = factor(colorCol)) 
-  xVec <- unique(data$x)
-  xRange <- range(xVec)
-  xDat <- compFactorDF %>% group_by_(factorsH1) %>%
-    do(data.frame(x = seq(xRange[1], xRange[2], length.out = 50))) %>%
-    ungroup
-  message("Predict values for plotting based on the null and alternative models.")
-  
-  modelPred <- fittedModels %>%
-    filter(successfulFit) %>% 
-    group_by(uniqueID, testHypothesis) %>%
-    do(data.frame(xDat, y = predict(.$fittedModel[[1]], newdata = xDat))) %>%
-    ungroup %>%
-    left_join(compFactorDF, by = factorsH1)
-  
-  modelPredH0 <- filter(modelPred, testHypothesis == "null") %>% 
-    select(-testHypothesis)
-  modelPredH1 <- filter(modelPred, testHypothesis == "alternative") %>% 
-    select(-testHypothesis)
-  
-  ## Prepare data:
-  ## 1. Test results:
-  testResPlot <- testResults %>% 
-    mutate(uniqueID = as.character(uniqueID)) %>%
+  ## Prepare test results:
+  annotatedTestResults <- testResults %>%
     select(uniqueID, p_NPARC, p_adj_NPARC) %>%
+    left_join(distinct(fittedModels, uniqueID, splineDF), by = "uniqueID") %>%
     # Create text for p-value annotation of each plot:
     mutate(pStr = format(p_NPARC, scientific = TRUE, digits = 2),
            p.adjStr = format(p_adj_NPARC, scientific = TRUE, digits = 2),
-           textStr = paste0("p.adj=", p.adjStr)) %>%
+           textString = paste0("p.adj=", p.adjStr,"\n", 
+                               "spline degrees of freedom=",splineDF)) %>%
+    # add empty rows for proteins with unsuccessful model fits
+    right_join(distinct(data, uniqueID), by = "uniqueID") %>% 
+    # convert factors to characters to enable sorting by p-values:
+    mutate(uniqueID = as.character(uniqueID)) %>%
     # Assign page numbers for plotting ranked by p-value:
     arrange(p_adj_NPARC) %>%
     mutate(pageByP = assignBins(rev(1:nrow(.)), 20, collapseSmallest = FALSE)) %>%
     mutate(pageByP = plyr::mapvalues(pageByP, unique(pageByP), rev(unique(pageByP)))) %>%
+    # Re-assign levels, otherwise sorting by arrange() could not give the real 
+    # alphabetical order:
+    mutate(uniqueID = factor(as.character(uniqueID))) %>% 
     # Assign page numbers for plotting in alphabetical order:
-    mutate(uniqueID = factor(as.character(uniqueID))) %>% # Re-assign levels, otherwise sorting by arrange() could not give the real alphabetical order
     arrange(uniqueID) %>%
     mutate(pageByID = assignBins(rev(1:nrow(.)), 20, collapseSmallest = FALSE)) %>%
-    mutate(pageByID = mapvalues(pageByID, unique(pageByID), rev(unique(pageByID))))
+    mutate(pageByID = mapvalues(pageByID, unique(pageByID), rev(unique(pageByID)))) %>%
+    # Convert back to character:
+    mutate(uniqueID = as.character(uniqueID))
   
-  ## 2. Original data:
-  data <- left_join(data, compFactorDF, by = factorsH1)
+  if(individual){
+    ## Generate plots per protein:
+    plotAnnotation = annotatedTestResults %>% select(uniqueID, textString)
+    
+    individualPlots <- plotIndividual(data = data, 
+                                      fittedModels = fittedModels, 
+                                      plotAnnotation = plotAnnotation, 
+                                      plotDir = plotDir, 
+                                      filePrefix = "smoothingSpline", 
+                                      returnPlots = returnPlots,
+                                      nCores = control$nCores)
+    
+    if (!is.null(resultPath)){
+      individualPlots <- individualPlots %>%
+        mutate(path = gsub(resultPath, "", path))
+    }
+    
+  } else individualPlots <- NULL
   
-  ## Plot top N proteins (ranked by adjusted p-values):
-  if (plotRanked){
-    fName <- paste0("splineFit_top", maxRank, ".pdf")
-    plotPath <- file.path(resultPath, plotDir, fName)
-    testResTmp <- testResPlot %>% filter(rank(p_adj_NPARC) <= maxRank) %>% 
-      mutate(pageNum = pageByP) %>% arrange(p_adj_NPARC)
-    message('Plot the top N hits (ranked by adjusted p-values):')
-    signfIDs <- testResTmp %>% filter(p_adj_NPARC <= a) %>% extract2("uniqueID")
-    t1 <- Sys.time()
-    plot_splines_to_file(data, modelPredH0, modelPredH1, 
-                         testResPlot = testResTmp, plotPath = plotPath,
-                         highlightIDs = signfIDs, highlightTxt = highlTxt)
-    timeDiff <- Sys.time() - t1
-    message("Runtime: ", round(timeDiff, 2), " ", units(timeDiff), "\n")
-  }
+  overviewPlots <- NULL
   
-  ## Plot all proteins (alphabetical order):
-  if (plotAlphabetical){
-    fName <- "splineFit_alphabetical.pdf"
-    plotPath <- file.path(resultPath, plotDir, fName)
-    testResTmp <- testResPlot %>% mutate(pageNum = pageByID)
-    message('Plot all proteins (alphabetical order):')
-    signfIDs <- testResTmp %>% filter(p_adj_NPARC <= a) %>% extract2("uniqueID")
-    t1 <- Sys.time()
-    plot_splines_to_file(data, modelPredH0, modelPredH1, 
-                         testResPlot = testResTmp, plotPath = plotPath,
-                         highlightIDs = signfIDs, highlightTxt = highlTxt)
-    timeDiff <- Sys.time() - t1
-    message("Runtime: ", round(timeDiff, 2), " ", units(timeDiff), "\n")
-  }
-  
+  # highlTxt <- paste("adjusted p-value <=", highlightBelow) 
+  # 
+  # ## Plot top N proteins (ranked by adjusted p-values):
+  # if (overview){
+  #   
+  #   message('Plot the top ', maxRank, ' hits (ranked by adjusted p-values):')
+  #   
+  #   fName <- paste0("splineFit_top", maxRank, ".pdf")
+  #   
+  #   plotPath <- file.path(resultPath, plotDir, fName)
+  #   
+  #   testResTmp <- plotText %>% filter(rank(p_adj_NPARC) <= maxRank) %>% 
+  #     mutate(pageNum = pageByP) %>% arrange(p_adj_NPARC)
+  #   
+  #   plotsTmp <- testResTmp %>%
+  #     distinct(uniqueID, pageNum) %>%
+  #     left_join(allPlots, by = "uniqueID") 
+  #   
+  #   signfIDs <- testResTmp %>% 
+  #     filter(p_adj_NPARC <= highlightBelow) %>% 
+  #     extract2("uniqueID")
+  #   
+  #   t1 <- Sys.time()
+  #   
+  #   plot_splines_to_file(plotsTmp, plotPath = plotPath,
+  #                        highlightIDs = signfIDs, highlightTxt = highlTxt)
+  #   timeDiff <- Sys.time() - t1
+  #   message("Runtime: ", round(timeDiff, 2), " ", units(timeDiff), "\n")
+  # }
+  # 
+  # ## Plot all proteins (alphabetical order):
+  # if (overview){
+  #   fName <- "splineFit_alphabetical.pdf"
+  #   plotPath <- file.path(resultPath, plotDir, fName)
+  #   testResTmp <- plotText %>% mutate(pageNum = pageByID)
+  #   message('Plot all proteins (alphabetical order):')
+  #   signfIDs <- testResTmp %>% filter(p_adj_NPARC <= a) %>% extract2("uniqueID")
+  #   t1 <- Sys.time()
+  #   plot_splines_to_file(data, modelPredH0, modelPredH1, 
+  #                        plotText = testResTmp, plotPath = plotPath,
+  #                        highlightIDs = signfIDs, highlightTxt = highlTxt)
+  #   timeDiff <- Sys.time() - t1
+  #   message("Runtime: ", round(timeDiff, 2), " ", units(timeDiff), "\n")
+  # }
+  # 
   #   if (!is.na(dfs)) {
   #     plotTable <- mutate(plotTable, best_df=dfs)
   #   }
-  return(NULL)
-}
-
-plot_splines_to_file <- function(data, modelPredH0, modelPredH1, testResPlot, 
-                                 plotPath, highlightIDs, highlightTxt){
   
-  pageVec <- sort(unique(testResPlot$pageNum))
-  message("Plotting spline fits for ", nrow(testResPlot), " identifiers to file '", plotPath, "' .")
-  message("Each page will display 20 individual plots (", length(pageVec)," pages in total).")
+  out <- list(individual = individualPlots, overview = overviewPlots)
   
-  # Sort items the same way as they are in 'testResPlot' to keep the same order for plotting 
-  # (i.e. when proteins were sorted by p-value)
-  sortIdx <- testResPlot %>% select(uniqueID) %>% mutate(idx = 1:nrow(.))
-  data2 <- left_join(data, sortIdx, by = "uniqueID") %>% arrange(idx)
-  
-  # Plot to file
-  pdf(file = plotPath, width = 11.811, height = 7.87, useDingbats = FALSE)
-  for (pageTmp in pageVec){
-    message("Plotting page ", pageTmp)
-    testResTmp <- filter(testResPlot, pageNum == pageTmp)
-    idsTmp <- testResTmp$uniqueID %>% as.character
-    datTmp <- filter(data2, uniqueID %in% idsTmp)
-    predH0Tmp <- filter(modelPredH0, uniqueID %in% idsTmp)
-    predH1Tmp <- filter(modelPredH1, uniqueID %in% idsTmp)
-    p <- create_spline_plots(datTmp = datTmp, predH0Tmp = predH0Tmp, 
-                             predH1Tmp = predH1Tmp, testResTmp = testResTmp, 
-                             highlightIDs = highlightIDs, 
-                             highlightTxt = highlightTxt)
-    print(p)
-  }
-  dev.off()
-}
-
-create_spline_plots <- function(datTmp, predH0Tmp, predH1Tmp, testResTmp, 
-                                highlightIDs = c(), highlightTxt = ""){
-  datTmp <- datTmp %>% 
-    mutate(uniqueID = factor(uniqueID, levels = unique(uniqueID)))
-  testResTmp <- testResTmp %>% 
-    mutate(uniqueID = factor(uniqueID, levels = unique(uniqueID)))
-  
-  p <- ggplot(data = datTmp, aes(y = y, x = x)) + 
-    ylim(-0.1, 1.5) +
-    ylab("Fraction non-denatured") + 
-    xlab("Temperature [\U00B0 C]") +
-    scale_shape_discrete(name = "") +
-    scale_color_discrete(name = "")
-  # scale_fill_continuous(guide = guide_legend()) +
-  # theme(legend.position="bottom")
-  
-  if (length(datTmp$uniqueID) >1) {
-    p <- p + facet_wrap(~ uniqueID, nrow = 4, ncol = 5) +
-      theme(strip.text = element_text(size = 7))
-  } else{
-    p <- p + ggtitle(unique(datTmp$uniqueID))
-  }
-  try(p <- p + geom_point(aes(shape = replicate, color = colorCol), size = 1, 
-                          na.rm = TRUE))
-  try(p <- p + geom_line(data = predH0Tmp, size = 0.7, na.rm = TRUE), 
-      silent = TRUE)
-  try(p <- p + geom_line(data = predH1Tmp, size = 0.7, na.rm = TRUE, 
-                         aes(color = colorCol)), silent = TRUE)
-  try(p <- p + geom_label(data = testResTmp, vjust = "top", hjust = "right", 
-                          label.size = 0.5, inherit.aes = FALSE,
-                          aes(label = textStr, x = Inf, y = Inf), alpha = 0.1), 
-      silent = TRUE)
-  
-  
-  backgroundTable <- datTmp %>% 
-    select(uniqueID) %>% 
-    distinct %>% 
-    mutate(highlight = uniqueID %in% highlightIDs)
-  p <- p + geom_rect(data = backgroundTable, aes(fill = factor(highlight)), 
-                     xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = Inf, 
-                     alpha = 0.1, inherit.aes = FALSE) +
-    scale_fill_manual(highlightTxt, values = c("FALSE" = "white", "TRUE" = "green"))
-  
-  return(p)
+  return(out)
 }

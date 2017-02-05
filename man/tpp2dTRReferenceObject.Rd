@@ -4,13 +4,13 @@
 \alias{tpp2dTRReferenceObject}
 \title{TPP-TR reference object}
 \usage{
-tpp2dTRReferenceObject(tppRefData = NULL, tppRefDataPath = NULL,
-  fcStr = "norm_rel_fc_protein_", qualColName = "qupm")
+tpp2dTRReferenceObject(tppRefData = NULL, tppRefPath = NULL,
+  fcStr = "norm_rel_fc_", qualColName = "qupm")
 }
 \arguments{
 \item{tppRefData}{TPP-TR reference object that can be directly passed to the function}
 
-\item{tppRefDataPath}{character string containing a system path to a RData file containing an
+\item{tppRefPath}{character string containing a system path to a RData file containing an
 TPP-TR reference object}
 
 \item{fcStr}{character string indicating which columns contain the fold changes}
@@ -23,5 +23,10 @@ A TPP-TR reference object
 }
 \description{
 Definition of a TPP-TR reference object
+}
+\examples{
+trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
+tpp2dTRReferenceObject(tppRefPath=trRef)
+
 }
 

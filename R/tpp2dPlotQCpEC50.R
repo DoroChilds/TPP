@@ -13,13 +13,14 @@
 #' @param idVar character string indicating how the column that contains the unique protein 
 #'  identifiers is called
 #' 
+#' @export
 tpp2dPlotQCpEC50 <- function(resultTable=NULL, resultPath=NULL, trRef=NULL, 
-                             idVar="representative"){
+                             idVar="gene_name"){
   message("Creating melting point vs. pEC50 QC plots...")  
   
   
   # load TR reference object
-  tppTRObj <- tpp2dTRReferenceObject(tppRefDataPath=trRef)
+  tppTRObj <- tpp2dTRReferenceObject(tppRefPath = trRef)
   # create resultTable subset of only rows have valid pEC50
   subCCR <- resultTable[which(!is.na(resultTable$pEC50)),]
   

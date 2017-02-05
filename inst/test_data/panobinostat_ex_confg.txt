@@ -1,0 +1,13 @@
+Compound	Experiment	Temperature	126	127L	127H	128L	128H	129L	129H	130L	130H	131L	RefCol	Path
+Panobinostat	X020466	42	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020466	44.1	-	-	-	-	-	5	1	0.143	0.02	0	131L	
+Panobinostat	X020467	46.2	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020467	48.1	-	-	-	-	-	5	1	0.143	0.02	0	131L	
+Panobinostat	X020468	50.4	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020468	51.9	-	-	-	-	-	5	1	0.143	0.02	0	131L	
+Panobinostat	X020469	54	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020469	56.1	-	-	-	-	-	5	1	0.143	0.02	0	131L	
+Panobinostat	X020470	58.2	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020470	60.1	-	-	-	-	-	5	1	0.143	0.02	0	131L	
+Panobinostat	X020471	62.4	5	1	0.143	0.02	0	-	-	-	-	-	128H	
+Panobinostat	X020471	63.9	-	-	-	-	-	5	1	0.143	0.02	0	131L	

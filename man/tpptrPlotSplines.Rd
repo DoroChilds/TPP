@@ -4,18 +4,18 @@
 \alias{tpptrPlotSplines}
 \title{Plot spline fits per protein}
 \usage{
-tpptrPlotSplines(data, factorsH1, factorsH0 = c(), fittedModels, testResults,
-  resultPath, ggplotTheme = tppDefaultTheme(), plotAlphabetical = FALSE,
-  plotRanked = TRUE, maxRank = 500)
+tpptrPlotSplines(data, factorsH1 = NULL, factorsH0 = NULL, fittedModels,
+  testResults, resultPath = NULL, individual = TRUE, overview = FALSE,
+  returnPlots = FALSE, control = list(nCores = "max", maxRank = 500,
+  highlightBelow = 0.05), maxRank = NULL, highlightBelow = NULL,
+  plotIndividual = NULL, plotAlphabetical = NULL)
 }
 \arguments{
-\item{data}{the data to be plotted.}
+\item{data}{long table of proteins measurements that were used for spline fitting.}
 
-\item{factorsH1}{which factors were included in the alternative model?
-(necessary for correct prediction)}
+\item{factorsH1}{DEPRECATED}
 
-\item{factorsH0}{which factors were included in the null model? 
-(necessary for correct prediction)}
+\item{factorsH0}{DEPRECATED}
 
 \item{fittedModels}{long table of fitted models. 
 Output of \code{\link{tpptrFitSplines}}.}
@@ -23,17 +23,33 @@ Output of \code{\link{tpptrFitSplines}}.}
 \item{testResults}{long table of p-values per protein. 
 Output of \code{\link{tpptrFTest}}.}
 
-\item{resultPath}{location where to store the spline plots per protein.}
+\item{resultPath}{an optional character vector with the name of the path where the plots should be saved.}
 
-\item{ggplotTheme}{ggplot theme for melting curve plots.}
+\item{individual}{logical. Export each plot to individual files?}
 
-\item{plotAlphabetical}{Generate a summary pdf with 20 plots per page in 
-alphabetical order?}
+\item{overview}{logical. Generate summary pdfs?}
 
-\item{plotRanked}{Generate a summary pdf with 20 plots per page, ordered by p-value?}
+\item{returnPlots}{logical. Should the ggplot objects be returned as well?}
 
-\item{maxRank}{if \code{plotRanked = TRUE}, how many of the top hits should 
-be plotted (default: 500)?}
+\item{control}{a list of general settings.}
+
+\item{maxRank}{DEPRECATED}
+
+\item{highlightBelow}{DEPRECATED}
+
+\item{plotIndividual}{DEPRECATED}
+
+\item{plotAlphabetical}{DEPRECATED
+Contains the following fields:
+\itemize{ 
+\item{\code{nCores}: number of CPUs for parallel production of plots per 
+protein if \code{individual = TRUE} (default: "max")}
+\item{\code{maxRank}: how many of the top hits should 
+be plotted if \code{overview = TRUE} (default: 500)} 
+ \item{\code{highlightBelow}: maximum adjusted p-value 
+for which a protein is highlighted by a different background color if 
+\code{overview = TRUE} (default: 0.05)}
+}}
 }
 \value{
 None
@@ -44,24 +60,32 @@ Plot spline fits per protein
 \details{
 Plots of the natural spline fits will be stored in a subfolder with 
 name \code{Spline_Fits} at the location specified by \code{resultPath}.
+
+Exporting each plot to individual files (individual = TRUE) can 
+cost runtime and the resulting files can be tedious to browse. 
+If you just want to browse the results, use \code{overview = TRUE} 
+instead.
+
+If \code{overview = TRUE}, two summary PDFs are created that enable quick 
+browsing through all results.  They contain the plots in alphacetical order 
+(\code{splineFit_alphabetical.pdf}), or ranked by p-values 
+(\code{splineFit_top_xx.pdf}, where xx is the maximum rank defined by 
+\code{overviewSettings$maxRank}).
 }
 \examples{
 data(hdacTR_smallExample)
 tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
-normResults <- tpptrNormalize(data = tpptrData, normReqs = tpptrDefaultNormReqs())
-normData_eSets <- normResults$normData
-normData_longTable <- tpptrTidyUpESets(normData_eSets)$proteinMeasurements
-splineFits <- tpptrFitSplines(data = normData_longTable,
+tidyData <- tpptrTidyUpESets(tpptrData)
+splineFits <- tpptrFitSplines(data = tidyData, nCores = 1,
                               factorsH1 = "condition", returnModels = TRUE)
 testResults <- tpptrFTest(fittedModels = splineFits, doPlot = FALSE)
-tpptrPlotSplines(data = normData_longTable, fittedModels = splineFits,
-                 factorsH1 = "condition", factorsH0 = c(),
-                 testResults = testResults, resultPath = getwd(),
-                 plotRanked = TRUE, maxRank = 20)
+tpptrPlotSplines(data = tidyData, fittedModels = splineFits,
+                 individual = FALSE,
+                 testResults = testResults, resultPath = getwd())
 
 }
 \seealso{
-\code{\link{ns}, \link{AICc}, \link{tppDefaultTheme}, 
+\code{\link{ns}, \link{AICc}, 
 \link{tpptrFitSplines}, \link{tpptrFTest}}
 }
 

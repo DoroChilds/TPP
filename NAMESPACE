@@ -21,46 +21,57 @@ export(tpptrFitSplines)
 export(tpptrPlotSplines)
 export(tpptrFTest)
 export(tpptrTidyUpESets)
-export(tpp2dEvalConfigTable)
-export(tpp2dImport)
+export(tpp2dAddAdditionalInfo) # export necessary? specialized function -> how often stabilized?
+export(tpp2dEvalConfigTable) # DEPRECATED
+export(tpp2dCalcFractAbundance) # export necessary? specialized function
 export(tpp2dComputeFoldChanges)
+export(tpp2dCreateCCRConfigFile) # DEPRECATED
+export(tpp2dCreateDRplots)
+export(tpp2dCreateReport)
+export(tpp2dCreateTPPTRreference)  # initialize object
+export(tpp2dCurveFit)
+export(tpp2dExport)
+export(tpp2dExportPlots)
+export(tpp2dImport)
+export(tpp2dMerge2dRef) # export necessary, or should it be made part of tpp2dExport? specialized function, adds reference summary to 2D output
 export(tpp2dNormalize)
 export(tpp2dPlotCCRAllCurves)
 export(tpp2dPlotCCRGoodCurves)
 export(tpp2dPlotCCRSingleCurves)
-export(tpp2dCreateCCRConfigFile)
-export(tpp2dCurveFit)
-export(tpp2dCalcFractAbundance) # specialized function
-export(tpp2dAddAdditionalInfo) # specialized function -> how often stabilized?
-export(tpp2dExport)
-export(tpp2dCreateReport)
-export(tpp2dExportPlots)
+export(tpp2dPlotQCpEC50)
+export(tpp2dPlotQChist)
+export(tpp2dRemoveZeroSias)
+export(tpp2dSplineFitAndTest)
+export(tpp2dTRReferenceObject) # define object
 import(Biobase, except = combine) # conflict with gridExtra::combine
+import(data.table, except = c(between, last, melt, first)) # conflict with dplyr and reshape2
+import(dplyr)
 import(ggplot2)
 import(grid)
 import(gridExtra, except = combine)
-import(dplyr)
 import(magrittr, except = extract)
-import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with dplyr
 import(openxlsx)
-import(VennDiagram)
-import(VGAM, except = c(fill, AICc)) # conflict with tidyr's fill, and sme's AICc
+import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with dplyr
 import(splines)
 import(tidyr)
-importFrom(MASS, rlm)
-importFrom(rmarkdown, render)
-importFrom(knitr, kable)
-importFrom(limma, squeezeVar)
-importFrom(parallel, detectCores, stopCluster)
+import(VennDiagram)
+import(VGAM, except = c(fill, AICc)) # conflict with tidyr's fill, and sme's AICc
 importFrom(doParallel, registerDoParallel, stopImplicitCluster)
 importFrom(foreach, '%dopar%', '%do%', foreach)
-importFrom(reshape2, melt)
+importFrom(futile.logger, flog.threshold, ERROR)
+importFrom(knitr, kable)
+importFrom(limma, squeezeVar)
+importFrom(MASS, rlm)
 importFrom(nls2, nls2)
+importFrom(parallel, detectCores, stopCluster)
+importFrom(reshape2, melt)
+importFrom(rmarkdown, render)
 importFrom(RColorBrewer, brewer.pal)
 importFrom(RCurl, url.exists)
 importFrom(sme, AICc)
+importFrom(stringr, str_to_title)
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")  # The following lines are recommendations from R CMD check
-importFrom("stats", "as.formula", "complete.cases", "contrasts", "lm",
+importFrom("stats", "as.formula", "complete.cases", "contrasts", "df", "lm",
            "median", "na.exclude", "na.omit", "nls", "p.adjust", "pf",
            "qnorm", "quantile", "reshape", "runif", "sd", "setNames",
            "sigma", "uniroot")

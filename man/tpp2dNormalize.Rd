@@ -4,16 +4,14 @@
 \alias{tpp2dNormalize}
 \title{Median normalization of protein fold changes of 2D-TPP data}
 \usage{
-tpp2dNormalize(configTable, data, fcStr = "rel_fc_protein_")
+tpp2dNormalize(configTable = NULL, data, fcStr = NULL)
 }
 \arguments{
-\item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
+\item{configTable}{DEPRECATED}
 
 \item{data}{data frame that contains the data for the 2D-TPP experiment}
 
-\item{fcStr}{character string indicating how columns that will contain the actual 
-fold change values will be called. The suffix \code{fcStr} will be pasted in front of
-the names of the experiments.}
+\item{fcStr}{DEPRECATED}
 }
 \value{
 A dataframe identical to the input dataframe except that the columns containing the
@@ -24,11 +22,26 @@ Normalizes fold changes retrieved from 2D-TPP experiment by dividing by the medi
   change
 }
 \examples{
-  load(system.file("example_data/2D_example_data/referenceFcData.RData", package="TPP"))
-  data("panobinostat_2DTPP_smallExample")
-  NormData2d <- tpp2dNormalize(configTable = panobinostat_2DTPP_config, 
-                                    data=headData2dFc,
-                                    fcStr="rel_fc_protein_")
+# Preparation:
+data(panobinostat_2DTPP_smallExample)
+
+# Import data:
+datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+                      data = panobinostat_2DTPP_data,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+
+# Compute fold changes:
+datFC <- tpp2dComputeFoldChanges(data = datIn)
+
+# Perform median normalization:
+datNorm <- tpp2dNormalize(data = datFC)
+
+# View updated attributes. Now contain field 'fcStrNorm' indicating prefix
+# of the fold change columns after normalization.
+attr(datNorm, "importSettings")["fcStrNorm"]
   
 }
 

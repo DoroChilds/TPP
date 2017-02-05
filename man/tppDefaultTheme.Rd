@@ -7,7 +7,7 @@
 tppDefaultTheme()
 }
 \value{
-ggplot theme with default settings for melting plot apparance.
+ggplot theme with default settings for melting plot appearance.
 }
 \description{
 Default theme to be passed to the gplots produced by the TPP package.

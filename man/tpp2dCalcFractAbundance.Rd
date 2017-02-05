@@ -5,18 +5,17 @@
 \title{Calculate fractional abundance and DMSO ratio of successive sumionareas  
   (usage of function is only reasonable when at least two temperatures are multiplexed!)}
 \usage{
-tpp2dCalcFractAbundance(configTable = NULL, data = NULL,
-  intensityStr = NULL, idVar = NULL)
+tpp2dCalcFractAbundance(configTable = NULL, data, intensityStr = NULL,
+  idVar = NULL)
 }
 \arguments{
-\item{configTable}{data frame that specifies important details of the TPP-CCR experiment.}
+\item{configTable}{DEPCRECATED}
 
 \item{data}{data frame of TPP-CCR results (e.g. obtained by \code{run2DTPPCCR}).}
 
-\item{intensityStr}{character string indicating which columns contain the sumionarea values.}
+\item{intensityStr}{DEPCRECATED}
 
-\item{idVar}{character string indicating which data column provides the 
-unique identifiers for each protein.}
+\item{idVar}{DEPCRECATED}
 }
 \value{
 Data frame that was handed over with additional columns of fractional abundance
@@ -27,12 +26,23 @@ Calculates fractional abundance and DMSO ratio of successive sumionareas and
   creates respective columns which are added two the data frame which is handed over
 }
 \examples{
-  data("panobinostat_2DTPP_smallExample")
-  load(system.file("example_data/2D_example_data/fractAbundInData.RData", package="TPP"))
-  fracAbund <- tpp2dCalcFractAbundance(configTable = panobinostat_2DTPP_config, 
-                data = fractAbundInData,
-                intensityStr = "sumionarea_protein_", 
-                idVar = "representative")
- 
+data(panobinostat_2DTPP_smallExample)
+
+# Import data:
+datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+                      data = panobinostat_2DTPP_data,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+
+# View attributes of imported data (experiment infos and import arguments):
+attr(datIn, "importSettings") \%>\% unlist
+attr(datIn, "configTable")
+
+# Compute fractional abundance:
+datDMSORatio <- tpp2dCalcFractAbundance(data = datIn)
+colnames(datDMSORatio)
+
 }
 

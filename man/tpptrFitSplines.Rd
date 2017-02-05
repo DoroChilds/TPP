@@ -4,8 +4,8 @@
 \alias{tpptrFitSplines}
 \title{Perform spline fitting}
 \usage{
-tpptrFitSplines(data, factorsH1, factorsH0 = c(), splineDF = 4,
-  computeAUC = FALSE, returnModels = TRUE)
+tpptrFitSplines(data, factorsH1, factorsH0 = character(0), splineDF = 3:7,
+  computeAUC = NULL, returnModels = TRUE, nCores = "max")
 }
 \arguments{
 \item{data}{the data to be fitted}
@@ -16,11 +16,13 @@ tpptrFitSplines(data, factorsH1, factorsH0 = c(), splineDF = 4,
 
 \item{splineDF}{degrees of freedom for natural spline fitting.}
 
-\item{computeAUC}{should areas under the spline curves be computed? 
-Activation increases runtime requirements.}
+\item{computeAUC}{DEPRECATED}
 
 \item{returnModels}{should the linear models be returned in a column of the
-result table? Activation increases memory requirements.
+result table? Activation increases memory requirements.}
+
+\item{nCores}{either a numerical value given the desired number of CPUs, or 
+  'max' to automatically assign the maximum possible number (default).
 
 Argument \code{splineDF} specifies the degrees of freedom for natural spline 
 fitting. As a single numeric value, it is directly passed on to the \code{splineDF} argument of 
@@ -41,10 +43,11 @@ tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 normResults <- tpptrNormalize(data = tpptrData, 
                normReqs = tpptrDefaultNormReqs())
 normData_eSets <- normResults$normData
-normData_longTable <- tpptrTidyUpESets(normData_eSets)$proteinMeasurements
+normData_longTable <- tpptrTidyUpESets(normData_eSets)
 hdacSubset <- subset(normData_longTable, grepl("HDAC", uniqueID))
 hdacSplineFits <- tpptrFitSplines(data = hdacSubset, 
-                                  factorsH1 = c("condition"))
+                                  factorsH1 = c("condition"), 
+                                  nCores = 1)
 
 }
 \seealso{

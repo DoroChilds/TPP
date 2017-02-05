@@ -5,7 +5,7 @@
 \title{Plot quality control histograms}
 \usage{
 tpp2dPlotQChist(configFile = NULL, resultTable = NULL, resultPath = NULL,
-  trRef = NULL, fcStr = NULL, idVar = "representative",
+  trRef = NULL, fcStr = "rel_fc_", idVar = "gene_name",
   qualColName = "qupm")
 }
 \arguments{

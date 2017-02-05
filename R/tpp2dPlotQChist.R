@@ -18,18 +18,26 @@
 #' @param qualColName character string indicating which column contain protein 
 #'  identification quality measures 
 #' 
+#' @export
 tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, trRef=NULL, 
-                            fcStr=NULL, idVar="representative", qualColName="qupm"){
-  message("Creating QC histograms...")  
-  if (is.null(fcStr)){
-    fcStr <- "rel_fc_protein_"
-  }
+                            fcStr="rel_fc_", idVar="gene_name", qualColName="qupm"){
+  # Problem: this function does not return plots, but stores them as a 'side effect'.
+  #         In contrast, tpp2dPlotQCpEC50 returns the plots. 
+  #         -> Choose one version for consistency.
   
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  concentration = experiment = intercept = slope = stats = R2 = temperature = 
+    stddev = dmso1_vs_dmso2 = marked = experiment = Var1 = Freq = Var2 = 
+    median_meltPoint = rev_cumsum <- NULL
+  
+  message("Creating QC histograms...")  
+
   # define suffix of normlized data columns
   fcStrNorm <- paste("norm", fcStr, sep="_")
   
   # eval configFile
-  configTable <- tpp2dEvalConfigTable(configFile)
+  configTable <- importCheckConfigTable(infoTable = configFile, type = "2D")
   
   # pre-define global variables
   key <- NULL

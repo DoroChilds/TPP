@@ -16,8 +16,8 @@
 #'   \code{Experiment} column in \code{configTable}. Experimental conditions can
 #'   be specified by an optional column in \code{configTable}.
 #'   
-#'   The default settings are adjusted to analyse data of the pyhton package 
-#'   \code{isobarQuant}. You can also customise them for your own dataset.
+#'   The default settings are adjusted to analyze data of the python package 
+#'   \code{isobarQuant}. You can also customize them for your own dataset.
 #'   
 #'   The \code{configTable} argument is a dataframe, or the path to a 
 #'   spreadsheet (tab-delimited text-file without quoted strings, or xlsx format). 
@@ -73,8 +73,8 @@ tpptrImport <- function(configTable, data=NULL, idVar="gene_name",
   if (outputFormat == "eSetList"){
     # warning("The outputFormat 'eSetList' is deprecated and will be removed soon.\n  Use outputFormat='tidy' instead.")
     out <- importTR_main(configTable=configTable, data=data, idVar=idVar, 
-                              fcStr=fcStr, naStrs=naStrs, qualColName=qualColName,
-                              type="TR")
+                         fcStr=fcStr, naStrs=naStrs, qualColName=qualColName,
+                         type="TR")
     
   } else if (outputFormat == "tidy"){
     out <- importTR_tidy(configTable = configTable, data = data, idVar = idVar, 

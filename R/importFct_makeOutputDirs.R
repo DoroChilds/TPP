@@ -2,7 +2,9 @@ importFct_makeOutputDirs <- function(outDir, fNames){
   if (is.null(outDir)){
     if(!is.null(fNames)){
       outDir <- dirname(fNames[1])
-      outDir <- file.path(outDir, "TPP_results")
+      outDir <- file.path(outDir, 
+                          paste0("TPP_results", "_", Sys.time() %>% 
+                                   gsub("[^[:alnum:]]", "_", .)))
       doWrite <- TRUE
     } else {
       m<-"No output directory specified. No result files or plots will be produced."

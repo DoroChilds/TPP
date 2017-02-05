@@ -10,19 +10,21 @@
 #' normResults <- tpptrNormalize(data = tpptrData, 
 #'                normReqs = tpptrDefaultNormReqs())
 #' normData_eSets <- normResults$normData
-#' normData_longTable <- tpptrTidyUpESets(normData_eSets)$proteinMeasurements
+#' normData_longTable <- tpptrTidyUpESets(normData_eSets)
 #' hdacSubset <- subset(normData_longTable, grepl("HDAC", uniqueID))
 #' hdacSplineFits <- tpptrFitSplines(data = hdacSubset, 
-#'                                   factorsH1 = c("condition"))
+#'                                   factorsH1 = c("condition"), 
+#'                                   nCores = 1)
 #' 
 #' @param data the data to be fitted
 #' @param splineDF degrees of freedom for natural spline fitting.
 #' @param factorsH1 which factors should be included in the alternative model?
 #' @param factorsH0 which factors should be included in the null model?
-#' @param computeAUC should areas under the spline curves be computed? 
-#' Activation increases runtime requirements.
+#' @param computeAUC DEPRECATED
 #' @param returnModels should the linear models be returned in a column of the
 #' result table? Activation increases memory requirements.
+#' @param nCores either a numerical value given the desired number of CPUs, or 
+#'   'max' to automatically assign the maximum possible number (default).
 #' 
 #' Argument \code{splineDF} specifies the degrees of freedom for natural spline 
 #' fitting. As a single numeric value, it is directly passed on to the \code{splineDF} argument of 
@@ -34,87 +36,117 @@
 #' @seealso \code{\link{ns}, \link{AICc}}
 #' @export
 
-tpptrFitSplines <- function(data, factorsH1, factorsH0 = c(), 
-                            splineDF = 4, 
-                            computeAUC = FALSE, returnModels = TRUE){
-  ## Prepare data:
-  dataGrouped <- data %>% group_by(uniqueID) 
+tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0), 
+                            splineDF = 3:7, 
+                            computeAUC = NULL, returnModels = TRUE, 
+                            nCores = "max"){
+  
+  ## ----------------------------------------------------------------------- ##
+  ## General checks and preparation
+  ## ----------------------------------------------------------------------- ##
+  if (!missing(computeAUC)) warning("`computeAUC` is deprecated", call. = TRUE)
+  
+  if (!("uniqueID" %in% colnames(data)))
+    stop("'data' must contain a column called 'uniqueID'")
+  
+  # Check for missing function arguments
+  checkFunctionArgs(match.call(), c("data", "factorsH1"))
+  
+  # ## Initialize variables to prevent "no visible binding for global
+  # ## variable" NOTE by R CMD check:
+  uniqueID = df = testHypothesis = fittedModel = successfulFit <- NULL
+  
+  # Produce informative error messages, if necessary:
+  if (!is.character(factorsH0)) stop("'factorsH0' is of class ", class(factorsH0), ", but must be an atomic vector of class 'character'")
+  if (!is.character(factorsH1)) stop("'factorsH1' is of class ", class(factorsH1), ", but must be an atomic vector of class 'character'")
+  if (!is.numeric(splineDF)) stop("'splineDF' is of class ", class(splineDF), ", but must be an atomic vector of class 'numeric'")
+  if (!all(factorsH1 %in% colnames(data))) stop("The column(s) '", paste(setdiff(factorsH1, colnames(data)), collapse = "', '"), "' specified by argument 'factorsH1' are not found in 'data'.")
+  
+  factorLevels <- subset(data, select = factorsH1) %>% purrr::map(. %>% unique)
+  factorNums <- factorLevels  %>% purrr::map(. %>% length) %>% unlist
+  factorsNonNA <- factorLevels  %>% purrr::map(. %>% is.na %>% all) %>% unlist
+  if(any(factorsNonNA)) stop("At least one of the data column(s) specified by argument 'factorsH1' contain only NAs.") 
+  if (any(factorNums <= 1)) stop("All of the data column(s) specified by arguments 'factorsH1' and 'factorsH0' need to contain varying levels.")
+  
+  ## ----------------------------------------------------------------------- ##
+  ## Fit models for different degrees of freedom
+  ## ----------------------------------------------------------------------- ##
   
   ## Define formulas for model fit:
   factorStrH1 <- paste0("factor(",factorsH1, ")", collapse = " * ") %>% paste0(" * ", .)
   factorStrH0 <- ifelse(length(factorsH0) > 0,
-                        yes = paste0("factor(",factorsH0, ")", collapse = " * ") %>% 
-                          paste0(" * ", .),
+                        yes = paste0("factor(",factorsH0, ")", collapse = " * ") %>% paste0(" * ", .),
                         no = "")
-  strFitH0 <- paste0("y ~ ns(x, df = ", splineDF, ")", factorStrH0)
-  strFitH1 <- paste0("y ~ ns(x, df = ", splineDF, ")", factorStrH1)
-  fitEqH0 <- as.formula(strFitH0)
-  fitEqH1 <- as.formula(strFitH1)
+  message(paste("Fitting smoothing splines and AICc values for the following degrees of freedom:", 
+          paste(splineDF, collapse = ", ")))
   
-  ## Fit null and alternative Model
-  nProt <- length(unique(data$uniqueID))
-  message("Fitting null models to ", nProt, " proteins.")
-  fitsH0 <- dataGrouped %>% 
-    do(fittedModel = fit_spline_model(dat = ., formula = fitEqH0))
-  message("Fitting alternative models to ", nProt, " proteins.")
-  fitsH1 <- dataGrouped %>% do(fittedModel = fit_spline_model(dat = ., formula = fitEqH1))
+  ## Loop over different degrees of freedom in parallel:
+  nCores <- checkCPUs(cpus=nCores)
+  doParallel::registerDoParallel(cores=nCores)
+  t1 <- Sys.time()
+  aicc_per_df <- foreach (df = splineDF, .combine=rbind) %dopar% {
+    
+    aiccCombined <- fit_splines_under_H0_and_H1(data = data, df = df,
+                                                strH0 = factorStrH0, 
+                                                strH1 = factorStrH1, 
+                                                returnModels = FALSE)
+    
+    return(aiccCombined)
+  }
+  stopImplicitCluster() 
   
-  # Combine results
-  fitsCombined <- fitsH0 %>% mutate(testHypothesis = "null") %>%
-    rbind(fitsH1 %>% mutate(testHypothesis = "alternative")) %>%
-    mutate(splineDF = splineDF, testHypothesis = factor(testHypothesis)) %>% 
-    ## Mark proteins where model fit was not successful
-    ungroup %>%
-    mutate(successfulFit = (sapply(fittedModel, class) != "try-error"))
+  if (!any(aicc_per_df$successfulFit)){
+    stop("Spline smoothing did not converge for any protein. Consider using different degrees of freedom (parameter 'splineDF')")
+  }
   
-  ## Evaluate goodness of fit of null and alternative models
+  ## ----------------------------------------------------------------------- ##
+  ## Select desired model complexity individually per protein. 
+  ## Criterion: corrected Aikake's information criterion (AICc) 
+  ## ----------------------------------------------------------------------- ##
+  message(paste("Select and re-fit models for selected degrees of freedom."))
+  
+  ## Select degrees of freedom that minimize the AICc:
+  selectedDf <- modelSelector(fitStats = aicc_per_df %>% filter(successfulFit), 
+                              criterion = "aicc",
+                              hypothesis = "alternative") %>%
+    right_join(aicc_per_df %>% distinct(uniqueID), by = "uniqueID")
+  
+  ## Re-fit models using the selected complexity:
+  selectedModels <- selectedDf %>% filter(!is.na(splineDF)) %>%
+    group_by(splineDF) %>%
+    do({ 
+      dfTmp <- unique(.$splineDF)
+      idsTmp <- .$uniqueID %>% as.character()
+      dataTmp <- data %>% filter(uniqueID %in% idsTmp)
+      fit_splines_under_H0_and_H1(data = dataTmp, df = dfTmp,
+                                  strH0 = factorStrH0,
+                                  strH1 = factorStrH1,
+                                  returnModels = TRUE)
+    }) %>% right_join(aicc_per_df %>%distinct(uniqueID, testHypothesis, successfulFit), 
+                      by = c("uniqueID", "testHypothesis", "successfulFit"))
+  
+  ## Evaluate goodness of fit of null and alternative models:
   message("Evaluate goodness of fit of null and alternative models.")
-  fitStats <- fitsCombined %>% 
+  fitStats <- selectedModels %>% 
     filter(successfulFit) %>%
     group_by(uniqueID, testHypothesis) %>%
-    do(eval_spline_model(.$fittedModel[[1]]))
+    do(eval_spline_model(.$fittedModel[[1]])) %>% 
+    arrange(uniqueID)
   
-  if (computeAUC){
-    aucTable <- tpptrSplineAUCs(data = data, 
-                                 splineFits = fitsCombined, 
-                                 factorsH1 = factorsH1)
-    fitsCombined <- fitsCombined %>% 
-      left_join(aucTable, by = c("uniqueID", "testHypothesis"))
-  }
+  ## ----------------------------------------------------------------------- ##
+  ## Prepare output
+  ## ----------------------------------------------------------------------- ##
+  if (!returnModels) selectedModels <- selectedModels %>% select(-fittedModel)
   
-  if (!returnModels) fitsCombined <- fitsCombined %>% select(-fittedModel)
-  
-  ## Join fit stat df and model df (also include proteins for which model fit
+  ## Join fit statistics and models (also include proteins for which model fit
   ## produced 'try-error')
-  out <- fitsCombined %>% 
-    left_join(fitStats, by = c("uniqueID", "testHypothesis"))
+  out <- selectedModels %>% 
+    left_join(fitStats, by = c("uniqueID", "testHypothesis", "aicc")) %>%
+    arrange(uniqueID)
+   
+  timeDiff <- Sys.time()-t1
+  message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", 
+          units(timeDiff), "\n")
   
-  return(out %>% arrange(uniqueID))
-}
-
-fit_spline_model <- function(dat, formula, algorithm = "lm"){
-  if (algorithm == "lm"){
-    fitResult <- try(lm(formula, data = dat), silent = TRUE)
-  } else if (algorithm == "rlm"){ # Current algorithm for TPP-2D data fitting -> to do: re-use for TPP-2D fits.
-    fitResult <- try(rlm(formula, data = dat, maxit = 50), silent = TRUE)
-  }
-  return(fitResult)
-}
-
-eval_spline_model <- function(lmFitObj){
-  X <- model.matrix(lmFitObj)
-  if (inherits(lmFitObj, "lmerMod")){
-    nCoeffsRandom <- length(unlist(ranef(lmFitObj)))
-    nCoeffsFixed <- length((fixef(lmFitObj)))
-    nCoeffs <- nCoeffsRandom + nCoeffsFixed
-  } else if (inherits(lmFitObj, "lm")){
-    nCoeffs <- ncol(X)
-  }
-  fitStats <- data.frame(rss = sum(residuals(lmFitObj)^2), 
-                         nCoeffs = nCoeffs, 
-                         nObs = nrow(X), # protein numbers per group
-                         sigma = sigma(lmFitObj), 
-                         aicc = AICc(lmFitObj),
-                         loglik = as.numeric(logLik(lmFitObj)))
-  return(fitStats)
+  return(out)
 }

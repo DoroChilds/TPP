@@ -12,7 +12,8 @@
   ub   <- filtersOther$thresholdUpper # Upper bounds
 
   fcListFiltered <- sapply(grNames, function(n){
-    message("Filtering by annotation columns ", paste(cols, collapse=" "), " in treatment group: ", n)
+    message("Filtering by annotation columns ", paste(cols, collapse=" "), 
+            " in treatment group: ", n)
     filterOther(data=data[[n]], cols=cols, lb=lb, ub=ub)},
     simplify=FALSE)
 
@@ -27,10 +28,11 @@
   pos <- filtersFC$fcColumn       # Column positions
   lb  <- filtersFC$thresholdLower # Lower bounds
   ub  <- filtersFC$thresholdUpper # Upper bounds
-
-  fcListFiltered <- sapply(grNames, function(n){message("Filtering fold changes in treatment group: ", n)
-                                                filterFCs(data=fcListJointP[[n]], pos=pos, lb=lb, ub=ub)},
-                           simplify=FALSE)
+  
+  fcListFiltered <- sapply(grNames, function(n){
+    message("Filtering fold changes in treatment group: ", n)
+    filterFCs(data=fcListJointP[[n]], pos=pos, lb=lb, ub=ub)
+  }, simplify=FALSE)
 
   ## Find treatment group with largest protein set after filtering (normP):
   protNum    <- sapply(fcListFiltered, nrow)

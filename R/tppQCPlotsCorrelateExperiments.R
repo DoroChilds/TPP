@@ -23,6 +23,11 @@
 #' @export
 tppQCPlotsCorrelateExperiments <- function(tppData, annotStr="", path=NULL,
                                            ggplotTheme=tppDefaultTheme()){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  x = y <- NULL
+  
   theme_set(ggplotTheme)
   
   if (length(tppData) > 1){

@@ -4,15 +4,22 @@
 #'  
 #' @return A TPP-TR reference object
 #' 
+#' @examples 
+#' trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
+#' tpp2dTRReferenceObject(tppRefPath=trRef)
 #'
 #' @param tppRefData TPP-TR reference object that can be directly passed to the function
-#' @param tppRefDataPath character string containing a system path to a RData file containing an
+#' @param tppRefPath character string containing a system path to a RData file containing an
 #'   TPP-TR reference object
 #' @param fcStr character string indicating which columns contain the fold changes
 #' @param qualColName character string indicating which column contain protein 
 #'  identification quality measures
 #' 
-tpp2dTRReferenceObject <- function(tppRefData=NULL, tppRefDataPath=NULL, fcStr="norm_rel_fc_protein_", qualColName="qupm"){
+#' @export
+tpp2dTRReferenceObject <- function(tppRefData = NULL, 
+                                   tppRefPath = NULL, 
+                                   fcStr = "norm_rel_fc_", 
+                                   qualColName = "qupm"){
   
   # pre-define variables to prevent NOTE by devtools::check()
   variable <- NULL
@@ -29,14 +36,14 @@ tpp2dTRReferenceObject <- function(tppRefData=NULL, tppRefDataPath=NULL, fcStr="
   
   thisEnv <- environment()
   
-  if(is.null(tppRefDataPath) & is.null(tppRefData)){
-    stop("tpptrRefDataPath and tppRefData are both NULL, one of them must be provided.")
-  } else if(!is.null(tppRefDataPath) & !is.null(tppRefData)){
-    stop("tpptrRefDataPath and tppRefData are both provided, please provide only one.")
+  if(is.null(tppRefPath) & is.null(tppRefData)){
+    stop("tppRefPath and tppRefData are both NULL, one of them must be provided.")
+  } else if(!is.null(tppRefPath) & !is.null(tppRefData)){
+    stop("tppRefPath and tppRefData are both provided, please provide only one.")
   }
   
-  if(!is.null(tppRefDataPath)){
-    load(tppRefDataPath)
+  if(!is.null(tppRefPath)){
+    load(tppRefPath)
   }
   
   tppCfgTable  <- tppRefData$tppCfgTable

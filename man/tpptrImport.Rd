@@ -60,8 +60,8 @@ The imported datasets have to contain measurements obtained by
   \code{Experiment} column in \code{configTable}. Experimental conditions can
   be specified by an optional column in \code{configTable}.
   
-  The default settings are adjusted to analyse data of the pyhton package 
-  \code{isobarQuant}. You can also customise them for your own dataset.
+  The default settings are adjusted to analyze data of the python package 
+  \code{isobarQuant}. You can also customize them for your own dataset.
   
   The \code{configTable} argument is a dataframe, or the path to a 
   spreadsheet (tab-delimited text-file without quoted strings, or xlsx format). 

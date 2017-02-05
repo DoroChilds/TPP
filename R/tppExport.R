@@ -15,32 +15,16 @@
 #' @return No value returned.
 #' @export
 tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
-  message("Writing results to file: ", file)
-  # Boolean columns: Convert TRUE/FALSE to "Yes"/"No" values
-  allCols <- colnames(tab)
-  boolPrefix <- c("passed_filter",
-                  "protein_identified_in",
-                  "sufficient_data_for_fit",
-                  "model_converged",
-                  "min_pVals_less_0.05_and_max_pVals_less_0.1",
-                  "meltP_diffs_have_same_sign",
-                  "meltP_diffs_T_vs_V_greater_V1_vs_V2",
-                  "minSlopes_less_than_0.06",
-                  "fulfills_all_4_requirements",
-                  "meets_FC_requirement", 
-                  "pEC50_outside_conc_range")
   
-  for (bp in boolPrefix){
-    boolCols <- grep(bp, colnames(tab), value = TRUE)
-    for (bc in boolCols){
-      x <-tab[,bc]
-      xNew <- rep(NA_character_, length(x))
-      xNew[which(x==TRUE)] <- "Yes"
-      xNew[which(x==FALSE)] <- "No"
-      xNew[which(is.na(x))] <- ""
-      tab[,bc] <- xNew      
-    }
-  }
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  Protein_ID <- NULL
+  
+  message("Writing results to file: ", file)
+  allCols <- colnames(tab)
+
+  # Boolean columns: Convert TRUE/FALSE to "Yes"/"No" values
+  tab <- exportFct_convertBoolean_1DTPP(tab)
   
   ## Remove inflection point column from TPP-TR output:
   rmCols <- c(grep("inflPoint", allCols, value=TRUE),
@@ -50,14 +34,15 @@ tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
   allCols <- colnames(tab)
   
   ## Remove plot column from TPP-TR output if it only contains missing values:
-  if (!any(grepl("plot", colnames(tab)))){
-    tab$plot <- NA
+  for (plotCol in c("splinefit_plot", "meltcurve_plot")){
+    if (!any(grepl(plotCol, colnames(tab)))){
+      tab[[plotCol]] <- NA
+    }
+    if (all(is.na(tab[[plotCol]]))){
+      tab[[plotCol]] <- NULL
+    } 
   }
-  if (all(is.na(tab$plot))){
-    tab <- subset(tab, select=!(allCols %in% "plot"))    
-    allCols <- colnames(tab)
-  }
-  
+  allCols <- colnames(tab)
   
   ## Sort proteins in alphabetical order:
   tab <- arrange(tab, Protein_ID)
@@ -69,17 +54,7 @@ tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
                  rowNames=FALSE, colNames=TRUE)
   
   ## Add column with links to fitted curve plots:
-  linkCol <- grepl("plot", allCols)
-  if (any(linkCol)){
-    relPaths <- as.character(tab[,linkCol])
-    plotPaths <- relPaths
-    plotPaths <- ifelse(is.na(plotPaths), "none", file.path(".", plotPaths))
-    names(plotPaths) <- ifelse(plotPaths=="none", "", gsub("([^[:alnum:]])", "_", tab$Protein_ID))
-    class(plotPaths) <- "hyperlink"
-    #plotPaths[plotPaths=="_"] <- NA
-    suppressWarnings(writeData(wb, sheet="Results", x=plotPaths, startCol=which(linkCol), 
-                               startRow = 2, keepNA=TRUE))
-  }
+  wb <- exportFct_addPlotLinks_1DTPP(wb = wb, sheet = "Results", dat = tab)
   
   
   ## Mark experiments by different colors in the result table:
@@ -97,13 +72,6 @@ tppExport <- function(tab, file, expNames=NULL, expColors=NULL){
     }
   }
   
-  tryCatch({
-    saveWorkbook(wb, file=file, overwrite=TRUE)
-    message("File created successfully!\n")
-  },
-  error = function(err){
-    message("\nCaution! Excel spreasheet could not be produced correctly due to the following error:")
-    message(err)
-    message(paste("\n\nAlthough the Excel output failed, you can still access the results of function 'tpptrAnalyzeMeltingCurves' via its return value or as an R object in the results folder.\n"))
-  })
+  success <- exportFct_trySave(wb = wb, file = file)
+  return(success)
 }

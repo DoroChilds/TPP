@@ -16,7 +16,7 @@ Example subset of a dataset obtained by TPP-TR experiments to
   functionalities without invoking the whole time consuming analysis on the 
   whole dataset.
   
-  The originial dataset is located in the folder 
+  The original dataset is located in the folder 
   \code{'example_data/TR_example_data'} in the package's installation
   directory. You can find it on your system by the \code{R} command
   \code{system.file('example_data', package = 'TPP')}.

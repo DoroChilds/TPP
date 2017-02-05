@@ -65,6 +65,11 @@
 tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
                              resultPath=NULL, ggplotTheme=tppDefaultTheme(),
                              nCores="max",  verbose=FALSE){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  variable = foldChange = pID <- NULL
+  
   ## 1. Check if output directory exists already. If not, create it here.
   plotDir <- "DoseResponse_Curves"
   if (!file.exists(file.path(resultPath, plotDir))) {
@@ -83,7 +88,7 @@ tppccrPlotCurves <- function(data=NULL, fcTable=NULL, curvePars=NULL,
       colnames(fcTable)[grep("labelValue",colnames(fcTable))] <- "concentration"
       
       fDatTable <- eSetsToLongTable_fData(data)
-      parNames <- drCurveParamNames(names=TRUE, info=FALSE)
+      parNames <- drCurveParamNames(names = TRUE, info = FALSE)
       curvePars <- subset(fDatTable, variable %in% parNames)
       curvePars$value <- as.numeric(curvePars$value)
       colnames(curvePars)[grep("variable", colnames(curvePars))] <- "param"

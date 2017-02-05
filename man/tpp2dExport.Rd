@@ -4,32 +4,35 @@
 \alias{tpp2dExport}
 \title{Produce Excel table of 2D-TPP experiment.}
 \usage{
-tpp2dExport(configTable = NULL, tab = NULL, resultPath = NULL,
-  idVar = NULL, fcStr = NULL, intensityStr = NULL, addCol = NULL,
-  normalizedData = FALSE, trRef = NULL)
+tpp2dExport(configTable = NULL, tab, resultPath = NULL, idVar = NULL,
+  fcStr = NULL, intensityStr = NULL, outPath, addCol = NULL,
+  normalizedData = NULL, trRef = NULL, addPlotColumns = TRUE)
 }
 \arguments{
-\item{configTable}{data frame that specifies important details of the 2D-TPP experiment}
+\item{configTable}{DEPRECATED}
 
 \item{tab}{Table with results of the 2D-TPP analysis.}
 
-\item{resultPath}{path for storing results table}
+\item{resultPath}{DEPRECATED}
 
-\item{idVar}{character string indicating how the column that contains the unique protein 
-identifiers is called}
+\item{idVar}{DEPRECATED}
 
-\item{fcStr}{character string indicating how columns that contain the actual 
-fold change values are called}
+\item{fcStr}{DEPRECATED}
 
-\item{intensityStr}{character string indicating how columns that contain the raw masspec signal 
-(e.g. sumionareas) values are called}
+\item{intensityStr}{DEPRECATED}
+
+\item{outPath}{path for storing results table}
 
 \item{addCol}{additional names of columns which are to be attached to the result table}
 
-\item{normalizedData}{boolean variabel indicating whether the data has been normalized}
+\item{normalizedData}{DEPRECATED}
 
 \item{trRef}{character string containing a valid system path to a TPP-TR reference RData
 file}
+
+\item{addPlotColumns}{boolean variable indicating whether paths to plot files 
+should be generated and checked for validity. De-activate if no dose-response
+curve plots were produced during the analysis.}
 }
 \value{
 Creates excel file of the TPP-CCR analysis of the 2D-TPP data.
@@ -38,12 +41,24 @@ Creates excel file of the TPP-CCR analysis of the 2D-TPP data.
 Produce Excel table of 2D-TPP experiment analysis results.
 }
 \examples{
-data("panobinostat_2DTPP_smallExample")
+data(panobinostat_2DTPP_smallExample)
 load(system.file("example_data/2D_example_data/shortData2d.RData", package="TPP"))
 # tpp2dExport(configTable = panobinostat_2DTPP_config, tab=shortData2d, 
-#             resultPath=getwd(), 
+#             outPath=getwd(), 
 #             idVar="representative", fcStr="norm_rel_fc_protein_", 
 #             intensityStr="sumionarea_protein_", addCol=NULL)
+
+data(panobinostat_2DTPP_smallExample)
+# cfgRaw <- panobinostat_2DTPP_config
+# datRaw <- panobinostat_2DTPP_data
+# datIn <- tpp2dImport(cfgIn, datRaw, fcStr = NULL)
+# datFC <- tpp2dComputeFoldChanges(data = datIn)
+# datNorm <- tpp2dNormalize(data = datFC)
+# cfgCCR <- convert_2D_cfgTable_to_CCR_cfgTable(cfgIn)
+# datFitted <- tpp2dCurveFit(datNorm, nCores = 2)
+# tpp2dCreateReport(getwd(), cfgIn, resultTable = datFitted, idVar = "representative", 
+#                   intensityStr = "sumionarea_protein_")
+# tpp2dExport(tab = datFitted, outPath = getwd(), addPlotColumns = FALSE) 
 
 }
 

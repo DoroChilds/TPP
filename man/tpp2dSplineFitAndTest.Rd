@@ -4,35 +4,40 @@
 \alias{tpp2dSplineFitAndTest}
 \title{Fit splines and perform f-Test}
 \usage{
-tpp2dSplineFitAndTest(data_2D, trRefDataPath, idVar = "representative",
-  fcStr = "norm_rel_fc_protein_", refFcStr = "norm_rel_fc_protein_",
-  resultPath = NULL, ggplotTheme = tppDefaultTheme(), doPlot = TRUE,
-  verbose = FALSE)
+tpp2dSplineFitAndTest(data_2D = NULL, data, trRefDataPath = NULL, dataRef,
+  refIDVar = "Protein_ID", refFcStr = "norm_rel_fc_", resultPath = NULL,
+  doPlot = TRUE, verbose = FALSE, nCores = "max", ggplotTheme = NULL)
 }
 \arguments{
-\item{data_2D}{result data.frame from a 2D-TPP CCR analysis}
+\item{data_2D}{DEPRECATED}
 
-\item{trRefDataPath}{character string with a link to a TPP-TR reference object RData file}
+\item{data}{result data.frame from a 2D-TPP CCR analysis}
 
-\item{idVar}{character string indicating name of the columns containing the unique protein 
-identifiers}
+\item{trRefDataPath}{DEPRECATED}
 
-\item{fcStr}{character string indicating how columns that will contain the actual 
-fold change values will be called. The suffix \code{fcStr} will be pasted in front of
+\item{dataRef}{reference data from a TPP TR analysis on the same cell line as}
+
+\item{refIDVar}{character string indicating name of the columns containing the unique protein 
+identifiers in the reference data set}
+
+\item{refFcStr}{character string indicating which columns contain the actual 
+fold change values in the reference data. The suffix \code{fcStr} will be 
+pasted in front of
 the names of the experiments.}
-
-\item{refFcStr}{same as argument fcStr, but for the reference data.}
 
 \item{resultPath}{location where to store dose-response curve plots and 
 results table.}
 
-\item{ggplotTheme}{ggplot theme for protein-wise plots.}
-
-\item{doPlot}{boolan value indicating whether protein-wise plots should be 
+\item{doPlot}{boolean value indicating whether protein-wise plots should be 
 produced Deactivating plotting decreases runtime.}
 
 \item{verbose}{print description of problems for each protein for which splines fits could 
 not be performed}
+
+\item{nCores}{either a numerical value given the desired number of CPUs, or 
+'max' to automatically assign the maximum possible number (default).}
+
+\item{ggplotTheme}{DEPRECATED}
 }
 \value{
 None
@@ -40,5 +45,33 @@ None
 \description{
 Fit splines through TR reference dataset and extrapolates relative 2D-TPP datapoints, 
  then compares spline fits of different treatments with non-treatment with an f-test
+}
+\details{
+dataRef can either be a tidy data frame of TPP-TR reference data,
+a list with TPP-TR reference data and additional information produced by 
+\code{\link{tpp2dCreateTPPTRreference}}, or a character string with a link to 
+the data in one of the described formats.
+}
+\examples{
+data(panobinostat_2DTPP_smallExample)
+config_tpp2d <- panobinostat_2DTPP_config
+data_tpp2d <- panobinostat_2DTPP_data
+trRef <- file.path(system.file("data", package="TPP"), 
+  "TPPTR_reference_results_HepG2.RData")
+datIn <- tpp2dImport(configTable = config_tpp2d,
+                      data = data_tpp2d,
+                      idVar = "representative",
+                      addCol = "clustername",
+                      intensityStr = "sumionarea_protein_",
+                      nonZeroCols = "qusm")
+fcData2d <- tpp2dComputeFoldChanges(data = datIn)
+normData2d <- tpp2dNormalize(data = fcData2d)
+analysisResults <- tpp2dSplineFitAndTest(data = normData2d,
+                                         dataRef = trRef,
+                                         refIDVar = "Protein_ID",
+                                         refFcStr = "norm_rel_fc_protein_",
+                                         doPlot = FALSE,
+                                         nCores = 1)
+  
 }
 

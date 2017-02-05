@@ -19,7 +19,7 @@ intervals for curve fitting. Default to NULL.}
 
 \item{ggplotTheme}{ggplot theme for melting curve plots.}
 
-\item{doPlot}{boolan value indicating whether melting curves should be
+\item{doPlot}{boolean value indicating whether melting curves should be
 plotted, or whether just the curve parameters should be returned.}
 
 \item{startPars}{start values for the melting curve parameters. Will be

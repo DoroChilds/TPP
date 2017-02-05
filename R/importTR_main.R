@@ -3,7 +3,8 @@ importTR_main <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
   message("Importing data...\n")
   
   ## Check configTable for consistency and extract all relevant information:
-  configTableContents <- importCheckConfigTable(infoTable=configTable, type=type)
+  configTableContents <- importCheckConfigTable(infoTable = configTable, 
+                                                type = type)
   expNames   <- configTableContents$expNames
   expCond    <- configTableContents$expCond
   files      <- configTableContents$files
@@ -26,26 +27,31 @@ importTR_main <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
     data <- importFct_readFiles(files=files, naStrs=naStrs)
   }
   
+  ## Experiment wise pre-processing prior to combination into one object:
+  dataFinal <- importFct_preprocessData(data = data, idVar = idVar)
   
   ## Import tables, convert into ExpressionSet format, and store in list:
-  fcListAll <- sapply(1:length(expNames), simplify=FALSE, USE.NAMES = FALSE,
-                      function(i){importFct_df_to_eSet(dataframe    = data[[expNames[i]]],
-                                                       labels       = labels,
-                                                       labelValues  = tempMatrix[i,],
-                                                       name         = expNames[i],
-                                                       condition    = expCond[i],
-                                                       idVar        = idVar,
-                                                       fcStr        = fcStr,
-                                                       qualColName  = qualColName,
-                                                       naStrs       = naStrs,
-                                                       type         = type)})
+  fcListAll <- sapply(
+    1:length(expNames), simplify=FALSE, USE.NAMES = FALSE,
+    function(i){
+      importFct_df_to_eSet(dataframe    = dataFinal[[expNames[i]]],
+                           labels       = labels,
+                           labelValues  = tempMatrix[i,],
+                           name         = expNames[i],
+                           condition    = expCond[i],
+                           idVar        = idVar,
+                           fcStr        = fcStr,
+                           qualColName  = qualColName,
+                           naStrs       = naStrs,
+                           type         = type)
+    })
   names(fcListAll) <- expNames
   
   ## Store user-specified contrasts in the annotation fields of the newly 
   ## created ExpressionSets. They will be retrieved later for the statistical
   ## comparisons:
   for (n in names(fcListAll)){
-    annotation(fcListAll[[n]]) <- c(annotation(fcListAll[[n]]), compStrs)     
+    annotation(fcListAll[[n]]) <- c(annotation(fcListAll[[n]]), compStrs)
   }
   message("\n")
   

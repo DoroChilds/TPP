@@ -11,7 +11,13 @@ pValFctPerformSingleComparison <- function(minsl, mpdiff, method, control,
       } else{
         binWidthNew <- binWidth
       }
-      pVals<-try(computePvalues(minSlopes=minsl, mpDiffs=mpdiff, binWidth=binWidthNew))
+      pVals<-try(
+        computePvalues(minSlopes = minsl, 
+                       mpDiffs = mpdiff, 
+                       binWidth = binWidthNew, 
+                       type = "p", 
+                       pAdj = "fdr")
+      )
       if (class(pVals) == "try-error"){
         pVals <- rep(NA_real_, length(mpdiff))
       }

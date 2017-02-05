@@ -5,7 +5,7 @@
 #'
 #' The specified plot properties include bold font and increased font size for axis labels and title, as well as a 90 degree angle for y axis labels.
 #'
-#' @return ggplot theme with default settings for melting plot apparance.
+#' @return ggplot theme with default settings for melting plot appearance.
 #' @export
 #' @examples
 #' # Import data:

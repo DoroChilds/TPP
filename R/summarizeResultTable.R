@@ -1,4 +1,5 @@
-summarizeResultTable <- function(inTable, wantedColPatterns, temperatures, fcStr){
+summarizeResultTable <- function(inTable, wantedColPatterns, temperatures, 
+                                 fcStr){
   
   #   lblsAndTemps = tppCfgTable[,c('Experiment', colnames(temperatures))]
   lbls = colnames(temperatures)

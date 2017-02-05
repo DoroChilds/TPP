@@ -7,9 +7,20 @@
 #' @return A dataframe comprising all experimental data
 #' 
 #' @examples 
-#'   data("panobinostat_2DTPP_smallExample")
-#'   tpp2dResults <- tpp2dImport(configTable = panobinostat_2DTPP_config, 
-#'                              data = panobinostat_2DTPP_data, fcStr = NULL)
+#' # Preparation:
+#' data(panobinostat_2DTPP_smallExample)
+#' 
+#' # Import data:
+#' datIn <- tpp2dImport(configTable = panobinostat_2DTPP_config,
+#'                       data = panobinostat_2DTPP_data,
+#'                       idVar = "representative",
+#'                       addCol = "clustername",
+#'                       intensityStr = "sumionarea_protein_",
+#'                       nonZeroCols = "qusm")
+#' 
+#' # View attributes of imported data (experiment infos and import arguments):
+#' attr(datIn, "importSettings") %>% unlist
+#' attr(datIn, "configTable")
 #' 
 #' @param configTable dataframe, or character object with the path to a file, 
 #'   that specifies important details of the 2D-TPP experiment. See Section 
@@ -25,6 +36,8 @@
 #' @param qualColName character string indicating which column can be used for 
 #'   additional quality criteria when deciding between different non-unique 
 #'   protein identifiers.
+#' @param nonZeroCols character string indicating a column that will be used for
+#'   filtering out zero values.
 #' @param fcStr character string indicating which columns contain the actual 
 #'   fold change values. Those column names containing the suffix \code{fcStr} 
 #'   will be regarded as containing fold change values.
@@ -32,27 +45,55 @@
 #'   to be attached to the data frame throughout the analysis 
 #' 
 #' @export
-tpp2dImport <- function(configTable=NULL, data=NULL, idVar="representative", 
-                            addCol=c("clustername", "msexperiment_id"),
-                            intensityStr="sumionarea_protein_", qualColName=c("qupm","qusm"),
-                            fcStr="rel_fc_protein_"){
-  if (is.null(configTable) || !is.data.frame(configTable)){
-    stop("Please specify a valid configTable of type data.frame!")
-  }
+tpp2dImport <- function(configTable = NULL, 
+                        data = NULL, 
+                        idVar = "gene_name",
+                        addCol = NULL,
+                        intensityStr = "signal_sum_",   
+                        qualColName = "qupm", 
+                        nonZeroCols = "qssm",
+                        fcStr = NULL){
+  
+  # check configTable and read in table if necessary
+  configWide <- importCheckConfigTable(infoTable = configTable, type = "2D")
+  #configLong <- gatherConfigTable(config = configWide)
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  experiment = unique_ID <- NULL
+  
   message("Importing data...")
   # import data as list, if is.null(fcStr) function will omit fold changes and only read in
   # sumionareas
-  Data2d <- tpp2dCreateDataFrameList(configTable=configTable, data=data, 
-                                     idVar=idVar, fcStr=fcStr, addCol=addCol,
-                                     intensityStr=intensityStr, qualColName=qualColName)
-  message("Done.")
-  # remove 0 sumionarea values
-  d.list <- tpp2dRemoveZeroSias(configTable=configTable, data.list=Data2d, 
-                    intensityStr=intensityStr)
+  dataList <- import2DTR_main(configTable = configWide, 
+                              data = data, 
+                              idVar = idVar, 
+                              fcStr = fcStr,
+                              addCol = addCol,
+                              naStrs = c("NA", "n/d", "NaN"),
+                              intensityStr = intensityStr,
+                              qualColName = qualColName,
+                              nonZeroCols = nonZeroCols)
   
-  # create one big data table
-  d.table <- tpp2dReplaceColNames(configTable=configTable, data.list=d.list, 
-                                  intensityStr=intensityStr, fcStr=fcStr)
+  # create one wide data table
+  dataTable <- importFct_createCCRInputFrom2DData(configTable = configWide, 
+                                                  data.list = dataList, 
+                                                  intensityStr = intensityStr, 
+                                                  fcStr = fcStr) %>%
+    mutate(experiment = factor(experiment), unique_ID = factor(unique_ID))
+  
+  ## Add annotation for use in later functions:
+  attr(dataTable, "configTable") <- configWide
+  
+  importSettings <- list(proteinIdCol = idVar, 
+                         uniqueIdCol = "unique_ID",
+                         addCol = addCol,
+                         intensityStr = intensityStr, 
+                         qualColName = qualColName, 
+                         nonZeroCols = nonZeroCols,
+                         fcStr = fcStr)
+  attr(dataTable, "importSettings") <- importSettings
+  
   message("Done.")
-  return(d.table)
+  return(dataTable)
 }

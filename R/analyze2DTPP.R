@@ -18,19 +18,26 @@
 #'   \item Perform normalization by fold 
 #'   change medians (optional) using the \code{\link{tpp2dNormalize}} function.
 #'   To perform normalization, set argument \code{normalize=TRUE}.}
-#'
+#'  \code{paletteName} specifies the color palette to be used by the \code{\link{brewer.pal}} 
+#' function from the \code{RColorBrewer} package to assign a separate color to 
+#' each concentration.
+#' 
+#' 
 #' @examples 
-#' data("panobinostat_2DTPP_smallExample")
+#' data(panobinostat_2DTPP_smallExample)
 #' config_tpp2d <- panobinostat_2DTPP_config
 #' data_tpp2d <- panobinostat_2DTPP_data
-#' tpp2dResults <- analyze2DTPP(configFile = config_tpp2d, 
+#' tpp2dResults <- analyze2DTPP(configTable = config_tpp2d, 
 #'                              data = data_tpp2d,
-#'                              fcStr = NULL,
 #'                              methods=c("doseResponse"),
 #'                              createReport="none",
-#'                              nCores=1)
+#'                              nCores=1,
+#'                              idVar = "representative",
+#'                              addCol = "clustername",
+#'                              intensityStr = "sumionarea_protein_",
+#'                              nonZeroCols = "qusm")
 #' 
-#' @param configFile dataframe, or character object with the path to a file, 
+#' @param configTable dataframe, or character object with the path to a file, 
 #'   that specifies important details of the 2D-TPP experiment. See Section 
 #'   \code{details} for instructions how to create this object.
 #' @param data single dataframe, containing fold change measurements and 
@@ -42,7 +49,8 @@
 #'   unique identifiers for each protein.
 #' @param fcStr character string indicating which columns contain the actual 
 #'   fold change values. Those column names containing the prefix \code{fcStr} 
-#'   will be regarded as containing fold change values.
+#'   will be regarded as containing fold change values. Only relevant if 
+#'   \code{compFC = FALSE}.
 #' @param intensityStr character string indicating which columns contain the actual 
 #'   sumionarea values. Those column names containing the prefix \code{intensityStr} 
 #'   will be regarded as containing sumionarea values.
@@ -51,9 +59,9 @@
 #'   When reading data from file, this value will be passed on to the argument 
 #'   \code{na.strings} in function \code{read.delim}.
 #' @param methods vector of character strings that indicate which methods should be used 
-#'   for the analysis (default: c("doseRespone"), alternative: c("splineFit") or 
-#'   c("doseRespone", "splineFit")) 
-#' @param addCol vector of chracter strings indicating which additional columns to include 
+#'   for the analysis (default: c("doseResponse"), alternative: c("splineFit") or 
+#'   c("doseResponse", "splineFit")) 
+#' @param addCol character vector indicating which additional columns to include 
 #'   from the input data 
 #' @param qualColName character string indicating which column can be used for 
 #'   additional quality criteria when deciding between different non-unique 
@@ -71,76 +79,96 @@
 #'   fitting.
 #' @param xlsxExport produce results table in xlsx format and store at the 
 #' location specified by the \code{resultPath} argument.
-#' @param plotAll boolan value indicating whether all dose response curves should
+#' @param plotAll boolean value indicating whether all dose response curves should
 #' be generated. Deactivating plotting decreases runtime.
-#' @param plotAllR2 boolan value indicating whether all dose response curves which
-#' fullfill the demanded criterias (Rsquared, maximum plateau) should be generated. 
+#' @param plotAllR2 boolean value indicating whether all dose response curves which
+#' fulfill the demanded criteria (Rsquared, maximum plateau) should be generated. 
 #' Deactivating plotting decreases runtime.
-#' @param plotSingle boolan value indicating whether all dose response curves which
-#' fullfill the demanded criterias (Rsquared, maximum plateau) should be generated. 
+#' @param plotSingle boolean value indicating whether all dose response curves which
+#' fulfill the demanded criteria (Rsquared, maximum plateau) should be generated. 
 #' Deactivating plotting decreases runtime.
 #' @param fractAbund boolean variable, if set to TRUE additional information concerning
 #' sumionarea fractional abundance and dmso1 vs. dmso2 of adjacent temperatures is 
 #' added to the output table
 #' @param addInfo boolean variable, if set to TRUE additional information on counts of
-#' stabilization and destabiliazation of each protein is added to the output table
+#' stabilization and destabilization of each protein is added to the output table
 #' @param trRef character string containing a valid system path to a previously generated TPP-TR
 #' reference object
 #' @param refFcStr character string indicating which columns in the reference data set contain 
 #' the fold change values
 #' @param createReport character string indicating whether a markdown report should be created
 #'  and which format it have (default: "html_document", alternative: "pdf_document" or "none")
+#' @param paletteName color palette (see details).
+#' @param configFile DEPRECATED
+
 #' 
 #' @export
-analyze2DTPP <- function(configFile = NULL, data = NULL, 
-                         resultPath = NULL, idVar = "representative", 
-                         fcStr = "rel_fc_protein_", 
-                         intensityStr = "sumionarea_protein_",   
+analyze2DTPP <- function(configTable, 
+                         data = NULL, 
+                         resultPath = NULL, 
+                         idVar = "gene_name", 
+                         fcStr = NULL, 
+                         intensityStr = "signal_sum_",   
                          naStrs = c("NA", "n/d", "NaN", "<NA>"), 
-                         methods = c("doseRespone", "splineFit"),
-                         qualColName="qupm", compFc=TRUE, normalize=TRUE, addCol=NULL,
-                         nCores="max", nonZeroCols="qupm", fcTolerance=0.1, r2Cutoff=0.8,  
-                         fcCutoff=1.5, slopeBounds=c(1,50), fractAbund=FALSE, xlsxExport=FALSE, 
-                         plotAll=FALSE,plotAllR2=FALSE, plotSingle=FALSE, trRef=NULL, 
-                         refFcStr="norm_rel_fc_protein_", addInfo=FALSE, createReport="html_document") {
+                         methods = "doseResponse",
+                         qualColName = "qupm", 
+                         compFc = TRUE, 
+                         normalize = TRUE, 
+                         addCol = NULL,
+                         nCores = 1, 
+                         nonZeroCols = "qssm",
+                         fcTolerance = 0.1, 
+                         r2Cutoff = 0.8,  
+                         fcCutoff = 1.5, 
+                         slopeBounds = c(1,50), 
+                         fractAbund = FALSE, 
+                         xlsxExport = TRUE, 
+                         plotAll = FALSE,
+                         plotAllR2 = FALSE, 
+                         plotSingle = FALSE, 
+                         trRef = NULL, 
+                         refFcStr="norm_rel_fc_", 
+                         addInfo = FALSE, 
+                         createReport = "none",
+                         paletteName = "Spectral",
+                         configFile) {
   
   message("This is TPP version ", packageVersion("TPP"),".")
   
-  # check configTable and read in table if necessary
-  configTable <- tpp2dEvalConfigTable(configFile)
+  if (!missing(configFile)){
+    warning("`configFile` is deprecated. Use 'configTable' instead.", call. = FALSE)
+    configTable <- configFile
+  }
+  
+  # # Check for missing function arguments
+  # checkFunctionArgs(match.call(), c("configTable"))
   
   # import data
-  Data2d <- tpp2dImport(configTable=configTable, data=data, 
-                            idVar=idVar, addCol=addCol, intensityStr=intensityStr, 
-                            qualColName=qualColName, fcStr=fcStr)
+  datIn <- tpp2dImport(configTable=configTable, data=data, 
+                       idVar=idVar, addCol=addCol, intensityStr=intensityStr, 
+                       qualColName=qualColName, nonZeroCols = nonZeroCols,
+                       fcStr=fcStr)
   
   # compute fold changes if requested
   if (compFc){
-    if (is.null(fcStr)){
-      fcStr <- "rel_fc_protein_"
-    }
-    Data2d <- tpp2dComputeFoldChanges(configTable=configTable, data=Data2d, 
-                                      intensityStr=intensityStr) 
+    fcStr <- "rel_fc_protein_"
+    datIn <- tpp2dComputeFoldChanges(data = datIn, newFcStr = fcStr) 
     
-  }else if (is.null(fcStr)){
-    stop("Fold changes need to either be supplied in the input data by specifying a prefix in fcStr 
-         or they need to be computed be setting comFc to TRUE!")
   }
   
   # do median normalization of fold changes 
   if (normalize){
-    NormData2d <- tpp2dNormalize(configTable=configTable, data=Data2d, fcStr=fcStr)
+    NormData2d <- tpp2dNormalize(data = datIn)
     
-    # Make sure the TPP-CCR routine uses the correct columns, when there was 
-    # normalization before:
-    fcStrUpdated <- paste("norm", fcStr, sep="_")
   }else{
-    NormData2d <- Data2d
-    fcStrUpdated <- fcStr
+    NormData2d <- datIn
   }
+  # Make sure the TPP-CCR routine uses the correct columns, when there was 
+  # normalization before:
+  fcStrUpdated <- attr(NormData2d, "importSettings")$fcStrNorm
   
   # filter out row with no quality information
-  if (length(which(is.na(NormData2d[[qualColName[1]]])))!=0){
+  if (length(which(is.na(NormData2d[[qualColName[1]]])))!=0){ # to do: shift this code into the curve fitting function to make it available for curve fitting outside this wrapper
     NormData2d <- NormData2d[-which(is.na(NormData2d[[qualColName[1]]])),]
   }
   
@@ -153,46 +181,38 @@ Please check your data quality and consider pre-filtering!")
   
   # calculate fractioncal abundance per curve
   if (fractAbund){
-    NormData2d <- tpp2dCalcFractAbundance(configTable=configTable, data=NormData2d, 
-                                          intensityStr=intensityStr, idVar=idVar)
+    NormData2d <- tpp2dCalcFractAbundance(data = NormData2d)
   }
   
   if ("doseResponse" %in% methods){
-    # create CCR config file list
-    CCR2dConfig <- tpp2dCreateCCRConfigFile(configTable=configTable)
     
     # run TPP-CCR
-    analysisResults <- tpp2dCurveFit(configFile = CCR2dConfig, 
-                                      data = NormData2d, 
-                                      nCores = nCores, 
-                                      fcStr = fcStrUpdated, 
-                                      idVar = "unique_ID", 
-                                      nonZeroCols = nonZeroCols, 
-                                      r2Cutoff = r2Cutoff, 
-                                      fcCutoff = fcCutoff, 
-                                      slopeBounds = slopeBounds,
-                                      fcTolerance = fcTolerance)
+    analysisResults <- tpp2dCurveFit(data = NormData2d, 
+                                     nCores = nCores, 
+                                     r2Cutoff = r2Cutoff, 
+                                     fcCutoff = fcCutoff, 
+                                     slopeBounds = slopeBounds,
+                                     fcTolerance = fcTolerance)
     
     if (plotAll){
       # generate joint plots for all proteins detected
-      plotList <- tpp2dPlotCCRAllCurves(configTable=configTable, data=analysisResults, 
-                                        idVar=idVar, fcStr=fcStrUpdated)
+      plotList <- tpp2dCreateDRplots(data = analysisResults, type = "all", 
+                                     verbose = TRUE, paletteName = paletteName)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotList, resultPath=resultPath, type="all")
+      tpp2dExportPlots(plotList = plotList, resultPath = resultPath, type = "all")
     }
     if (plotAllR2){
       # generate joint plots for all proteins detected with sufficient R2
-      plotGoodList <- tpp2dPlotCCRGoodCurves(configTable=configTable, data=analysisResults, 
-                                             idVar=idVar, fcStr=fcStrUpdated)
+      plotGoodList <- tpp2dCreateDRplots(data = analysisResults, type = "good", 
+                                         verbose = TRUE, paletteName = paletteName)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotGoodList, resultPath=resultPath, type="good")
+      tpp2dExportPlots(plotList = plotGoodList, resultPath = resultPath, type = "good")
     }
     if (plotSingle){
       # generate single plots for all protein in each condition fitted with sufficient R2
-      plotSingleList <- tpp2dPlotCCRSingleCurves(configTable=configTable, data=analysisResults, 
-                                                 idVar=idVar, fcStr=fcStrUpdated)
+      plotSingleList <- tpp2dCreateDRplots(data = analysisResults, type = "single", verbose = TRUE)
       # write output file with plots
-      tpp2dExportPlots(plotList=plotSingleList, resultPath=resultPath, type="single")
+      tpp2dExportPlots(plotList = plotSingleList, resultPath = resultPath, type = "single")
     }
   }else{
     analysisResults <- NormData2d
@@ -201,13 +221,14 @@ Please check your data quality and consider pre-filtering!")
   # do spline fit over tpp-tr reference
   if (("splineFit" %in% methods) && !is.null(trRef)){
     # do f-test for splines fit
-    analysisResults <- tpp2dSplineFitAndTest(data_2D = analysisResults, 
-                                             trRefDataPath = trRef, 
-                                             idVar = idVar,
-                                             fcStr = fcStrUpdated, 
-                                             refFcStr = refFcStr,
+    analysisResults <- tpp2dSplineFitAndTest(data = analysisResults, 
+                                             dataRef = trRef, 
+                                             refIDVar = "Protein_ID",
+                                             refFcStr = "norm_rel_fc_",
                                              resultPath = resultPath,
-                                             verbose = verbose)
+                                             doPlot = TRUE,
+                                             verbose = TRUE,
+                                             nCores = nCores)
     
   }else if("splineFit" %in% methods){
     message("The spline fit and corresponding f-Test could not be performed, as no TPP-TR reference dataset was specified!
@@ -218,7 +239,8 @@ Please check the file path you have specified for trRef!")
   
   # add additional information e.g. how often protein was stabilized/destabilized if desired
   if (addInfo){
-    analysisResults <- tpp2dAddAdditionalInfo(data = analysisResults)
+    analysisResults <- tpp2dAddAdditionalInfo(data = analysisResults, 
+                                              idVar = idVar)
   }
   
   # add TR reference columns to result table
@@ -228,21 +250,22 @@ Please check the file path you have specified for trRef!")
   }
   
   # export results
-  if (!is.null(resultPath)){
-    tpp2dExport(configTable = configTable, tab = analysisResults, 
-                resultPath = resultPath, 
-                idVar = "Protein_ID", fcStr = fcStr, intensityStr = intensityStr, # new: idVar = "Protein_ID"
-                addCol = addCol, 
-                normalizedData = normalize, trRef = trRef) 
+  if (!is.null(resultPath) & xlsxExport){
+    addPlotColumns <- any(c(plotAll, plotAllR2, plotSingle, !is.null(trRef)))
+    
+    tpp2dExport(tab = analysisResults, 
+                outPath = resultPath, 
+                addCol = addCol, addPlotColumns = addPlotColumns,
+                trRef = trRef) 
   }
   
   # create markdown report
   if ((createReport!="none") && !is.null(resultPath)){
     tpp2dCreateReport(resultPath = resultPath, 
-                      configFile = configFile, 
+                      configFile = configTable, 
                       normalize = normalize,
                       configTable = configTable, 
-                      resultTable = analysisResults, 
+                      data = analysisResults, 
                       idVar = "Protein_ID", 
                       fcStr = fcStr, 
                       fcStrUpdated = fcStrUpdated, 

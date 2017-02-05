@@ -15,12 +15,12 @@
 #'   \code{\link{tppccrImport}} function. \item Perform normalization by fold 
 #'   change medians (optional) using the \code{\link{tppccrNormalize}} function.
 #'   To perform normalization, set argument \code{normalize=TRUE}. \item Fit and
-#'   analyse dose response curves using the \code{\link{tppccrCurveFit}} 
+#'   analyze dose response curves using the \code{\link{tppccrCurveFit}} 
 #'   function. \item Export results to Excel using the \code{\link{tppExport}} 
 #'   function. }
 #'   
 #'   The default settings are tailored towards the output of the python package 
-#'   isobarQuant, but can be customised to your own dataset by the arguments 
+#'   isobarQuant, but can be customized to your own dataset by the arguments 
 #'   \code{idVar, fcStr, naStrs, qualColName}.
 #'   
 #'   If \code{resultPath} is not specified, result files are stored at the path 
@@ -89,7 +89,8 @@
 #' @export
 analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL, 
                           idVar="gene_name", fcStr="rel_fc_", 
-                          naStrs=c("NA", "n/d", "NaN", "<NA>"), qualColName="qupm",
+                          naStrs=c("NA", "n/d", "NaN", "<NA>"), 
+                          qualColName="qupm",
                           normalize=TRUE, ggplotTheme=tppDefaultTheme(), 
                           nCores="max", nonZeroCols="qssm", 
                           r2Cutoff=0.8,  fcCutoff=1.5, slopeBounds=c(1,50),
@@ -137,7 +138,8 @@ analyzeTPPCCR <- function(configTable, data=NULL, resultPath=NULL,
   
   ## 5) Plot dose response curves
   if (plotCurves){
-    datFitted <- tppccrPlotCurves(data=datFitted, resultPath=resultPath, verbose=verbose, nCores=nCores,
+    datFitted <- tppccrPlotCurves(data=datFitted, resultPath=resultPath, 
+                                  verbose=verbose, nCores=nCores,
                                   ggplotTheme=ggplotTheme)
   }
   

@@ -5,6 +5,15 @@ filterFCs <- function(data, pos, lb, ub){
   rValid <- rep(TRUE, nrow(data))
 
   ## Filter proteins according to lower and upper bounds:
+  if (max(pos) > ncol(data)){
+    msg1 <- "Error during fold change normalization:"
+    msg2 <- paste("Given filter criteria require", max(pos), 
+                  "fold changes, but only", ncol(data), 
+                  "fold change columns are available.")
+    msg3 <- "Please adjust the normalization requirements" 
+    msg4 <- "(see '?tpptrDefaultNormReqs' for details)."
+    stop(paste(msg1, msg2, msg3, msg4))
+  }
   for (i in 1:length(pos)){
     rValTmp <- rep(TRUE, nrow(data))
 

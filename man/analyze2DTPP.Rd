@@ -4,19 +4,19 @@
 \alias{analyze2DTPP}
 \title{Analyze 2D-TPP experiment}
 \usage{
-analyze2DTPP(configFile = NULL, data = NULL, resultPath = NULL,
-  idVar = "representative", fcStr = "rel_fc_protein_",
-  intensityStr = "sumionarea_protein_", naStrs = c("NA", "n/d", "NaN",
-  "<NA>"), methods = c("doseRespone", "splineFit"), qualColName = "qupm",
-  compFc = TRUE, normalize = TRUE, addCol = NULL, nCores = "max",
-  nonZeroCols = "qupm", fcTolerance = 0.1, r2Cutoff = 0.8,
+analyze2DTPP(configTable, data = NULL, resultPath = NULL,
+  idVar = "gene_name", fcStr = NULL, intensityStr = "signal_sum_",
+  naStrs = c("NA", "n/d", "NaN", "<NA>"), methods = "doseResponse",
+  qualColName = "qupm", compFc = TRUE, normalize = TRUE, addCol = NULL,
+  nCores = 1, nonZeroCols = "qssm", fcTolerance = 0.1, r2Cutoff = 0.8,
   fcCutoff = 1.5, slopeBounds = c(1, 50), fractAbund = FALSE,
-  xlsxExport = FALSE, plotAll = FALSE, plotAllR2 = FALSE,
-  plotSingle = FALSE, trRef = NULL, refFcStr = "norm_rel_fc_protein_",
-  addInfo = FALSE, createReport = "html_document")
+  xlsxExport = TRUE, plotAll = FALSE, plotAllR2 = FALSE,
+  plotSingle = FALSE, trRef = NULL, refFcStr = "norm_rel_fc_",
+  addInfo = FALSE, createReport = "none", paletteName = "Spectral",
+  configFile)
 }
 \arguments{
-\item{configFile}{dataframe, or character object with the path to a file, 
+\item{configTable}{dataframe, or character object with the path to a file, 
 that specifies important details of the 2D-TPP experiment. See Section 
 \code{details} for instructions how to create this object.}
 
@@ -32,7 +32,8 @@ unique identifiers for each protein.}
 
 \item{fcStr}{character string indicating which columns contain the actual 
 fold change values. Those column names containing the prefix \code{fcStr} 
-will be regarded as containing fold change values.}
+will be regarded as containing fold change values. Only relevant if 
+\code{compFC = FALSE}.}
 
 \item{intensityStr}{character string indicating which columns contain the actual 
 sumionarea values. Those column names containing the prefix \code{intensityStr} 
@@ -43,8 +44,8 @@ When reading data from file, this value will be passed on to the argument
 \code{na.strings} in function \code{read.delim}.}
 
 \item{methods}{vector of character strings that indicate which methods should be used 
-for the analysis (default: c("doseRespone"), alternative: c("splineFit") or 
-c("doseRespone", "splineFit"))}
+for the analysis (default: c("doseResponse"), alternative: c("splineFit") or 
+c("doseResponse", "splineFit"))}
 
 \item{qualColName}{character string indicating which column can be used for 
 additional quality criteria when deciding between different non-unique 
@@ -55,7 +56,7 @@ regarding reference column from sumionareas (default: TRUE)}
 
 \item{normalize}{perform median normalization (default: TRUE).}
 
-\item{addCol}{vector of chracter strings indicating which additional columns to include 
+\item{addCol}{character vector indicating which additional columns to include 
 from the input data}
 
 \item{nCores}{either a numerical value given the desired number of CPUs, or 
@@ -80,15 +81,15 @@ added to the output table}
 \item{xlsxExport}{produce results table in xlsx format and store at the 
 location specified by the \code{resultPath} argument.}
 
-\item{plotAll}{boolan value indicating whether all dose response curves should
+\item{plotAll}{boolean value indicating whether all dose response curves should
 be generated. Deactivating plotting decreases runtime.}
 
-\item{plotAllR2}{boolan value indicating whether all dose response curves which
-fullfill the demanded criterias (Rsquared, maximum plateau) should be generated. 
+\item{plotAllR2}{boolean value indicating whether all dose response curves which
+fulfill the demanded criteria (Rsquared, maximum plateau) should be generated. 
 Deactivating plotting decreases runtime.}
 
-\item{plotSingle}{boolan value indicating whether all dose response curves which
-fullfill the demanded criterias (Rsquared, maximum plateau) should be generated. 
+\item{plotSingle}{boolean value indicating whether all dose response curves which
+fulfill the demanded criteria (Rsquared, maximum plateau) should be generated. 
 Deactivating plotting decreases runtime.}
 
 \item{trRef}{character string containing a valid system path to a previously generated TPP-TR
@@ -98,10 +99,14 @@ reference object}
 the fold change values}
 
 \item{addInfo}{boolean variable, if set to TRUE additional information on counts of
-stabilization and destabiliazation of each protein is added to the output table}
+stabilization and destabilization of each protein is added to the output table}
 
 \item{createReport}{character string indicating whether a markdown report should be created
 and which format it have (default: "html_document", alternative: "pdf_document" or "none")}
+
+\item{paletteName}{color palette (see details).}
+
+\item{configFile}{DEPRECATED}
 }
 \value{
 A data frame in which the fit results are stored row-wise for each
@@ -119,17 +124,23 @@ Invokes the following steps: \enumerate{ \item Import data using the
   \item Perform normalization by fold 
   change medians (optional) using the \code{\link{tpp2dNormalize}} function.
   To perform normalization, set argument \code{normalize=TRUE}.}
+ \code{paletteName} specifies the color palette to be used by the \code{\link{brewer.pal}} 
+function from the \code{RColorBrewer} package to assign a separate color to 
+each concentration.
 }
 \examples{
-data("panobinostat_2DTPP_smallExample")
+data(panobinostat_2DTPP_smallExample)
 config_tpp2d <- panobinostat_2DTPP_config
 data_tpp2d <- panobinostat_2DTPP_data
-tpp2dResults <- analyze2DTPP(configFile = config_tpp2d, 
+tpp2dResults <- analyze2DTPP(configTable = config_tpp2d, 
                              data = data_tpp2d,
-                             fcStr = NULL,
                              methods=c("doseResponse"),
                              createReport="none",
-                             nCores=1)
+                             nCores=1,
+                             idVar = "representative",
+                             addCol = "clustername",
+                             intensityStr = "sumionarea_protein_",
+                             nonZeroCols = "qusm")
 
 }
 \references{

@@ -1,10 +1,17 @@
 storeMeltCurveParams <- function(data, params){
   ## Store estimated melting curve parameters in featureData.
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  expName = protID <- NULL
+  
   expNames <- names(data)
   for (en in expNames){
     idsInDataset  <- featureNames(data[[en]])
     
-    meltCurveParNames <- c(meltCurveParamNames(), "plot")
+    meltCurveParNames <- c(meltCurveParamNames(returnParNames = TRUE, 
+                                               returnPerformanceInfo = TRUE), 
+                           "plot")
     
     ciOpt <- getOption("TPPTR_CI")
     if(!is.null(ciOpt)){

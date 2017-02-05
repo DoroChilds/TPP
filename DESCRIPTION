@@ -1,7 +1,7 @@
 Package: TPP
 Type: Package
 Title: Analyze thermal proteome profiling (TPP) experiments
-Version: 3.1.3
+Version: 3.1.4
 Author: Dorothee Childs, Nils Kurzawa, Holger Franken, Carola Doce, Mikhail Savitski and Wolfgang Huber
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
 Depends:
@@ -11,27 +11,36 @@ Depends:
     tidyr
 Imports:
     Biobase,
+    biobroom,
+    broom,
+    data.table,
     doParallel,
     foreach,
+    futile.logger,
     ggplot2,
+    grDevices, 
     gridExtra,
     grid,
+    knitr,
     limma,
     MASS,
+    mefa,
     nls2,
     openxlsx (>= 2.4.0),
     parallel,
     plyr,
+    purrr,
     RColorBrewer,
     RCurl,
     reshape2,
+    rmarkdown,
     sme,
     splines,
+    stats,
+    stringr,
+    utils,
     VennDiagram,
-    VGAM,
-    knitr,
-    rmarkdown,
-    grDevices, stats, utils
+    VGAM
 Suggests:
     BiocStyle,
     testthat

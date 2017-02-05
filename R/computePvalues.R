@@ -1,4 +1,4 @@
-computePvalues <- function(minSlopes, mpDiffs, binWidth, type="p", pAdj="fdr"){
+computePvalues <- function(minSlopes, mpDiffs, binWidth, type, pAdj){
   ## Compute p-values of melt point differences as described by Cox et al.(2008)
   
   ## Bin melting points according to slope values:

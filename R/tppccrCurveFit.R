@@ -57,6 +57,11 @@
 #' @export
 tppccrCurveFit <- function(data=NULL, fcTable=NULL, cpdEffects=NULL, 
                            slopeBounds=c(1,50), nCores='max', verbose=FALSE){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  variable = experiment = i <- NULL
+  
   # get id corresponding to transformed fold changes
   indTrans <- grep("transformed", colnames(pData(featureData(data[[1]]))))[1]
   if (length(which(!is.na(pData(featureData(data[[1]]))[[indTrans]]))) == 0){

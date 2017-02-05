@@ -2,11 +2,11 @@
 % Please edit documentation in R/tpptrSplineFitAndTest.R
 \name{tpptrSplineFitAndTest}
 \alias{tpptrSplineFitAndTest}
-\title{Perform spline fitting and analyse by moderated F-test}
+\title{Perform spline fitting and analyze by moderated F-test}
 \usage{
-tpptrSplineFitAndTest(data, factorsH1, factorsH0 = c(), resultPath = NULL,
-  ggplotTheme = tppDefaultTheme(), doPlot = TRUE, nCores = "max",
-  splineDF = 4, additionalCols = NULL, verbose = FALSE)
+tpptrSplineFitAndTest(data, factorsH1, factorsH0 = character(),
+  resultPath = NULL, doPlot = TRUE, nCores = "max", splineDF = 3:7,
+  additionalCols = NULL, verbose = NULL, ggplotTheme = NULL)
 }
 \arguments{
 \item{data}{the data to be fitted.}
@@ -17,9 +17,7 @@ tpptrSplineFitAndTest(data, factorsH1, factorsH0 = c(), resultPath = NULL,
 
 \item{resultPath}{location where to store the spline plots per protein.}
 
-\item{ggplotTheme}{ggplot theme for melting curve plots.}
-
-\item{doPlot}{boolan value indicating whether melting curves should be 
+\item{doPlot}{boolean value indicating whether melting curves should be 
 plotted, or whether just the curve parameters should be returned.}
 
 \item{nCores}{either a numerical value given the desired number of CPUs, or 
@@ -30,18 +28,19 @@ plotted, or whether just the curve parameters should be returned.}
 \item{additionalCols}{additional annotation per protein to append to the 
 result table.}
 
-\item{verbose}{plot name of each fitted protein to the command lin as a means
-of progress report.}
+\item{verbose}{DEPRECATED}
+
+\item{ggplotTheme}{DEPRECATED.}
 }
 \value{
-A list of two data frames: 1. A long table containing the spline
-  predictions per protein and TMT-label 2. A long table containing the
-  hypothesis test results per protein.
+A data frame in wide format with one row per protein. It contains 
+the smoothing spline parameters and F-test results obtained by comparing 
+the null and alternative models.
 }
 \description{
 A wrapper function around the functions \code{tpptrFitSplines}, 
 \code{tpptrFTest}, \code{tpptrPlotSplines}, which fits natural splines to
-  all proteins in a dataset and detect differential behaviour between
+  all proteins in a dataset and detect differential behavior between
   conditions by a moderated F-test. The results are formatted as a wide table
   with one row per protein. This table contains all the original data, the
   test results, and (optionally) additional annotation columns for each 
@@ -62,26 +61,23 @@ Plots of the natural spline fits will be stored in a subfolder with
 \examples{
 data(hdacTR_smallExample)
 tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
-normResults <- tpptrNormalize(data = tpptrData, 
-                              normReqs = tpptrDefaultNormReqs())
-normData_eSets <- normResults$normData
-longTables <- normData_eSets \%>\% tpptrTidyUpESets
-fitData <- longTables \%>\% extract2("proteinMeasurements")
-proteinInfos <- longTables \%>\% extract2("proteinAnnotation")
+fitData <- tpptrTidyUpESets(tpptrData)
 hdacSplineFits <- tpptrSplineFitAndTest(data = fitData,
                                         factorsH1 = "condition",
-                                        additionalCols = proteinInfos, 
                                         nCores = 1)
 # Show estimated splines for HDAC1:
 filter(hdacSplineFits, Protein_ID == "HDAC1")
+# -> Which proteins showed significant condition effects?
+hdacSplineFits \%>\% filter(p_adj_NPARC <= 0.01) \%>\% select(Protein_ID, p_adj_NPARC)
 # Quality control: test for replicate-specific effects:
  testResults <- tpptrSplineFitAndTest(data = fitData,
-                                     factorsH1 = "replicate")
+                                     factorsH1 = "replicate",
+                                     nCores = 1)
 # -> Which proteins showed significant replicate effects?
 testResults \%>\% filter(p_adj_NPARC <= 0.01) \%>\% select(Protein_ID, p_adj_NPARC)
 
 }
 \seealso{
-\code{\link{ns}, \link{AICc}, \link{tppDefaultTheme}}
+\code{\link{ns}, \link{AICc}}
 }
 

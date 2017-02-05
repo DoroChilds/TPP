@@ -4,16 +4,22 @@
 \alias{tpp2dMerge2dRef}
 \title{Merge 2D-TPP result data with TPP-TR reference data}
 \usage{
-tpp2dMerge2dRef(data = NULL, trRef = NULL, idVar = "representative")
+tpp2dMerge2dRef(resultTable_2D, referenceDataSummary, refIDVar = "Protein_ID",
+  idVar = NULL, data = NULL, trRef = NULL)
 }
 \arguments{
-\item{data}{dataframe containing the 2D-TPP results}
+\item{resultTable_2D}{dataframe containing the 2D-TPP results}
 
-\item{trRef}{character string of a valid system path to a TPP-TR reference 
-RData object}
+\item{referenceDataSummary}{summarized reference data results. See details.}
 
-\item{idVar}{character string matching the column containing the unique protein 
-identifiers}
+\item{refIDVar}{character string indicating name of the columns containing 
+the unique protein identifiers in the reference data set}
+
+\item{idVar}{DEPRECATED}
+
+\item{data}{DEPRECATED}
+
+\item{trRef}{DEPRECATED}
 }
 \value{
 A data frame with results merged from 2D-TPP and TPP-TR reference
@@ -21,5 +27,38 @@ A data frame with results merged from 2D-TPP and TPP-TR reference
 \description{
 Merges 2D-TPP result data with TPP-TR reference data to generate
 a big table including both results
+}
+\details{
+\code{referenceSummary} contains summary statistics like median 
+fold changes and is produced by the function
+ \code{\link{tpp2dCreateTPPTRreference}}. It summarizes the results of a 
+ TPP-TR analysis of a reference data set. 
+ A reference data set is the a output of a TR experiment without drug 
+ treatment on the same cell line as resultTable_2D.
+}
+\examples{
+ 
+data(panobinostat_2DTPP_smallExample)
+config_tpp2d <- panobinostat_2DTPP_config
+data_tpp2d <- panobinostat_2DTPP_data
+tpp2dResults <- analyze2DTPP(configTable = config_tpp2d, 
+                             data = data_tpp2d,
+                             methods=c("doseResponse"),
+                             createReport="none",
+                             nCores=1,
+                             idVar = "representative",
+                             addCol = "clustername",
+                             intensityStr = "sumionarea_protein_",
+                             nonZeroCols = "qusm") 
+
+trRef <- file.path(system.file("data", package="TPP"), 
+"TPPTR_reference_results_HepG2.RData")
+
+annotatedTable <- tpp2dMerge2dRef(resultTable_2D = tpp2dResults,
+                                  referenceDataSummary = trRef)
+
+}
+\seealso{
+\code{\link{tpp2dCreateTPPTRreference}}
 }
 

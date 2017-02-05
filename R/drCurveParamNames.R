@@ -1,4 +1,4 @@
-drCurveParamNames <- function(names=TRUE, info=TRUE){
+drCurveParamNames <- function(names, info){
   ##  Assistant function that returns the column names of the dose response 
   ## curve parameters in the internal datasets.
   ## This function is intended to assure consistency when accessing, 

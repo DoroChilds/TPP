@@ -66,13 +66,6 @@ The installed package can be loaded by
 library("TPP")
 @
 
-For the data manipulations in this vignette, we also load the \Rpackage{dplyr}
-and \Rpackage{magrittr} packages:
-<<helperPackages, message = FALSE>>=
-library("dplyr", quietly = TRUE)
-library("magrittr", quietly = TRUE)
-@
-
 \subsection{Special note for Windows users}
 The \Rpackage{TPP} package uses the \Rpackage{openxlsx} package to produce Excel 
 output \cite{openxlsx}. \Rpackage{openxlsx} requires a zip application to be 
@@ -177,7 +170,7 @@ If you want to use data from other sources than \Rpackage{isobarQuant}, see sect
 If you import the data directly from tab-delimited \texttt{.txt} files, please make sure that the entries are not encapsulated by quotes (for example, \texttt{"entry1"} or \texttt{'entry2'}). All quotes will be ignored during data import in order to robustly handle entries containing single quotes (for example protein annotation by \texttt{5'} or \texttt{3'}).
 
 By default, plots for the fitted melting curves are produced and stored in pdf 
-format for each protein during runtime and we highly recommend that you do this when you analyse your data. However, producing plots for all \Sexpr{length(unique(unlist(sapply(hdacTR_data, function(d) d$gene_name))))} proteins in our dataset can be time consuming and would slow down the execution of the current example. Thus, we first disable plotting by setting the argument \Rcode{plotCurves=FALSE}. 
+format for each protein during runtime and we highly recommend that you do this when you analyze your data. However, producing plots for all \Sexpr{length(unique(unlist(sapply(hdacTR_data, function(d) d$gene_name))))} proteins in our dataset can be time consuming and would slow down the execution of the current example. Thus, we first disable plotting by setting the argument \Rcode{plotCurves=FALSE}. 
 Afterwards, we will produce plots for individual proteins of interest. Note that, in practice, you will only be able to examine the results in an unbiased manner if you allow the production of all plots.
 
 We start the workflow by typing
@@ -289,9 +282,8 @@ package. It provides a range of functions to access and manipulate texttt{expres
 \texttt{featureData}. In order to use them outside of the TPP package 
 namespace, we first import the \Rpackage{Biobase} package:
 <<trSelectHDACs>>=
-library(Biobase, quietly = TRUE)
 trDataHDAC <- lapply(trDataNormalized, function(d) 
-  d[featureNames(d) %in% hdac_targets,])
+  d[Biobase::featureNames(d) %in% hdac_targets,])
 @
 
 We fit melting curves for these proteins using the function \Rfunction{tpptrCurveFit}:
@@ -301,7 +293,7 @@ trDataHDAC <- tpptrCurveFit(data = trDataHDAC, resultPath = resultPath, nCores =
 
 The melting curve parameters are now stored within the \texttt{featureData} of the \Rclass{ExpressionSet}s. For example, the melting curves estimated for the Vehicle group have the following parameters:
 <<fittedMeltPars>>=
-pData(Biobase::featureData(trDataHDAC[["Vehicle_1"]]))[,1:5]
+Biobase::pData(Biobase::featureData(trDataHDAC[["Vehicle_1"]]))[,1:5]
 @
 
 The melting curve plots were stored in subdirectory \texttt{Melting\_Curves} in \texttt{resultPath}. You can browse this directory and inspect the melting curves and their parameters. In the following, you can see the plots that were placed in this directory for the \Sexpr{length(hdac_targets)} detected targets: 
@@ -329,7 +321,7 @@ This loaded the object \Robject{trDataFitted}, which is a list of \Rclass{Expres
 
 Now we start the curve parameter evaluation, this time applying less rigorous 
 filters on the quality of the fitted curves (defined by the minimum $R^2$), and
-their long-term melting behaviour (constrained by the maximum plateu paramter):
+their long-term melting behavior (constrained by the maximum plateu paramter):
 <<trPvals, message=TRUE, cache=TRUE>>=
 minR2New <- 0.5 # instead of 0.8
 maxPlateauNew <- 0.7 # instead of 0.3
@@ -450,7 +442,7 @@ ccrDataTransformed <- tppccrTransform(data = ccrDataNormalized)[[1]]
 Next we fit and plot dose response curves for the detected HDAC targets.
 We first select the corresponding rows from the imported data:
 <<ccrSelectHDACs>>=
-ccrDataHDAC <- ccrDataTransformed[match(hdac_targets, featureNames(ccrDataTransformed)),]
+ccrDataHDAC <- ccrDataTransformed[match(hdac_targets, Biobase::featureNames(ccrDataTransformed)),]
 @
 
 We fit dose response curves for these proteins using the function \Rfunction{tppccrCurveFit}:

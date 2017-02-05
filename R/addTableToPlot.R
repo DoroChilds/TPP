@@ -1,4 +1,9 @@
 addTableToPlot = function(plotObj, tableDF, meltVar, clrs){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  variable = condition = value <- NULL
+  
   ## Adds a table of melting curve parameters to an existing ggplot object
   naReplacement = -1e6
   tableDF[is.na(tableDF)] = naReplacement

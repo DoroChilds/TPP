@@ -81,12 +81,12 @@ Invokes the following steps: \enumerate{ \item Import data using the
   \code{\link{tppccrImport}} function. \item Perform normalization by fold 
   change medians (optional) using the \code{\link{tppccrNormalize}} function.
   To perform normalization, set argument \code{normalize=TRUE}. \item Fit and
-  analyse dose response curves using the \code{\link{tppccrCurveFit}} 
+  analyze dose response curves using the \code{\link{tppccrCurveFit}} 
   function. \item Export results to Excel using the \code{\link{tppExport}} 
   function. }
   
   The default settings are tailored towards the output of the python package 
-  isobarQuant, but can be customised to your own dataset by the arguments 
+  isobarQuant, but can be customized to your own dataset by the arguments 
   \code{idVar, fcStr, naStrs, qualColName}.
   
   If \code{resultPath} is not specified, result files are stored at the path 

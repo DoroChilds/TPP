@@ -2,6 +2,10 @@ importTR_tidy <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
                           type){
   message("Importing data...\n")
   
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  experiment = uniqueID = x = fcListAll <- NULL
+  
   ## Check configTable for consistency and extract all relevant information:
   configTableContents <- importCheckConfigTable(infoTable=configTable, type=type)
   expInfos <- configTableListToLong(configTableContents)
@@ -82,6 +86,11 @@ importTR_tidy <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
 }
 
 configTableListToLong <- function(cfgEntries){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  experiment <- NULL
+  
   expNames <- as.character(cfgEntries$expNames)
   labels   <- as.character(cfgEntries$labels)
   conditions  <- cfgEntries$expCond
@@ -127,6 +136,11 @@ prepareForImport <- function(dataframe, fcColNames, qualColName, idVar, expName)
 }
 
 importTidyFoldChanges <- function(dat, fcColNames, type, fcStr){
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  key <- NULL
+  
   nameTmp <- unique(dat$experiment)
   message("Importing fold changes from ",type, " dataset: ", nameTmp)
   fcTidy <- importFct_extractFCs(datDF = dat, colsFC = fcColNames, 
@@ -153,6 +167,11 @@ importAdditionalCols <- function(dat, type, fcColNames){
 importFct_reportValidValues <- function(datLong, expName){
   ## Report size of imported dataset and success rate (how many proteins provide 
   ## enough data to be acutally used for curve fitting?):
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  y = yIsNotNA = sumOfNotNA = uniqueID <- NULL
+  
   proteinSummary <- datLong %>% group_by(uniqueID) %>% 
     mutate(yIsNotNA = !is.na(y)) %>%
     summarise(sumOfNotNA = sum(yIsNotNA)) %>%

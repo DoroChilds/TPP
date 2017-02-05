@@ -1,6 +1,6 @@
-#' @title Analyse spline fits to detect differential behaviour over time
+#' @title Analyze spline fits to detect differential behavior over time
 #' 
-#' @description Analyse fitted natural spline models and look for 
+#' @description Analyze fitted natural spline models and look for 
 #' differential behaviour between conditions by a moderated F-test.
 #'   
 #' @return A long table containing the hypothesis test results per protein.
@@ -10,9 +10,8 @@
 #' tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 #' normResults <- tpptrNormalize(data = tpptrData, normReqs = tpptrDefaultNormReqs())
 #' normData_eSets <- normResults$normData
-#' longTables <- normData_eSets %>% tpptrTidyUpESets
-#' fitData <- longTables %>% extract2("proteinMeasurements")
-#' fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition")
+#' fitData <- tpptrTidyUpESets(normData_eSets)
+#' fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition", nCores = 1)
 #' testResults <- tpptrFTest(fittedModels = fits)
 #' 
 #' @param fittedModels a table of fitted spline models (produced by \code{tpptrFitSplines}).
@@ -30,16 +29,27 @@
 #' @seealso \code{\link{ns}, \link{squeezeVar}}
 #' @export
 tpptrFTest <- function(fittedModels, doPlot = FALSE, resultPath = NULL){
-  # results <- modelSelector(testResults=results, method=modMet, criterion=modCrit)
+  
+  ## Initialize variables to prevent "no visible binding for global
+  ## variable" NOTE by R CMD check:
+  testHypothesis = rssH0 = rssH1 = nObsH1 = nCoeffsH1 = sigmaH1 = 
+    residual_df_H1 = posterior_var_H1 = nCoeffsH0 = df2 = prior_df_H1 =
+    F_moderated = df1 = F_scaled = df2_moderated = p_NPARC = uniqueID =
+    F_statistic = p_adj_NPARC = staType = staValue <- NULL
+  
+  if (!("uniqueID" %in% colnames(fittedModels)))
+    stop("'fittedModels' must contain a column called 'uniqueID'")
   
   ## Create wide table of goodness of fit statistics
   ## (not the most elegant solution, but spread only works for single column)
   fitStatsH0 <- fittedModels %>% filter(testHypothesis == "null") %>% 
     mutate(fittedModel = NULL) %>% # remove column "fittedModel", if it exists at all
     select( -testHypothesis)
+  
   fitStatsH1 <- fittedModels %>% filter(testHypothesis == "alternative") %>% 
     mutate(fittedModel = NULL) %>% # remove column "fittedModel", if it exists at all
     select( -testHypothesis)
+  
   fitStatsBothModels <- full_join(fitStatsH0, fitStatsH1, by = "uniqueID", 
                                   suffix = c("H0", "H1")) 
   
@@ -90,59 +100,6 @@ tpptrFTest <- function(fittedModels, doPlot = FALSE, resultPath = NULL){
   }
   
   return(testResults)
-}
-
-plot_pVal_distribution <- function(dataWide){
-  plotDat <- dataWide %>% 
-    select(uniqueID, p_NPARC, p_adj_NPARC, df1, df2, df2_moderated) %>%
-    gather(pValType, pValue, c(p_NPARC, p_adj_NPARC)) %>%
-    mutate(pValType = factor(pValType), 
-           df2_moderated = round(df2_moderated, 2)) %>%
-    na.omit()
   
-  mainTitle = "P-values before and after Benjamini-Hochberg adjustment"
-  subTitle = paste("df1 = ", unique(plotDat$df1),
-                 ", df2 = ", unique(plotDat$df2),
-                 ", df2_moderated = ", unique(plotDat$df2_moderated), sep = "")
-  numProt = plotDat %>% group_by(pValType)%>% summarize(n = n()) %>%
-    mutate(label = paste("n =", n))
-  
-  p <- ggplot(data = plotDat, aes(x = pValue)) +
-    geom_histogram(aes(y=..density../max(..density..)), # Histogram with density instead of count on y-axis
-                   alpha = 1, binwidth = 0.05, na.rm = TRUE) +
-    geom_text(data = numProt, aes(x = 0.1, y = 1, label = label), 
-              color = "red", inherit.aes = FALSE) +
-    ylab("Relative frequency") +
-    ylim(c(-0.1,1.1)) + xlim(c(-0.1,1.1)) +
-    # geom_density(alpha = .2, fill = "#FF6666") + # Overlay with transparent density plot
-    facet_grid(pValType ~ .) +
-    ggtitle(paste(mainTitle, subTitle, sep = "\n"))
-  return(p)
-}
-
-plot_fSta_distribution <- function(dataLong){
-  plotDat <- dataLong %>% 
-    select(uniqueID, staType, staValue, df1, df2, df2_moderated) %>%
-    mutate(staType = factor(staType), df2_moderated = round(df2_moderated, 2)) %>%
-    na.omit()
-  
-  mainTitle = "F-statistics and moderated F-statistics"
-  subTitle = paste("Type = ", unique(plotDat$staType), sep = "")
-  numProt = plotDat %>% group_by(staType, df1, df2, df2_moderated)%>% 
-    summarize(n = n(), DF1 = unique(df1), DF2 = unique(df2), MOD.DF2 = unique(df2_moderated)) %>%
-    mutate(label = paste("n =", n, ", df1 =", DF1, ", df2 =", df2, ", df2_moderated =", df2_moderated, sep = " "))
-  
-  p <- ggplot(data = plotDat, aes(x = staValue)) +
-    geom_histogram(aes(y=..density../max(..density..)), # Histogram with density instead of count on y-axis
-                   alpha = 1, bins = min(nrow(plotDat), 100), na.rm = TRUE) +
-    geom_text(data = numProt, aes(x = 0.1, y = 1, label = label), 
-              color = "red", inherit.aes = FALSE, hjust = "left", vjust = "top") +
-    # geom_density(alpha = .2, fill = "#FF6666") + # Overlay with transparent density plot
-    facet_grid(df1 + df2 + df2_moderated ~ .) +
-    ylim(c(0,1)) +
-    ylab("Relative frequency") + xlab("F statistic") +
-    ggtitle(paste(mainTitle, subTitle, sep = "\n"))
-  # stat_function(fun = df, colour = "red", args = list(df1 = df1, df2 = df2))
-  
-  return(p)
+  ## to do: shift QC plots to an extra function 'tpptrFTestQCplots' and deprecate the doPlot and resultPath arguments
 }

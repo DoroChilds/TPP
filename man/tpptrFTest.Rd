@@ -2,7 +2,7 @@
 % Please edit documentation in R/tpptrFTest.R
 \name{tpptrFTest}
 \alias{tpptrFTest}
-\title{Analyse spline fits to detect differential behaviour over time}
+\title{Analyze spline fits to detect differential behavior over time}
 \usage{
 tpptrFTest(fittedModels, doPlot = FALSE, resultPath = NULL)
 }
@@ -19,7 +19,7 @@ p-values before/ after Benjamini Hochberg adjustment.}
 A long table containing the hypothesis test results per protein.
 }
 \description{
-Analyse fitted natural spline models and look for 
+Analyze fitted natural spline models and look for 
 differential behaviour between conditions by a moderated F-test.
 }
 \details{
@@ -34,9 +34,8 @@ data(hdacTR_smallExample)
 tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 normResults <- tpptrNormalize(data = tpptrData, normReqs = tpptrDefaultNormReqs())
 normData_eSets <- normResults$normData
-longTables <- normData_eSets \%>\% tpptrTidyUpESets
-fitData <- longTables \%>\% extract2("proteinMeasurements")
-fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition")
+fitData <- tpptrTidyUpESets(normData_eSets)
+fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition", nCores = 1)
 testResults <- tpptrFTest(fittedModels = fits)
 
 }
