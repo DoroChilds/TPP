@@ -20,8 +20,8 @@ extract_fit_factors <- function(splineModel, mode){
       grep("factor.", ., value = TRUE) 
     
     factorNames <- factorColumns %>% 
-      gsub("factor", "", .) %>% 
-      gsub("\\.", "", .)
+      gsub("factor.", "", .) %>% 
+      substr(1, nchar(.)-1) # remove the final '.'
     
     if (mode == "names"){
       
