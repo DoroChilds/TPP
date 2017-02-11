@@ -12,7 +12,7 @@ results <- readRDS(file.path(testDataPath, "panobinostat_2D_importResults.rds"))
 test_that(desc="evalImportData", code={
   cfgIn <- cfg
   datIn <- dat
-  ref <- results
+  ref <- results %>% arrange(representative, temperature)
   new <- tpp2dImport(configTable = cfgIn,
                      data = datIn,
                      idVar = "representative",
@@ -32,7 +32,7 @@ test_that(desc="cfg_empty_entries", code={
   cfgIn <- cfg %>% mutate(`126` = gsub("-", NA, `126`))
   datIn <- dat
   
-  ref <- results
+  ref <- results %>% arrange(representative, temperature)
   attr(ref, "configTable") <- cfgIn %>% select(-Path)
   
   new <- tpp2dImport(configTable = cfgIn,
