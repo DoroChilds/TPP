@@ -39,6 +39,31 @@ test_that(desc="allOk_H0", code={
   
 })
 
+test_that(desc="allOk_H1_factorContainsDot", code={
+  splineFits <- suppressMessages(
+    tpptrFitSplines(data = hdacData %>% rename(condition.1. = condition), 
+                    factorsH1 = "condition.1.", returnModels = TRUE, 
+                    splineDF = 4, nCores = 1)
+  )
+  
+  modelH1 <- (splineFits %>% 
+                filter(uniqueID == "HDAC1", testHypothesis == "alternative") %>%
+                extract2("fittedModel"))[[1]]
+  
+  mIn <- modelH1
+  xIn <- xNew
+  
+  prediction <- TPP:::predict_spline(splineModel = mIn, x = xIn)
+  
+  check1 <- nrow(prediction) == (2 * length(xNew))
+  check2 <- all(colnames(prediction) == c("x", "condition.1.", "y"))
+  check3 <- all(prediction$x == rep(xNew, each = 2))
+  check4 <- all(unique(prediction$condition.1.) == c("Vehicle", "Treatment"))
+  
+  expect_true(check1 & check2 & check3 & check4)
+  
+})
+
 test_that(desc="allOk_H1", code={
   
   mIn <- modelH1
