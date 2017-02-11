@@ -74,4 +74,3 @@ tppccrFitted <- tppccrCurveFit(data=tppccrTransformed, nCores=1)
 \code{\link{tppccrImport}}, \code{\link{tppccrNormalize}}, 
   \code{\link{tppccrTransform}}
 }
-

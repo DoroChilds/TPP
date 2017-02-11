@@ -21,4 +21,3 @@ A list with two subsets of a dataset obtained by 2D-TPP experiments to
 \seealso{
 \code{\link{panobinostat_2DTPP_config}, \link{panobinostat_2DTPP_smallExample}}
 }
-

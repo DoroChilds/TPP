@@ -76,4 +76,3 @@ Biobase::pData(Biobase::featureData(tpptrFittedHDACs[["Panobinostat_1"]]))
 \seealso{
 \code{\link{tppDefaultTheme}}
 }
-

@@ -35,4 +35,3 @@ concentrations <- tpptrTidyUpESets(tpptrData)
 additionalInfos <- tpptrTidyUpESets(tpptrData, returnType = "featureData")
 summary(concentrations)
 }
-

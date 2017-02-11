@@ -63,4 +63,3 @@ attr(datIn, "importSettings") \%>\% unlist
 attr(datIn, "configTable")
 
 }
-

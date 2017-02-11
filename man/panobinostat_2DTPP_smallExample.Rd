@@ -13,4 +13,3 @@ the TPP-package. It contains all necessary arguments to start the analysis
 \seealso{
 \code{\link{panobinostat_2DTPP_data}, \link{panobinostat_2DTPP_config}}
 }
-

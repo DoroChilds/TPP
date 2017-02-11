@@ -2,13 +2,19 @@
 % Please edit documentation in R/tppDeprecated.R
 \name{TPP-deprecated}
 \alias{TPP-deprecated}
-\alias{tpp2dCreateCCRConfigFile}
-\alias{tpp2dEvalConfigTable}
-\alias{tpp2dPlotCCRAllCurves}
 \alias{tpp2dPlotCCRGoodCurves}
+\alias{TPP-deprecated}
+\alias{tpp2dPlotCCRAllCurves}
+\alias{TPP-deprecated}
 \alias{tpp2dPlotCCRSingleCurves}
+\alias{TPP-deprecated}
+\alias{tpp2dEvalConfigTable}
+\alias{TPP-deprecated}
 \alias{tpp2dRemoveZeroSias}
+\alias{TPP-deprecated}
 \alias{tpp2dReplaceColNames}
+\alias{TPP-deprecated}
+\alias{tpp2dCreateCCRConfigFile}
 \title{Deprecated functions in package \sQuote{TPP}}
 \usage{
 tpp2dPlotCCRGoodCurves(configTable = NULL, data = NULL,
@@ -59,4 +65,3 @@ The following function is deprecated and will be made defunct; use
  \item{tpp2dPlotCCRAllCurves: \code{\link{tpp2dCreateDRplots}}}
  }
 }
-

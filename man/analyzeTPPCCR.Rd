@@ -123,4 +123,3 @@ Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T.,
 \seealso{
 tppDefaultTheme
 }
-

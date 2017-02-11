@@ -35,4 +35,3 @@ A pdf with various quality control plots for a specified 2D-TPP data set
 Plots quality control histograms of pEC50 values of reference dataset and
   indicates the pEC50 values of the 2D-TPP experiment
 }
-

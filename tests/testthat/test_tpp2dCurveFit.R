@@ -15,8 +15,10 @@ test_that("all_ok1", code={
   datIn <- dat1
   
   new <- tpp2dCurveFit(data = datIn, nCores = 1) %>% select(-row_derived_from_non_unique_identifiers)
-  
-  expect_equal(new, out1)
+
+  expect_equal(new %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+               out1 %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+               tolerance = 1e-5) # There are some small deviations in the estimated slopes on linux, which do not occur on the Mac.
 })
 
 test_that("all_ok2", code={
@@ -32,7 +34,9 @@ test_that("all_ok3", code={
   
   new <- tpp2dCurveFit(data = datIn, nCores = 1) %>% select(-row_derived_from_non_unique_identifiers)
   
-  expect_equal(new, out3)
+  expect_equal(new %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+               out3 %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+               tolerance = 1e-5)
 })
 
 test_that("idCol_updated", code={

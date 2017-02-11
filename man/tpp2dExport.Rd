@@ -61,4 +61,3 @@ data(panobinostat_2DTPP_smallExample)
 # tpp2dExport(tab = datFitted, outPath = getwd(), addPlotColumns = FALSE) 
 
 }
-

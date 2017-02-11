@@ -24,4 +24,3 @@ Creates pdf files of the afore created plots by
 \code{plot_2D_data_on_temperature_range} or
 \code{tpp2dCreateDRplots}
 }
-

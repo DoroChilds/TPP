@@ -81,4 +81,3 @@ data = hdacCCR_data)
 \seealso{
 \code{\link{tpptrImport}}, \code{\link{tppccrCurveFit}}
 }
-

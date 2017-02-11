@@ -2,8 +2,8 @@
 % Please edit documentation in R/TPP.R
 \docType{package}
 \name{TPP}
-\alias{.onLoad}
 \alias{TPP}
+\alias{.onLoad}
 \alias{TPP-package}
 \title{Thermal proteome profiling (TPP)}
 \usage{
@@ -34,4 +34,3 @@ Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T.,
   drugs in living cells by thermal profiling of the proteome. Science, 
   346(6205), 1255784.
 }
-

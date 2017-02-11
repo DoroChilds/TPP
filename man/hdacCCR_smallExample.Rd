@@ -10,4 +10,3 @@ Example dataset obtained by TPP-CCR experiments for analysis by
 the TPP-package. It contains all necessary arguments to start the analysis
 (config table and list of data frames).
 }
-

@@ -44,4 +44,3 @@ datNorm <- tpp2dNormalize(data = datFC)
 attr(datNorm, "importSettings")["fcStrNorm"]
   
 }
-

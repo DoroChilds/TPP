@@ -21,4 +21,3 @@ A list with two subsets of a dataset obtained by TPP-CCR experiments to
   directory. You can find it on your system by the \code{R} command 
   \code{system.file('example_data', package = 'TPP')}.
 }
-

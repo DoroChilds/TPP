@@ -61,4 +61,3 @@ A pdf or html report which summarizes all parameters that were set
 Creates a markdown pdf file that summarizes the 2D-TPP analysis by reporting e.g. R
  version and package versions used
 }
-

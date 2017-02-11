@@ -14,4 +14,3 @@ treatment on HepG2 cell lines.
   reference for normalization of 2D-TPP data. See the vignette for the 2D
   workflow for details.
 }
-

@@ -85,4 +85,3 @@ tpptrData <- tpptrImport(hdacTR_config, hdacTR_data)
 \seealso{
 \code{\link{tppccrImport}}
 }
-

@@ -26,4 +26,3 @@ A folder with plots for each identified protein that compare melting points in
 Plots quality control plots which indicate at which temperatures the pEC50 
  values of the treatment curves lie in comparison to those of the reference data
 }
-

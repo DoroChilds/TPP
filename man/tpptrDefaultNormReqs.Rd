@@ -20,4 +20,3 @@ tpptrData <- tpptrImport(configTable=hdacTR_config, data=hdacTR_data)
 tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 
 }
-

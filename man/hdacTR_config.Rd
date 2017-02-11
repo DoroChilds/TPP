@@ -11,4 +11,3 @@ The configuration table to analyze \link{hdacTR_data}.
  name, isobaric labels, and the administered temperatures at each 
  label.
 }
-

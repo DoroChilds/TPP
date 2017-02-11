@@ -52,4 +52,3 @@ datFC <- tpp2dComputeFoldChanges(data = datIn)
 attr(datFC, "importSettings")["fcStr"]
                                  
 }
-

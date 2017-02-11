@@ -44,4 +44,3 @@ newData_repl1 <- data.frame(Biobase::exprs(transf_replicate1),
                               Type=effects_replicate1)[!is.na(effects_replicate1),]
                               
 }
-

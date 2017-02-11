@@ -39,4 +39,3 @@ annotStr="Normalized Fold Changes")
 \seealso{
 \code{\link{tppDefaultTheme}}
 }
-

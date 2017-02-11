@@ -29,4 +29,3 @@ data(hdacTR_resultsTable_smallExample)
 tppExport(resultTable, "tpptr_example_results.xlsx")
 
 }
-

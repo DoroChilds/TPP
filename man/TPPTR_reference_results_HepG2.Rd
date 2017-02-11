@@ -11,4 +11,3 @@ treatment on HepG2 cell lines.
 \details{
 Contains the data object \code{\link{tppRefData}}.
 }
-

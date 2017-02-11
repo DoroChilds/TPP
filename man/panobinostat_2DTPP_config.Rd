@@ -14,4 +14,3 @@ The configuration table to analyze \link{panobinostat_2DTPP_data}.
 \seealso{
 \code{\link{panobinostat_2DTPP_data}, \link{panobinostat_2DTPP_smallExample}}
 }
-

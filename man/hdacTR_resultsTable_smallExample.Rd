@@ -10,4 +10,3 @@ Example of a TPP-TR result table.
 \details{
 Contains the data object \code{\link{resultTable}}.
 }
-

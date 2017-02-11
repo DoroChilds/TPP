@@ -13,4 +13,3 @@ Example of a TPP-TR result table.
  can be used as input for the function
  \code{\link{tppQCPlotsCorrelateExperiments}}.
 }
-

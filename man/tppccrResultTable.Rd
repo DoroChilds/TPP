@@ -45,4 +45,3 @@ subset(tppccrResults, passed_filter_Panobinostat_1 & passed_filter_Panobinostat_
 \seealso{
 \code{\link{tppccrCurveFit}},\code{\link{tppccrPlotCurves}}
 }
-

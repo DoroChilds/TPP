@@ -188,4 +188,3 @@ Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T.,
 tppDefaultTheme, tpptrImport, tpptrNormalize, tpptrCurveFit, 
 tpptrAnalyzeMeltingCurves
 }
-

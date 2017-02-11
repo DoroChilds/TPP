@@ -45,4 +45,3 @@ datDMSORatio <- tpp2dCalcFractAbundance(data = datIn)
 colnames(datDMSORatio)
 
 }
-

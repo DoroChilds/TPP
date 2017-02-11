@@ -67,4 +67,3 @@ attr(datNorm, "importSettings")["fcStrNorm"]
 datFit <- tpp2dCurveFit(data = datNorm)
   
 }
-

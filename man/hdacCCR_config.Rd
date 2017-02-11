@@ -11,4 +11,3 @@ The configuration table to analyze \link{hdacCCR_data}.
  names, isobaric labels, and the administered drug concentrations at each
  label.
 }
-

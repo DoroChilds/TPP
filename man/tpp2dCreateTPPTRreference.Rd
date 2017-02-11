@@ -46,4 +46,3 @@ A TPP-TR reference object for a certain cell line with different supporting file
 Performs a reference analysis of a TPP-TR experiment and generates boxplots for
  the distribution of fold changes at the different temperatures if desired.
 }
-

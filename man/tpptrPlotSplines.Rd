@@ -88,4 +88,3 @@ tpptrPlotSplines(data = tidyData, fittedModels = splineFits,
 \code{\link{ns}, \link{AICc}, 
 \link{tpptrFitSplines}, \link{tpptrFTest}}
 }
-

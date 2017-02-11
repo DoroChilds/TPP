@@ -25,4 +25,3 @@ load(system.file("example_data/2D_example_data/shortCCRresults.RData", package="
 shortCCRresults <- tpp2dAddAdditionalInfo(data = shortCCRresults, idVar="representative")
 
 }
-

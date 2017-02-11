@@ -29,4 +29,3 @@ trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", pac
 tpp2dTRReferenceObject(tppRefPath=trRef)
 
 }
-

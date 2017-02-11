@@ -57,4 +57,3 @@ Cox, J., & Mann, M. (2008). MaxQuant enables high peptide
   proteome-wide protein quantification. Nature biotechnology, 26(12), 
   1367-1372.
 }
-

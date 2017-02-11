@@ -46,4 +46,3 @@ load(system.file("example_data/2D_example_data/shortData2d.RData", package="TPP"
 trRef <- system.file("example_data/2D_example_data/referenceNormData.RData", package="TPP")
 
 }
-

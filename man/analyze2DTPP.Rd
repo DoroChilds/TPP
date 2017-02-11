@@ -149,4 +149,3 @@ Salzer, E., Bantscheff, M., Savitski, M. M. (2016) Comprehensive thermal and che
 profiling identifies phenylalanine hydroxylase as a potent off-target of the histone 
 deacetylase inhibitor panobinostat. Nature Chemical Biology (accepted)
 }
-

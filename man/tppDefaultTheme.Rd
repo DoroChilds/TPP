@@ -31,4 +31,3 @@ normRequirements$fcRequirements[3,3] <- 0.25
 # Perform normalization:
 tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=)
 }
-

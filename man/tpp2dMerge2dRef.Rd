@@ -61,4 +61,3 @@ annotatedTable <- tpp2dMerge2dRef(resultTable_2D = tpp2dResults,
 \seealso{
 \code{\link{tpp2dCreateTPPTRreference}}
 }
-

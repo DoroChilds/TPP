@@ -83,4 +83,3 @@ tppccrPlotted <- tppccrPlotCurves(hdacSubset, resultPath=getwd(), nCores = 1)
 \seealso{
 \code{\link{tppccrCurveFit}},\code{\link{tppDefaultTheme}}
 }
-

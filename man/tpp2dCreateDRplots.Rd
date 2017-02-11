@@ -70,4 +70,3 @@ allCurves[["HDAC1"]]
 \seealso{
 \code{\link{tpp2dCurveFit}} \code{\link{brewer.pal}}
 }
-

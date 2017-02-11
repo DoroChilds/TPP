@@ -42,4 +42,3 @@ testResults <- tpptrFTest(fittedModels = fits)
 \seealso{
 \code{\link{ns}, \link{squeezeVar}}
 }
-

@@ -49,4 +49,4 @@ Description: Analyze thermal proteome profiling (TPP) experiments with varying
 License: Artistic-2.0
 VignetteBuilder: knitr
 biocViews: Proteomics, MassSpectrometry
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

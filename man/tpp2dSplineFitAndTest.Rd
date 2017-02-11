@@ -74,4 +74,3 @@ analysisResults <- tpp2dSplineFitAndTest(data = normData2d,
                                          nCores = 1)
   
 }
-
