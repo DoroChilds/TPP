@@ -41,7 +41,7 @@ splitIDsIntoSeparateRows <- function(singleDat, idVar) {
   if (nrow(newRows) > 0) {
     message("Splitting ", length(nonUniques), 
             " rows with multiple identifiers into ", nrow(newRows), 
-            " separate rows.\n")
+            " separate rows.")
   } 
   newDat <- singleDat[!singleDat[[idVar]] %in% nonUniques, ] %>%
     rbind(newRows)
