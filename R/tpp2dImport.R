@@ -76,14 +76,16 @@ tpp2dImport <- function(configTable = NULL,
                               nonZeroCols = nonZeroCols)
   
   # create one wide data table
-  dataTable <- importFct_createCCRInputFrom2DData(configTable = configWide, 
+  dataWide <- importFct_createCCRInputFrom2DData(configTable = configWide, 
                                                   data.list = dataList, 
                                                   intensityStr = intensityStr, 
                                                   fcStr = fcStr) %>%
     mutate(experiment = factor(experiment), unique_ID = factor(unique_ID))
   
+  dataWide <- dataWide %>% arrange_(.dots = c(idVar, "temperature"))
+  
   ## Add annotation for use in later functions:
-  attr(dataTable, "configTable") <- configWide
+  attr(dataWide, "configTable") <- configWide
   
   importSettings <- list(proteinIdCol = idVar, 
                          uniqueIdCol = "unique_ID",
@@ -92,8 +94,8 @@ tpp2dImport <- function(configTable = NULL,
                          qualColName = qualColName, 
                          nonZeroCols = nonZeroCols,
                          fcStr = fcStr)
-  attr(dataTable, "importSettings") <- importSettings
+  attr(dataWide, "importSettings") <- importSettings
   
   message("Done.")
-  return(dataTable)
+  return(dataWide)
 }
