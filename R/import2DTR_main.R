@@ -74,6 +74,9 @@ import2DTR_main <- function(configTable, data, idVar, fcStr, addCol, naStrs,
            "'. Please check the suffices and the additional column names you have specified.")
     }
     
+    ## Experiment wise pre-processing prior to combination into one object:
+    dataTmp <- splitIDsIntoSeparateRows(singleDat = dataTmp, idVar = idVar)
+    
     ## Make sure that ID variable 'idvar' is unique:
     dataFiltered <- importFct_removeDuplicates(inDF = dataTmp, 
                                                refColName = idVar, 
