@@ -51,6 +51,8 @@ importFct_createCCRInputFrom2DData <- function(configTable, data.list, intensity
     }
     return(dataset)
   })
-  #names(new.list) <- experiments
-  return(do.call(rbind, new.list))
+  
+  out <- bind_rows(new.list)
+  
+  return(out)
 }
