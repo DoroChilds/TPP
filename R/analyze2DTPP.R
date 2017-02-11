@@ -149,6 +149,16 @@ analyze2DTPP <- function(configTable,
                        qualColName=qualColName, nonZeroCols = nonZeroCols,
                        fcStr=fcStr)
   
+  ## Extract directory from the filenames in config table, if specified:
+  confgFields <- suppressMessages(
+    importCheckConfigTable(infoTable=configTable, type="2D")
+    )
+  files      <- suppressWarnings(confgFields$Path)
+  outDirList <- importFct_makeOutputDirs(outDir=resultPath, fNames=files)
+  flagDoWrite <- outDirList$doWrite
+  resultPath <- outDirList$outDir
+  if (!flagDoWrite) xlsxExport = plotAll = plotAllR2 = plotSingle <- FALSE
+  
   # compute fold changes if requested
   if (compFc){
     fcStr <- "rel_fc_protein_"
