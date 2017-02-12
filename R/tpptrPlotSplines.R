@@ -7,11 +7,11 @@
 #' data(hdacTR_smallExample)
 #' tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 #' tidyData <- tpptrTidyUpESets(tpptrData)
-#' splineFits <- tpptrFitSplines(data = tidyData, nCores = 1,
+#' splineFits <- tpptrFitSplines(data = tidyData, nCores = 1, splineDF = 4:5,
 #'                               factorsH1 = "condition", returnModels = TRUE)
 #' testResults <- tpptrFTest(fittedModels = splineFits, doPlot = FALSE)
 #' tpptrPlotSplines(data = tidyData, fittedModels = splineFits,
-#'                  individual = FALSE, splineDF = 4:5,
+#'                  individual = FALSE,
 #'                  testResults = testResults, resultPath = getwd())
 #' 
 #' @param data long table of proteins measurements that were used for spline fitting.
