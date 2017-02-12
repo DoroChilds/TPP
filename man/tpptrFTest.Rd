@@ -35,7 +35,7 @@ tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
 normResults <- tpptrNormalize(data = tpptrData, normReqs = tpptrDefaultNormReqs())
 normData_eSets <- normResults$normData
 fitData <- tpptrTidyUpESets(normData_eSets)
-fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition", nCores = 1)
+fits <- tpptrFitSplines(data = fitData, factorsH1 = "condition", nCores = 1, splineDF = 4:5)
 testResults <- tpptrFTest(fittedModels = fits)
 
 }

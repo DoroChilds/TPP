@@ -65,6 +65,7 @@ fitData <- tpptrTidyUpESets(tpptrData)
 hdacSplineFits <- tpptrSplineFitAndTest(data = fitData,
                                         factorsH1 = "condition",
                                         nCores = 1,
+                                        splineDF = 4:5,
                                         doPlot = FALSE)
 # Show estimated splines for HDAC1:
 filter(hdacSplineFits, Protein_ID == "HDAC1")
@@ -74,6 +75,7 @@ hdacSplineFits \%>\% filter(p_adj_NPARC <= 0.01) \%>\% select(Protein_ID, p_adj_
  testResults <- tpptrSplineFitAndTest(data = fitData,
                                      factorsH1 = "replicate",
                                      nCores = 1,
+                                     splineDF = 4,
                                      doPlot = FALSE)
 # -> Which proteins showed significant replicate effects?
 testResults \%>\% filter(p_adj_NPARC <= 0.01) \%>\% select(Protein_ID, p_adj_NPARC)

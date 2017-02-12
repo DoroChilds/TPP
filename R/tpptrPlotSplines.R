@@ -11,7 +11,7 @@
 #'                               factorsH1 = "condition", returnModels = TRUE)
 #' testResults <- tpptrFTest(fittedModels = splineFits, doPlot = FALSE)
 #' tpptrPlotSplines(data = tidyData, fittedModels = splineFits,
-#'                  individual = FALSE,
+#'                  individual = FALSE, splineDF = 4:5,
 #'                  testResults = testResults, resultPath = getwd())
 #' 
 #' @param data long table of proteins measurements that were used for spline fitting.
