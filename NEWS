@@ -169,8 +169,9 @@ Updated package vignette.
     - Plot paths in excel output are stored in separate columns for spline and melting curve fits
     - Combination of result tables no works without generating redundancies
 
-3.2.0 (Feb-11-2017)
+3.2.0 (Feb-13-2017)
  o Enable the following features for 2D-TPP analysis:
   - Automatic creation of result path from 'Path' column in config table (was already present in TR- and CCR analysis)
   - Split rows with multiple identifiers (e.g. separated by '|') into separate rows  (was already present in TR- and CCR analysis)
   - Sort result table rows by temperature for each ID
+ o Bugfixes and shortening of example runtimes
