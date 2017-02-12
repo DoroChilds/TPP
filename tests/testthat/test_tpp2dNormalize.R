@@ -21,8 +21,29 @@ test_that(desc="all_ok2", code={
   
   new <- tpp2dNormalize(data = datIn)
 
-  expect_identical(new, out2)
+  expect_identical(object = new, expected = out2)
 })
+
+test_that(desc="all_ok2_different_sorting", code={
+  datIn <- dat2 %>% arrange(representative, temperature)
+  
+  new <- tpp2dNormalize(data = datIn)
+  old <- out2 %>% arrange(representative, temperature)
+  
+  expect_identical(object = new, expected = old)
+})
+
+test_that(desc="all_ok2_scientificFotma", code={
+  datIn <- dat2 %>% rename_("rel_fc_protein_1e-4" = "rel_fc_protein_1")
+  
+  new <- tpp2dNormalize(data = datIn)
+  old <- out2 %>% rename_("rel_fc_protein_1e-4" = "rel_fc_protein_1",
+                          "norm_rel_fc_protein_1e-4" = "norm_rel_fc_protein_1")
+  
+  expect_identical(object = new, expected = old)
+})
+
+
 
 test_that(desc="no_fcStr", code={
   
@@ -59,14 +80,14 @@ test_that(desc="fcStr_not_found", code={
 })
 
 test_that(desc="warning_deprecated_fct_arg1", code={
-  datIn <- dat1
+  datIn <- dat2
   
   expect_warning(tpp2dNormalize(data = datIn, configTable = NA))
 
 })
 
 test_that(desc="warning_deprecated_fct_arg2", code={
-  datIn <- dat1
+  datIn <- dat2
   
   expect_warning(tpp2dNormalize(data = datIn, fcStr = NA))
   

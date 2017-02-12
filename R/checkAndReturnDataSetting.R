@@ -41,8 +41,10 @@ checkAndReturnDataSetting <- function(dataSettings, fieldName, columnNames, sysC
     }
   }
   
-  
-  message("Found the following column name in attr(data, 'importSettings')$", fieldName, ": '", fieldEntry, "'")
+  msgTxt <- paste0(
+    "Found the following column name in attr(data, 'importSettings')$", 
+    fieldName, ": '", fieldEntry, "'")
+  message(msgTxt)
   
   exactMatches <- c("proteinIdCol", "uniqueIdCol", "addCol", "qualColName", 
                     "nonZeroCols")
