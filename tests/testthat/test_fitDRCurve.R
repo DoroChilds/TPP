@@ -27,3 +27,27 @@ test_that(desc = "2d_data_were_outcome_depends_on_OS", code = {
   expect_true(check1 & check2 & check3 & check4)
 })
 
+## Test just the ns part to understand why the above code fails on Linux:
+test_that("nls_difference_Linux_Mac", {
+  y <- c(norm_rel_fc_protein_0_transformed = 0, 
+         norm_rel_fc_protein_0.02_transformed = 0.4215532379877233726262,
+         norm_rel_fc_protein_0.143_transformed = 1.026455783468937177361,
+         norm_rel_fc_protein_1_transformed = 0.9166168400334454569034,
+         norm_rel_fc_protein_5_transformed = 1)
+  
+  x <- c(0, 0.02, .143, 1, 5)
+  xLog <- c(-15, log10(x * 10^-6)[-1])
+  
+  fitFct <- as.formula(paste("y ~ 1 / (1 + exp((infl - x) * hill))"))
+  
+  
+  m <- try(nls(formula = as.formula(paste("y ~ 1 / (1 + exp((infl - x) * hill))")), 
+               algorithm = "port", 
+               data = list(x = xLog, y = y), 
+               start = list(hill = 1, infl = -7.7), 
+               lower = c(1.000000, -8.126123), 
+               upper = c(50.000000, -5.728183), 
+               na.action=na.exclude))
+  
+})
+
