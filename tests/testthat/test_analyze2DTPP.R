@@ -71,35 +71,35 @@ test_that(desc="warning_deprecated_fct_arg", code={
   )
 })
 
-test_that(desc="allOK_obtain_paths_from_config", code={
-  
-  cfgIn <- openxlsx::read.xlsx(file.path(dataPath, "Panobinostat_TPP-2D_config.xlsx")) %>% select(-Path)
-  
-  files <- tibble(Experiment = c("X020466", "X020467", "X020468", "X020469", "X020470", "X020471"),
-                  Path = c("PFC_39106_PF1_QV1_P0101868C.txt",
-                           "PFC_39108_PF1_QV1_P0101878C.txt",
-                           "PFC_39110_PF1_QV1_P0101888C.txt",
-                           "PFC_39101_PF1_QV1_P0101898C.txt",
-                           "PFC_39099_PF1_QV1_P0101908C.txt",
-                           "PFC_39093_PF1_QV1_P0101918C.txt") %>% file.path(dataPath, .))
-  
-  cfgIn <- cfgIn %>% left_join(files)
-  
-  out <- analyze2DTPP(configTable = cfgIn,
-                      idVar = "representative",
-                      addCol = c("clustername", "msexperiment_id"),
-                      intensityStr = "sumionarea_protein_",
-                      qualColName = c("qupm", "qusm"),
-                      nonZeroCols = "qusm",
-                      fcStr = NULL)
-  
-  check1 <- any(grepl("TPP_results", dir(dataPath))) # Was result path correctly created from the config file?
-  check2 <- all.equal(dim(out), c(61938, 46))
-  check3 <- all.equal(out$pEC50 %>% range(na.rm = TRUE), c(5.728183, 8.126123))
-  check4 <- all.equal(out$compound_effect %>% table %>% as.numeric, c(1921, 1092))
-  check5 <- all.equal(out$pEC50_outside_conc_range %>% table() %>% as.numeric(), c(1450, 1562))
-  expect_true(check1 & check2 & check3 & check4 & check5)
-})
+# test_that(desc="allOK_obtain_paths_from_config", code={
+#   
+#   cfgIn <- openxlsx::read.xlsx(file.path(dataPath, "Panobinostat_TPP-2D_config.xlsx")) %>% select(-Path)
+#   
+#   files <- tibble(Experiment = c("X020466", "X020467", "X020468", "X020469", "X020470", "X020471"),
+#                   Path = c("PFC_39106_PF1_QV1_P0101868C.txt",
+#                            "PFC_39108_PF1_QV1_P0101878C.txt",
+#                            "PFC_39110_PF1_QV1_P0101888C.txt",
+#                            "PFC_39101_PF1_QV1_P0101898C.txt",
+#                            "PFC_39099_PF1_QV1_P0101908C.txt",
+#                            "PFC_39093_PF1_QV1_P0101918C.txt") %>% file.path(dataPath, .))
+#   
+#   cfgIn <- cfgIn %>% left_join(files)
+#   
+#   out <- analyze2DTPP(configTable = cfgIn,
+#                       idVar = "representative",
+#                       addCol = c("clustername", "msexperiment_id"),
+#                       intensityStr = "sumionarea_protein_",
+#                       qualColName = c("qupm", "qusm"),
+#                       nonZeroCols = "qusm",
+#                       fcStr = NULL)
+#   
+#   check1 <- any(grepl("TPP_results", dir(dataPath))) # Was result path correctly created from the config file?
+#   check2 <- all.equal(dim(out), c(61938, 46))
+#   check3 <- all.equal(out$pEC50 %>% range(na.rm = TRUE), c(5.728183, 8.126123))
+#   check4 <- all.equal(out$compound_effect %>% table %>% as.numeric, c(1921, 1092))
+#   check5 <- all.equal(out$pEC50_outside_conc_range %>% table() %>% as.numeric(), c(1450, 1562))
+#   expect_true(check1 & check2 & check3 & check4 & check5)
+# })
 
 
 ## to do:
