@@ -175,3 +175,7 @@ Updated package vignette.
   - Split rows with multiple identifiers (e.g. separated by '|') into separate rows  (was already present in TR- and CCR analysis)
   - Sort result table rows by temperature for each ID
  o Bugfixes and shortening of example runtimes
+
+
+3.2.1 (Feb-18-2017)
+ o Revise examples and unit tests in order to fix issues found by R CMD check on Linux and Windows.
