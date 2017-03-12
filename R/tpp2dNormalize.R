@@ -49,7 +49,7 @@ tpp2dNormalize <- function(configTable = NULL, data, fcStr = NULL){
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
-  median_per_temp_and_conc = y = yNormalized = columnName <- NULL
+  median_per_temp_and_conc = y = yNormalized <- NULL
   
   ## Check for missing function arguments
   checkFunctionArgs(match.call(), c("data"))
