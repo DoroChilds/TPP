@@ -1,5 +1,5 @@
 plotColors <- function(expConditions, comparisonNums){
-  ## Create matching color pairs for vehicle and treatment groups
+  ## Create matching color pairs for vehicle and treatment groups.
   groupColors <- FALSE
   
   if (all(!is.na(expConditions))){

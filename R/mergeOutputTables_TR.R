@@ -1,11 +1,11 @@
 mergeOutputTables_TR <- function(dataList, pValDF, qualCheckDF){
-  # Concatenate individual data frames produced by upstream functions
-  # into a wide table that can be exported to Excel.
+  ## Generate final TR output table.
+  ## Concatenate individual data frames produced by upstream functions
+  ## into a wide table that can be exported to Excel.
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
   Protein_ID <- NULL
-  
   
   ## Check for missing function arguments
   checkFunctionArgs(match.call(), c("dataList"))

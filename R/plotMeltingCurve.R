@@ -2,6 +2,7 @@ plotMeltingCurve <- function(modelList, listUpper, listLower,
                              xMat, fcMat, curvePars, protID, 
                              filename, plotTheme, expConditions, expComps, 
                              addLegend, useCI){
+  ## Plot melting curves (one plot per protein).
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

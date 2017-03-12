@@ -1,5 +1,6 @@
 qcPlotFct_MeltPointHist <- function(resultTab=resultTable, expNames=expNames, 
                                     minR2, expConds){
+  ## Generate QC plots with melting point histograms.
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

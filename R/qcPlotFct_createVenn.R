@@ -1,5 +1,8 @@
 qcPlotFct_CreateVenn <- function(dataTab, grNames, compDF, mainTxt, method, 
                                  minR2){
+  ## Create Venn diagram to display the protein numbers and their overlap per 
+  ## experiment.
+  
   idList     <- list()
   filterList <- list()
   

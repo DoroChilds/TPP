@@ -1,4 +1,6 @@
 importFct_create_fData <- function(dat, type, fcRaw){
+  ## Create feature data for the expression sets.
+  
   if (type == "TR"){
     pars <- meltCurveParamNames(returnParNames = TRUE, 
                                 returnPerformanceInfo = TRUE)

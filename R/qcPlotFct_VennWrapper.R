@@ -1,5 +1,8 @@
 qcPlotFct_VennWrapper <- function(resultTab, expNames, grConditions, compDF, 
                                   minR2){  
+  ## Invoke Venn diagram computation to compare protein numbers per experiment,
+  ## as well as their overlap.
+  
   # supress useless VD logfiles
   futile.logger::flog.threshold(futile.logger::ERROR, name = "VennDiagramLogger")
   

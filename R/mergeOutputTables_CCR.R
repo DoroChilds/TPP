@@ -1,4 +1,5 @@
 mergeOutputTables_CCR <- function(dataList, qualCheckDF){
+  ## Generate final CCR output table.
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

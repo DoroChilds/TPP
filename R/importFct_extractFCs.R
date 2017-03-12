@@ -1,4 +1,7 @@
 importFct_extractFCs <- function(datDF, colsFC, type){
+  ## Extract fold change columns from the imported data tables and return them 
+  ## in a matrix.
+  
   datFC           <- subset(datDF, select=colsFC)
   datFCChar        <- colwise(as.character)(datFC)
   datFCNum        <- colwise(as.numeric)(datFCChar)

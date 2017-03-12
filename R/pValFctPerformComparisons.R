@@ -1,13 +1,12 @@
 pValFctPerformComparisons <- function(curveParsAllExp, method, controlFilter, 
                                       controlpVal, comparisons){
+  ## Invoke p-values computation for each experiment pair.
   ## Preparation:
   testGroups <- comparisons$testGroup
   refGroups  <- comparisons$refGroup
   refIsVehicle <- comparisons$refIsVehicle
   allIDs       <- curveParsAllExp$Protein_ID
   
-  ## Start p-values computation for each experiment pair and store results in a 
-  ## data frame that can be appended to the final output:
   pValDF <- data.frame(Protein_ID=allIDs, stringsAsFactors=FALSE)
   for (i in 1:length(testGroups)){
     ## Preparation for the current comparison:

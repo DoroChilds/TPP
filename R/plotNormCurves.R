@@ -1,6 +1,7 @@
 plotNormCurves <- function(modelList, xMat, fcMat, r2Vec, nNormP, plotTheme){
   ## Plot QC plot to visualize curve fit of normalization curves to fold change
   ## medians.
+  
   message("Creating QC plots to illustrate median curve fits.")
   grNames <- names(modelList)
   yMax <- 1.25

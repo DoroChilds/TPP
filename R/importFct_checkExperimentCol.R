@@ -1,4 +1,7 @@
 importFct_checkExperimentCol <- function(expCol){
+  ## Check whether experiment names are defined in the config table and remove
+  ## non-alphanumeric characters.
+  
   if (is.null(expCol)){
     m <- "Config table needs an 'Experiment' column with unique experiment IDs."
     stop(m, "\n")

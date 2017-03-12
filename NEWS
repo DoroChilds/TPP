@@ -179,3 +179,7 @@ Updated package vignette.
 
 3.2.1 (Feb-18-2017)
  o Revise examples and unit tests in order to fix issues found by R CMD check on Linux and Windows.
+
+3.2.2 (Marc-12-2017)
+ o Improved documentation of non-exported functions by ensuring that there is 
+  at least a one-line comment explaining what the function does.

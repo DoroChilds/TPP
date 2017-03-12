@@ -1,4 +1,4 @@
- filterTables <- function(data, normReqs){
+filterTables <- function(data, normReqs){
   ## Filter all data sets by specified criteria on fold changes and metadata columns
   message("Creating normalization set:")
 

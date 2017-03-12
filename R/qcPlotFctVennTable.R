@@ -1,4 +1,6 @@
 qcPlotFctVennTable <- function(plotIDs, allIDs){
+  ## Create table to be added below the Venn diagram.
+  
   tableDF = data.frame()
   for(name in names(allIDs)){
     lmntsIn <- length(plotIDs[[name]])

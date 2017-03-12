@@ -1,5 +1,6 @@
 plotDRCurve <- function(protID, fcDF, parDF, plotDir, allExp, addLegend, 
                         plotCols, verbose){
+  ## Plot dose-response curves (one plot per protein).
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

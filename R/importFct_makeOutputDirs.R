@@ -1,4 +1,7 @@
 importFct_makeOutputDirs <- function(outDir, fNames){
+  ## Check whether a path for storing the final results is defined in the config 
+  ## table and initialize the directory, if it does not exist already.
+  
   if (is.null(outDir)){
     if(!is.null(fNames)){
       outDir <- dirname(fNames[1])
@@ -17,14 +20,15 @@ importFct_makeOutputDirs <- function(outDir, fNames){
   
   if (doWrite){
     # Ensure that full path is obtained. (If the path hints at a symbolic link, 
-    # there could otherwise be problems with the links embedded in the Excel output):
+    # there could otherwise be problems with the links embedded in the Excel 
+    ## output):
     if (!file.exists(outDir)) dir.create(outDir, recursive=TRUE)
-    outDir <- normalizePath(outDir, winslash = "/") # Will create warning if directory does not exist yet, therefore we create it first.
-    
+    outDir <- normalizePath(outDir, winslash = "/") # Will create warning if 
+    ## directory does not exist yet, therefore we create it first
     message("Results will be written to ", outDir, "\n\n")
     
-    ## Create output directory and include a subfolder for data objects created during 
-    ## package excecution:
+    ## Create output directory and include a subfolder for data objects created 
+    ## during package excecution:
     pathDataObj <- file.path(outDir, "dataObj")
     if (!file.exists(pathDataObj)) dir.create(pathDataObj, recursive=TRUE)
     

@@ -1,4 +1,6 @@
 qcPlotFct_invokeBottleplots <- function(resultTable, compDF){
+  ## Invoke QC plots to compare melting point differences to minimal slopes
+  ## for each fitted melting curve.
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

@@ -1,7 +1,7 @@
 qcPlotFct_Bottleplot <- function(mpDiffs, minSlopes, isHit=NULL, strHit, strNoHit, 
                                  expName1, expName2, addHist, yLimVec){ 
-  ## Create 'bottle plot' and histogram of minimal slopes
-  
+  ## Generate QC plots to compare melting point differences to minimal slopes.
+
   ## Create dataframe to be passed to ggplot function:
   plotDf <- data.frame(mpDiffs=mpDiffs, minSlopes=minSlopes)
   

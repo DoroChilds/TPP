@@ -1,4 +1,6 @@
 importCheckTemperatures <- function(temp){
+  ## Retrieve temperatures from the input table.
+  
   ## Convert to matrix. Assign rownames manually to ensure consistent output
   ## regardless of 'temp' being native data.frame or tibble.
   tempMatrix <- as.matrix(temp)

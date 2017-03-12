@@ -1,5 +1,6 @@
 retrieveDataFromESets_CCR <- function(data){
-  ## Merge row annotation data and fold changes over all experiments
+  ## Merge row annotations and fold changes from different expressionSets
+  ## containing CCR data
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

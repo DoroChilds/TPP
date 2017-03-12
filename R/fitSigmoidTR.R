@@ -1,5 +1,6 @@
 fitSigmoidTR <- function(xVec, yVec, startPars, maxAttempts, fixT0){
-  ## Fit sigmoidal model to a vector of TPP-TR measurements
+  ## Fit melting curve to a vector of TPP-TR measurements.
+  
   strSigm <- fctSigmoidTR(deriv=0)
   fitFct <- as.formula(paste("y ~", strSigm))
   varyPars <- 0

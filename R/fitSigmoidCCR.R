@@ -1,6 +1,6 @@
 fitSigmoidCCR <- function(xVec, yVec, hill_init, pec50_init, slopeBounds, 
                           concBounds){
-  ## Fit sigmoidal model to a vector of TPP-CCR measurements
+  ## Fit dose response curve to a vector of TPP-CCR measurements.
   
   ## Prepare model fit:
   strSigm <- fctSigmoidCCR()

@@ -1,4 +1,6 @@
 importFct_create_pData <- function(labels, labelValues, fcCols, type){
+  ## Create phenodata for the expression sets.
+  
   if (type == "TR"){
     dataTmp <- data.frame("label"=labels, "temperature"=labelValues, 
                           "normCoeff"=NA, stringsAsFactors=FALSE, 

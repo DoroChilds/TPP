@@ -1,4 +1,5 @@
 eSetsToLongTable_fc <- function(data){
+  ## Extract fold changes from expressionSets and store in long tables
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:

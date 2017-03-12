@@ -1,6 +1,7 @@
 fitMeltCurves <- function(xMat, yDF, colPrefix, startPars, maxAttempts, expNames, 
                           protID, verbose){
-  ## Fit melting curves for experiment to a single protein
+  ## Invoke melting curve fitting for each protein.
+  
   if (verbose) message("Fitting melting curves for protein: ", protID)
   
   ## Obtain data for model fit:

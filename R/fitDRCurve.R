@@ -1,4 +1,5 @@
 fitDRCurve <- function(protID, expName, dose, response, cpd_effect, slBds, verbose){
+  ## Invoke dose-response curve fitting for each protein.
   
   ## Preparation:
   flagConv = flagOutsideConcRange = pEC50qualCheckCol <- FALSE

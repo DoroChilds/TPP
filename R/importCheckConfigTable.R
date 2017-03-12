@@ -1,4 +1,7 @@
 importCheckConfigTable <- function(infoTable, type){
+  ## Check the config table for correctness after import, retrieve different
+  ## types of information from it (experiment names, conditions, result path,
+  ## comparisons, labels, temperatures), and return them in a list.
   
   # Check for missing function arguments
   checkFunctionArgs(match.call(), c("infoTable", "type"))
