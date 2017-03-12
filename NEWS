@@ -116,6 +116,13 @@ Updated package vignette.
  o New CCR output column 'pEC50_quality_check' now reports pec50 values with
    the same sign as the 'pec50' column.
    
+
+2.3.2 (Apr-16-2016)
+Removed unit test that causes R CMD check to crash  since the latest update of package 'testthat'.
+
+2.3.3 (Jun-02-2016)
+Fixed bug in plotColors for the case when no comparisons are specified
+   
 2.99.0 (Oct-06-2016)
  o Major update: Extended package to analyze 2D-TPP experiments
  o Major update: Extended package to analyze TPP-TR experiments by 
@@ -164,22 +171,39 @@ Updated package vignette.
   - Fixed bug with the display of plot paths in the NPARC output.
   - Bugfix in Venn diagram creation: supress useless VD logfiles
 
-  - Bugfix in p-value calculation. Filter requirements have been adjusted accordingly.
+3.2.0 (Feb-13-2017)
+ o Re-introduce example data with column names from the standard pipeline
+ o Tackle erros and warnings produced by R CMD check:
+ - Revise unit tests
+ - Revise executable examples of the exported functions
+ - Revise documentation (=man files) of the exported functions
+ - Make sure that internal function calls avoid deprecated arguments.
+ o General code revision:
+ - Thoroughly check each function manually and look for possible issues that were introduced accidentially during recent/ past updates
+ - Put each function into a separate file to facilitate maintenance and testing
+ - Make sure that internal functions are called by defining all arguments (caused mistakes in the past, for example when default columns names still referred to std pipeline convention). Avoid default values for internal functions.
+ - Tidy up NAMESPACE
+ - Finalize function deprecation.
+ - Continue deprecation of individual function arguments in the 2D part.
+ - Debug NPARC plotting: improve runtime and memory requirements
+ o Improved memory efficiency for spline fitting
+ o Fixed bug with the display of plot paths in the NPARC output.
  o Bugfixes when simultaneously starting spline fitting and melting curve fitting:
     - Plot paths in excel output are stored in separate columns for spline and melting curve fits
     - Combination of result tables no works without generating redundancies
-
-3.2.0 (Feb-13-2017)
+ o Ensure that R CMD check and BiocCheck run again without errors or warnings.
+ o Bugfix in p-value calculation. Filter requirements have been adjusted accordingly.
+ 
  o Enable the following features for 2D-TPP analysis:
   - Automatic creation of result path from 'Path' column in config table (was already present in TR- and CCR analysis)
   - Split rows with multiple identifiers (e.g. separated by '|') into separate rows  (was already present in TR- and CCR analysis)
   - Sort result table rows by temperature for each ID
- o Bugfixes and shortening of example runtimes
 
 
 3.2.1 (Feb-18-2017)
  o Revise examples and unit tests in order to fix issues found by R CMD check on Linux and Windows.
 
 3.2.2 (Marc-12-2017)
+ o Bugfixes in the functions responsible for filtering by user-specified QC columns (e.g. 'qssm')  for normalization set creation. It is now possible to leave the 'otherRequirements' slot in the normalization criteria empty.
  o Improved documentation of non-exported functions by ensuring that there is 
   at least a one-line comment explaining what the function does.
