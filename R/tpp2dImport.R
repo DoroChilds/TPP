@@ -56,7 +56,6 @@ tpp2dImport <- function(configTable = NULL,
   
   # check configTable and read in table if necessary
   configWide <- importCheckConfigTable(infoTable = configTable, type = "2D")
-  #configLong <- gatherConfigTable(config = configWide)
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
