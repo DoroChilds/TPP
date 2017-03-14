@@ -50,6 +50,12 @@ A wrapper function around the functions \code{tpptrFitSplines},
 Plots of the natural spline fits will be stored in a subfolder with 
   name \code{Spline_Fits} at the location specified by \code{resultPath}.
   
+  Argument \code{data} can either be long table, or a list of expressionSets
+  as returned by \code{\link{'tpptrImport'}}. If a long table, it needs to
+  contain the following columns: 'uniqueID' (identifier), 'x' (independent
+  variable for fitting, usually the temperature) and 'y' (dependent variable
+  for fitting, usually the relative concentration).
+  
   Argument \code{splineDF} specifies the degrees of freedom for natural
   spline fitting. As a single numeric value, it is directly passed on to the
   \code{splineDF} argument of \code{splines::ns}. Experience shows that

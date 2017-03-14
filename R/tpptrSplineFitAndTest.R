@@ -52,6 +52,12 @@
 #' @details Plots of the natural spline fits will be stored in a subfolder with 
 #'   name \code{Spline_Fits} at the location specified by \code{resultPath}.
 #'   
+#'   Argument \code{data} can either be long table, or a list of expressionSets
+#'   as returned by \code{\link{'tpptrImport'}}. If a long table, it needs to
+#'   contain the following columns: 'uniqueID' (identifier), 'x' (independent
+#'   variable for fitting, usually the temperature) and 'y' (dependent variable
+#'   for fitting, usually the relative concentration).
+#'   
 #'   Argument \code{splineDF} specifies the degrees of freedom for natural
 #'   spline fitting. As a single numeric value, it is directly passed on to the
 #'   \code{splineDF} argument of \code{splines::ns}. Experience shows that
@@ -80,10 +86,6 @@ tpptrSplineFitAndTest <- function(data,
   if (!missing(ggplotTheme)) 
     warning("`ggplotTheme` is deprecated", call. = TRUE)
   
-  if (!("uniqueID" %in% colnames(data)))
-    stop("'data' must contain a column called 'uniqueID'")
-  
-  
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
   uniqueID = path <- NULL
@@ -91,13 +93,27 @@ tpptrSplineFitAndTest <- function(data,
   ## Check whether plotting is possible (result path specified?)
   doPlot <- doPlot && !is.null(resultPath)
   
-  ## Initialize data frames for result table creation:
-  resultTableElements <- splitTidyMeasurementsForExport(
-    measurements = data, 
+  ## If data is given as a list of expression sets, convert to long tables:
+  data_is_eSet_list <- check_if_data_is_eSet_list(data)
+  
+  if (data_is_eSet_list){
+    measurements <- data %>% tpptrTidyUpESets(., returnType = "exprs")
+    proteinInfos <- data %>% tpptrTidyUpESets(., returnType = "featureData")
+  } else {
+    measurements <- data
     proteinInfos = additionalCols
+  }
+  
+  ## Initialize data frames for result table creation:
+  if (!("uniqueID" %in% colnames(measurements)))
+    stop("'data' must contain a column called 'uniqueID'")
+  
+  resultTableElements <- splitTidyMeasurementsForExport(
+    measurements = measurements, 
+    proteinInfos = proteinInfos
   )
   
-  lmTable <- tpptrFitSplines(data = data, 
+  lmTable <- tpptrFitSplines(data = measurements, 
                              factorsH1 = factorsH1,
                              factorsH0 = factorsH0,
                              splineDF = splineDF,
@@ -109,7 +125,7 @@ tpptrSplineFitAndTest <- function(data,
   )  
   
   if (doPlot){
-    paths <- tpptrPlotSplines(data = data,
+    paths <- tpptrPlotSplines(data = measurements,
                               fittedModels = lmTable, 
                               testResults = testResults,
                               resultPath = resultPath,
