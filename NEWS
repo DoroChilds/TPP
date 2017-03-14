@@ -203,7 +203,11 @@ Fixed bug in plotColors for the case when no comparisons are specified
 3.2.1 (Feb-18-2017)
  o Revise examples and unit tests in order to fix issues found by R CMD check on Linux and Windows.
 
-3.2.2 (Marc-12-2017)
+3.2.2 (Mar-12-2017)
  o Bugfixes in the functions responsible for filtering by user-specified QC columns (e.g. 'qssm')  for normalization set creation. It is now possible to leave the 'otherRequirements' slot in the normalization criteria empty.
  o Improved documentation of non-exported functions by ensuring that there is 
   at least a one-line comment explaining what the function does.
+  
+3.2.3 (Mar-??-2017)
+ o Allow the data argument of the function tpptrSplineFitAndTest to be a list of expressionSets, like the one produced by the functions tpptrImport, tpptrNormalize and tpptrCurveFit.
+ 
