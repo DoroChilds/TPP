@@ -1,5 +1,7 @@
 importTR_tidy <- function(configTable, data, idVar, fcStr, naStrs, qualColName, 
                           type){
+  ## Wrapper function to invoke the individual steps necessary for data import in long format.
+  
   message("Importing data...\n")
   
   ## Initialize variables to prevent "no visible binding for global
@@ -7,7 +9,9 @@ importTR_tidy <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
   experiment = uniqueID = x = fcListAll <- NULL
   
   ## Check configTable for consistency and extract all relevant information:
-  configTableContents <- importCheckConfigTable(infoTable=configTable, type=type)
+  configTableContents <- importCheckConfigTable(infoTable = configTable, 
+                                                type = type)
+
   expInfos <- configTableListToLong(configTableContents)
   expNames   <- configTableContents$expNames
   files      <- configTableContents$files
