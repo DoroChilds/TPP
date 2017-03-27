@@ -5,16 +5,41 @@ detectLabelColumnsInConfigTable <- function(allColumns){
   # Check for missing function arguments
   checkFunctionArgs(match.call(), c("allColumns"))
   
-  ## Comparison columns (used for TR-config tables):
-  compCols    <- grep("comparison", allColumns, value=TRUE, ignore.case=TRUE)
-  
   ## Find all columns NOT belonging to an isobaric label:
-  noLabelCols <- c("Experiment", "Path", # General columns
-                   "Condition", compCols, # TR-specific columns
-                   "Compound", "Temperature", "RefCol") # 2D-TPP specific columns
+  noLabelCols <- nonLabelColumns()$column %>% as.character %>% unique
+  
+  ## Comparison columns (used for TR-config tables):
+  # to do: ignore case for every column name to ensure consistency in treatment 
+  # of the different columns
+  compCols    <- grep("comparison", allColumns, value=TRUE, ignore.case=TRUE)
+  noLabelCols <- c(noLabelCols, compCols)
   
   ## Detect the columns belonging to isobaric labels:
   labelCols <- setdiff(allColumns, noLabelCols)
   
   return(labelCols)
+}
+
+nonLabelColumns <- function(){
+  
+  out <- data.frame(
+    column = c("Experiment", "Experiment", "Experiment",
+               "Path", "Path", "Path", # General columns
+               "Condition", "Replicate", # TR-specific columns
+               "Compound", "Temperature", "RefCol"), # 2D-TPP specific columns
+    type = c("TR", "CCR", "2D",
+             "TR", "CCR", "2D",
+             "TR", "TR", 
+             "2D", "2D", "2D"),
+    obligatory = c(TRUE, TRUE, TRUE, 
+                   FALSE, FALSE, FALSE, 
+                   TRUE, FALSE, 
+                   TRUE, TRUE, TRUE),
+    exclusive = c(FALSE, FALSE, FALSE,
+                  FALSE, FALSE, FALSE,
+                  TRUE, TRUE,
+                  TRUE, TRUE, TRUE)
+  )
+  
+  return(out)
 }

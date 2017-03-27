@@ -37,6 +37,15 @@ test_that(desc="allOK_2D", code={
   expect_equal(colsOut, allTMTcols)
 })
 
+test_that(desc="allOK_replicateColumn", code={
+  
+  colsIn <- c(cfgCols_TR, "Replicate")
+  
+  colsOut <- TPP:::detectLabelColumnsInConfigTable(allColumns = colsIn)
+  
+  expect_equal(colsOut, allTMTcols)
+})
+
 test_that(desc="allOK_numericLabels", code={
   
   colsIn <- c("Experiment", "0.01", "0.1")
