@@ -211,3 +211,5 @@ Fixed bug in plotColors for the case when no comparisons are specified
 3.2.3 (Mar-23-2017)
  o Allow the data argument of the function tpptrSplineFitAndTest to be a list of expressionSets, like the one produced by the functions tpptrImport, tpptrNormalize and tpptrCurveFit.
 
+3.2.4 (Apr-4-2017)
+ o Fix broken unit test.
