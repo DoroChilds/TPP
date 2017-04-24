@@ -29,9 +29,6 @@ importTR_main <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
     data <- importFct_readFiles(files=files, naStrs=naStrs)
   }
   
-  ## Experiment wise pre-processing prior to combination into one object:
-  dataFinal <- importFct_preprocessData(data = data, idVar = idVar)
-  
   ## Import tables, convert into ExpressionSet format, and store in list:
   fcListAll <- sapply(
     1:length(expNames), simplify=FALSE, USE.NAMES = FALSE,
