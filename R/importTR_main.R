@@ -33,7 +33,7 @@ importTR_main <- function(configTable, data, idVar, fcStr, naStrs, qualColName,
   fcListAll <- sapply(
     1:length(expNames), simplify=FALSE, USE.NAMES = FALSE,
     function(i){
-      importFct_df_to_eSet(dataframe    = dataFinal[[expNames[i]]],
+      importFct_df_to_eSet(dataframe    = data[[expNames[i]]],
                            labels       = labels,
                            labelValues  = tempMatrix[i,],
                            name         = expNames[i],
