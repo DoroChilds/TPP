@@ -45,15 +45,13 @@ export(tpp2dSplineFitAndTest)
 export(tpp2dTRReferenceObject) # define object
 import(Biobase, except = combine) # conflict with gridExtra::combine
 import(data.table, except = c(between, last, melt, first)) # conflict with dplyr and reshape2
-import(dplyr)
-import(ggplot2)
 import(grid)
 import(gridExtra, except = combine)
 import(magrittr, except = extract)
 import(openxlsx)
-import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with dplyr
+import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with tidyverse
 import(splines)
-import(tidyr)
+import(tidyverse) # loads ggplot2, tibble, tidyr, readr, purrr, dplyr
 import(VennDiagram)
 import(VGAM, except = c(fill, AICc)) # conflict with tidyr's fill, and sme's AICc
 importFrom(doParallel, registerDoParallel, stopImplicitCluster)

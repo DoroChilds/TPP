@@ -164,9 +164,16 @@ Changes in version 3.2.0 (Feb-13-2017):
  - Reported p-values for Tm based analysis are now increased in value after removing a bug in their calculation. The thresholds applied for determining significant hits have been updated justed accordingly.
  
  o Improvements to the 2D-TPP analysis:
-  - Split rows with multiple identifiers (e.g. separated by '|') into separate rows  (was already present in TR- and CCR analysis)
+  - Split rows with multiple identifiers (e.g. separated by '|') into separate rows
   - Sort result table rows by temperature for each ID
 
 Changes in version 3.2.2 (Mar-12-2017):
  o Bug fix in the TPP-TR analysis: 
  - It is now possible to leave the 'otherRequirements' slot empty in the object containing the normalization criteria. 
+
+3.5.0 (May-01-2017)
+ o New Bioconductor release candidate!
+
+Chenges in version 3.5.xx (May-xx-2017):
+ o Importing the whole tidyverse instead of ggplot2, dplyr etc. individually
+ o Shift tidyverse and Biobase to "depends" so that they are automatically availabe for downstream analyses.

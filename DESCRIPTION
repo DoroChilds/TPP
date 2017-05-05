@@ -6,30 +6,27 @@ Author: Dorothee Childs, Nils Kurzawa, Holger Franken, Carola Doce, Mikhail Savi
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
 Depends:
     R (>= 3.3),
-    dplyr,
-    magrittr,
-    tidyr
+    tidyverse,
+    Biobase
 Imports:
-    Biobase,
     biobroom,
     broom,
     data.table,
     doParallel,
     foreach,
     futile.logger,
-    ggplot2,
     grDevices, 
     gridExtra,
     grid,
     knitr,
     limma,
     MASS,
+    magrittr,
     mefa,
     nls2,
     openxlsx (>= 2.4.0),
     parallel,
     plyr,
-    purrr,
     RColorBrewer,
     RCurl,
     reshape2,
