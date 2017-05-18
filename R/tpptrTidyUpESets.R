@@ -1,17 +1,16 @@
 #' @title Tidy up expressionSets
 #' @description Convert list of expressionSets (intermediate output of several 
-#' TR and CCR functions) to list of tidy tables.
-#' @param tppESetList A list of expressionSets, which currently still is the format
-#' for intermediate results of most TR and CCR functions (to be deprecated soon).
+#' TPP-TR functions) to tidy tables.
+#' @param tppESetList A list of expressionSets, returned 
+#' by most TPP-TR functions.
 #' @param returnType A string with two possible values: "exprs", "featureData".
 #' @details expressionSet lists are for example produced by 
 #' \code{\link{tpptrImport}}, \code{\link{tpptrNormalize}}, 
-#' \code{\link{tpptrCurveFit}}, \code{\link{tppccrImport}}, 
-#' \code{\link{tppccrNormalize}}, \code{\link{tppccrCurveFit}}.
+#' \code{\link{tpptrCurveFit}}.
 #' @return Either the fold changes per protein across all experiments 
 #' (if \code{returnType = "exprs"}), or the 
 #' additional annotation per protein and experiment (if \code{returnType = "featureData"}). For example, the
-#' peptide counts per identified protein would go here.
+#' peptide counts per identified protein can be found here.
 #' @examples
 #' data(hdacTR_smallExample)
 #' tpptrData <- tpptrImport(configTable = hdacTR_config, data = hdacTR_data)
