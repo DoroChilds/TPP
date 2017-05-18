@@ -8,7 +8,7 @@ tpptrTidyUpESets(tppESetList, returnType = "exprs")
 }
 \arguments{
 \item{tppESetList}{A list of expressionSets, returned 
-by most TR functions.}
+by most TPP-TR functions.}
 
 \item{returnType}{A string with two possible values: "exprs", "featureData".}
 }
@@ -20,7 +20,7 @@ peptide counts per identified protein can be found here.
 }
 \description{
 Convert list of expressionSets (intermediate output of several 
-TR and CCR functions) to tidy tables.
+TPP-TR functions) to tidy tables.
 }
 \details{
 expressionSet lists are for example produced by 
