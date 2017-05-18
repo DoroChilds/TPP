@@ -6,7 +6,7 @@ Author: Dorothee Childs, Nils Kurzawa, Holger Franken, Carola Doce, Mikhail Savi
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
 Depends:
     R (>= 3.3),
-    tidyverse,
+    dplyr,
     Biobase
 Imports:
     biobroom,
@@ -15,6 +15,7 @@ Imports:
     doParallel,
     foreach,
     futile.logger,
+    ggplot2,
     grDevices, 
     gridExtra,
     grid,
@@ -27,6 +28,7 @@ Imports:
     openxlsx (>= 2.4.0),
     parallel,
     plyr,
+    purrr,
     RColorBrewer,
     RCurl,
     reshape2,
