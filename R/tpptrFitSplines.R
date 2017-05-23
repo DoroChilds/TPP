@@ -57,8 +57,8 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
   uniqueID = df = testHypothesis = fittedModel = successfulFit <- NULL
   
   # Produce informative error messages, if necessary:
-  if (!is.character(factorsH0)) stop("'factorsH0' is of class ", class(factorsH0), ", but must be an atomic vector of class 'character'")
-  if (!is.character(factorsH1)) stop("'factorsH1' is of class ", class(factorsH1), ", but must be an atomic vector of class 'character'")
+  if (!(is.character(factorsH0) | is.null(factorsH0))) stop("'factorsH0' is of class ", class(factorsH0), ", but must be an atomic vector of class 'character'")
+  if (!(is.character(factorsH1) | is.null(factorsH1))) stop("'factorsH1' is of class ", class(factorsH1), ", but must be an atomic vector of class 'character'")
   if (!is.numeric(splineDF)) stop("'splineDF' is of class ", class(splineDF), ", but must be an atomic vector of class 'numeric'")
   if (!all(factorsH1 %in% colnames(data))) stop("The column(s) '", paste(setdiff(factorsH1, colnames(data)), collapse = "', '"), "' specified by argument 'factorsH1' are not found in 'data'.")
   
@@ -78,7 +78,7 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
                         yes = paste0("factor(",factorsH0, ")", collapse = " * ") %>% paste0(" * ", .),
                         no = "")
   message(paste("Fitting smoothing splines and AICc values for the following degrees of freedom:", 
-          paste(splineDF, collapse = ", ")))
+                paste(splineDF, collapse = ", ")))
   
   ## Loop over different degrees of freedom in parallel:
   nCores <- checkCPUs(cpus=nCores)
@@ -143,7 +143,7 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
   out <- selectedModels %>% 
     left_join(fitStats, by = c("uniqueID", "testHypothesis", "aicc")) %>%
     arrange(uniqueID)
-   
+  
   timeDiff <- Sys.time()-t1
   message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", 
           units(timeDiff), "\n")
