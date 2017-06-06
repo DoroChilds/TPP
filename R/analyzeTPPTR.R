@@ -351,5 +351,5 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
     dev.off()
     ## --------------------------------------------------------------------------------------------
   }
-  return(resultTable)
+  invisible(resultTable)
 }
