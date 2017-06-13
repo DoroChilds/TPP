@@ -2,7 +2,7 @@
 % Please edit documentation in R/analyze2DTPP.R
 \name{analyze2DTPP}
 \alias{analyze2DTPP}
-\title{Analyze 2D-TPP experiment}
+\title{Analyze a 2D-TPP experiment}
 \usage{
 analyze2DTPP(configTable, data = NULL, resultPath = NULL,
   idVar = "gene_name", fcStr = NULL, intensityStr = "signal_sum_",
@@ -109,11 +109,11 @@ and which format it have (default: "html_document", alternative: "pdf_document" 
 \item{configFile}{DEPRECATED}
 }
 \value{
-A data frame in which the fit results are stored row-wise for each
-  protein at the different temperatures.
+A data frame in which the model results (slopes and pEC50 values) are 
+ stored row-wise for each protein and administered temperatures.
 }
 \description{
-Performs analysis of a 2D-TPP experiment by invoking routines 
+Performs the whole analysis workflow for 2D-TPP experiment by invoking routines 
   for data import, data processing, fold change computation, median normalization, 
   TPP-CCR curve fitting, plotting and production of the result table.
 }
@@ -145,7 +145,7 @@ tpp2dResults <- analyze2DTPP(configTable = config_tpp2d,
 }
 \references{
 Becher, I., Werner, T., Doce, C., Zaal, E. A., Berkers, C. R., T"ogel, I., 
-Salzer, E., Bantscheff, M., Savitski, M. M. (2016) Comprehensive thermal and chemoproteomics 
-profiling identifies phenylalanine hydroxylase as a potent off-target of the histone 
-deacetylase inhibitor panobinostat. Nature Chemical Biology (accepted)
+Salzer, E., Bantscheff, M., Savitski, M. M. (2016) 
+Thermal profiling reveals phenylalanine hydroxylase as an off-target of panobinostat.
+Nature Chemical Biology, 12(11), 908–910.
 }
