@@ -15,12 +15,13 @@ predict_and_plot_spline_models <- function(dat, fits){
   fitFactors <- fits %>% 
     group_by(uniqueID, testHypothesis) %>%
     do({
+      out <- tibble()
       if(nrow(.) > 0){
         fitFactors <- extract_fit_factors(splineModel = .$fittedModel[[1]], mode = "names")
         if (length(fitFactors) > 0){
-          return(tibble(factors = fitFactors))
-        } else return(tibble())
-      } else return(tibble())
+          out <- tibble(factors = fitFactors)
+        }}
+      out
       }) %>%
     ungroup %>%
     select(-uniqueID) %>%

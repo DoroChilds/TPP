@@ -93,11 +93,7 @@ plotIndividual <- function(data, fittedModels, plotAnnotation,
                          
                        }
                        
-                       
                        out <- data.table(out)
-                       
-                       return(out)
                      }
-  
   return(results)
 }
