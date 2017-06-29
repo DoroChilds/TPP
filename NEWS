@@ -164,7 +164,7 @@ Changes in version 3.2.0 (Feb-13-2017):
  - Reported p-values for Tm based analysis are now increased in value after removing a bug in their calculation. The thresholds applied for determining significant hits have been updated justed accordingly.
  
  o Improvements to the 2D-TPP analysis:
-  - Split rows with multiple identifiers (e.g. separated by '|') into separate rows
+  - Split rows with multiple identifiers (e.g. separated by '|') into separate rows  (was already present in TR- and CCR analysis)
   - Sort result table rows by temperature for each ID
 
 Changes in version 3.2.2 (Mar-12-2017):
