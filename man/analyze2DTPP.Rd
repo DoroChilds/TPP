@@ -147,5 +147,5 @@ tpp2dResults <- analyze2DTPP(configTable = config_tpp2d,
 Becher, I., Werner, T., Doce, C., Zaal, E. A., Berkers, C. R., T"ogel, I., 
 Salzer, E., Bantscheff, M., Savitski, M. M. (2016) 
 Thermal profiling reveals phenylalanine hydroxylase as an off-target of panobinostat.
-Nature Chemical Biology, 12(11), 908–910.
+Nature Chemical Biology, 12(11), 908-910.
 }
