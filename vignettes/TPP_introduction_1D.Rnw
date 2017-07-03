@@ -24,7 +24,7 @@ European Molecular Biology Laboratory (EMBL),
 <<opts, include=FALSE, echo=FALSE>>=
 knitr::opts_chunk$set(concordance=TRUE, 
                       eval = TRUE,
-                      cache = FALSE,
+                      cache = TRUE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,
@@ -97,6 +97,15 @@ The package retrieves this information from a configuration table that you need 
 
 We demonstrate the functionality of the package using the dataset \texttt{hdacTR\_smallExample}. 
 It contains an illustrative subset of a larger dataset which was obtained by TPP-TR experiments on K562 cells treated with the histone deacetylase (HDAC) inhibitor panobinostat in the treatment groups and with vehicle in the control groups. The experiments were performed for two conditions (vehicle and treatment), with two biological replicates each. The raw MS data were processed with the Python package \Rpackage{isobarQuant}, which provides protein fold changes relative to the protein abundance at the lowest temperature as input for the TPP package \cite{franken2015}.
+
+Each text file produced by \Rpackage{isobarQuant} contains, among others, the following information:
+\begin{itemize}
+\item The gene symbol per protein (column `gene\_name')
+\item The relative concentrations per protein, already normalized to the lowest temperature (indicated by prefix `rel\_fc\_' and followed by the respective isobaric label)
+\item Quality control columns `qupm' (quantified unique peptide matches), which describe the number of unique peptide sequences in a protein group with reporter ions used in protein quantification, and `qssm' (quantified spectrum-sequence matches), which are the number of spectrum to sequence matches [peptides] in a protein group with reporter ions used in protein quantification.
+\end{itemize}
+
+More details about the \Rpackage{isobarQuant} output format can be found in the \href{https://www.nature.com/article-assets/npg/nprot/journal/v10/n10/extref/nprot.2015.101-S1.pdf}{supplementary manual} of the software (starting on page 7 of the document located at the provided link).
 
 First, we load the data:
 <<load_tr_data>>=
