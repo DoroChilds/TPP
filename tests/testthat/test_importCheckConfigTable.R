@@ -59,6 +59,18 @@ test_that(desc="'confgCheck_expColEmptyEntries", code={
   expect_equal(confgList$expNames, hdacTR_config$Experiment[-1])
 })
 
+test_that(desc="'confgCheck_replaceReplicate", code={
+  cfgIn <- hdacTR_config %>% mutate(Replicate = c(1,2,1,2)) %>% select(-ComparisonVT1, -ComparisonVT2)
+  confgList <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = "TR")
+  refList   <- list(expNames = refNames,
+                    expCond  = refConds,
+                    files    = NULL,
+                    compStrs = refComps,
+                    labels   = refLabels,
+                    tempMatrix = refTempMat)
+  expect_equal(confgList, refList)
+})
+
 ## ------------------------------------------------------------------------- ##
 ## test for 2D data:
 ## ------------------------------------------------------------------------- ##

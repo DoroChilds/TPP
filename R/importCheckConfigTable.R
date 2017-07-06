@@ -39,7 +39,7 @@ importCheckConfigTable <- function(infoTable, type){
   infoTable$Experiment <- importFct_checkExperimentCol(infoTable$Experiment)
   infoTable <- subset(infoTable, Experiment != "")
   
-  ## 2.1 Check whether table contains a column 'Path', and remove if empty:
+  ## 3. Check whether table contains a column 'Path', and remove if empty:
   givenPaths <- NULL
   if (any("Path" %in% colnames(infoTable))) {
     if (all(infoTable$Path == "") || all(is.na(infoTable$Path))){
@@ -50,7 +50,13 @@ importCheckConfigTable <- function(infoTable, type){
     }
   }
   
-  ## 3. Retrieve user-defined comparisons, check for consistency, and summarize 
+  ## 4. Check whether table contains the deprecated column 'Replicate', and
+  ## assign valid comparisons instead:
+  if (type == "TR"){  
+    infoTable <- importFct_replaceReplicateColumn(cfg = infoTable)
+  }
+  
+  ## 4. Retrieve user-defined comparisons, check for consistency, and summarize 
   ## them in strings that can be stored in the ExpressionSet annotation fields
   ## (TR part only):
   if (type == "TR"){  
@@ -59,7 +65,7 @@ importCheckConfigTable <- function(infoTable, type){
     compStrs <- NA
   }
   
-  ## 4. If condition column does not exist, assign default values 
+  ## 5. If condition column does not exist, assign default values 
   ## (TR part only):
   if (type == "TR"){  
     infoTable$Condition <- importFct_checkConditions(infoTable$Condition, nrow(infoTable))    
@@ -68,12 +74,12 @@ importCheckConfigTable <- function(infoTable, type){
   }
   
   
-  ## 5. Check if table contains mandatory label columns. Stop, if not:
+  ## 6. Check if table contains mandatory label columns. Stop, if not:
   allCols     <- colnames(infoTable)
   
   labelCols <- detectLabelColumnsInConfigTable(allColumns = allCols)
   
-  ## 6. Remove label columns that do not contain at least 1 number:
+  ## 7. Remove label columns that do not contain at least 1 number:
   labelValues <- infoTable[,labelCols]
   labelValuesNum <- suppressWarnings(labelValues %>% apply(2, as.numeric))
   if (is.matrix(labelValuesNum)) {
@@ -114,8 +120,9 @@ importCheckConfigTable <- function(infoTable, type){
     }
     out <- infoTable
   } else {   
+    
     ## TR- and CCR- specific checks:
-    ## 6. Retrieve matrix of temperatures to each isobaric label
+    ## 8. Retrieve matrix of temperatures to each isobaric label
     temperatures <- subset(infoTable, select = labelColsNew)
     tempMatrix <- importCheckTemperatures(temp=temperatures)
     

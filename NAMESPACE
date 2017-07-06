@@ -51,7 +51,7 @@ import(grid)
 import(gridExtra, except = combine)
 import(magrittr, except = extract)
 import(openxlsx)
-import(plyr, except = c(mutate, summarize, summarise, rename, arrange, failwith, id, desc, count)) # conflict with dplyr
+import(plyr, except = c(mutate, summarize, summarise, rename, arrange, id, desc, count, failwith)) # conflict with dplyr
 import(splines)
 import(tidyr)
 import(VennDiagram)

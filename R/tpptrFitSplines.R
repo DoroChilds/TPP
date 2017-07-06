@@ -78,7 +78,7 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
                         yes = paste0("factor(",factorsH0, ")", collapse = " * ") %>% paste0(" * ", .),
                         no = "")
   message(paste("Fitting smoothing splines and AICc values for the following degrees of freedom:", 
-                paste(splineDF, collapse = ", ")))
+          paste(splineDF, collapse = ", ")))
   
   ## Loop over different degrees of freedom in parallel:
   nCores <- checkCPUs(cpus=nCores)
@@ -143,7 +143,7 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
   out <- selectedModels %>% 
     left_join(fitStats, by = c("uniqueID", "testHypothesis", "aicc")) %>%
     arrange(uniqueID)
-  
+   
   timeDiff <- Sys.time()-t1
   message("Runtime (", nCores, " CPUs used): ", round(timeDiff, 2), " ", 
           units(timeDiff), "\n")
