@@ -6,7 +6,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{forloop}
-\usepackage{mathtools}
 
 
 %\pagestyle{empty}
