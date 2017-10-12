@@ -174,6 +174,7 @@ Changes in version 3.2.2 (Mar-12-2017):
 3.5.0 (May-01-2017)
  o New Bioconductor release candidate!
 
-Chenges in version 3.5.xx (May-xx-2017):
+Changes in version 3.5.14 (May-02-2017):
  o Importing the whole tidyverse instead of ggplot2, dplyr etc. individually
- o Shift tidyverse and Biobase to "depends" so that they are automatically availabe for downstream analyses.
+ o Shift Biobase, dplyr and tidyr to "depends" so that they are automatically availabe for downstream analyses.
+ o Add the option to use the 'old' config table with a Replicate column. On the support site, users expressed confusion that this column was deprecated since the Nature Protocols paper release. Now, the comparison columns are automatically generated from the replicate column, if only the replicate column is defined as described in the old documentation.
