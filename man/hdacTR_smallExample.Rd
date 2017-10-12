@@ -10,3 +10,11 @@ Example dataset obtained by TPP-TR experiments for analysis by
 the TPP-package. It contains all necessary arguments to start the analysis
 (config table and list of data frames).
 }
+\references{
+Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+  Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+  Nature protocols 10(10), 1567-1593.
+}
+\seealso{
+\code{\link{hdacTR_data}}, \code{\link{hdacTR_config}}
+}

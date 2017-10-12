@@ -5,6 +5,10 @@
 #' @description Example dataset obtained by TPP-TR experiments for analysis by 
 #' the TPP-package. It contains all necessary arguments to start the analysis
 #' (config table and list of data frames).
+#' @seealso \code{\link{hdacTR_data}}, \code{\link{hdacTR_config}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL
 #' 
 #' @rdname hdacTR_data
@@ -24,7 +28,12 @@ NULL
 #'   \code{'example_data/TR_example_data'} in the package's installation
 #'   directory. You can find it on your system by the \code{R} command
 #'   \code{system.file('example_data', package = 'TPP')}.
+#' @seealso \code{\link{hdacTR_smallExample}}, \code{\link{hdacTR_config}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL
+
 #'
 #'@rdname hdacTR_config
 #'@name hdacTR_config
@@ -33,4 +42,8 @@ NULL
 #'@details \code{hdacTR_config} is a data frame that specifies the experiment 
 #'  name, isobaric labels, and the administered temperatures at each 
 #'  label.
+#' @seealso \code{\link{hdacTR_smallExample}}, \code{\link{hdacTR_data}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL 

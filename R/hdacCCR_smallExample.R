@@ -5,7 +5,10 @@
 #' @description Example dataset obtained by TPP-CCR experiments for analysis by 
 #' the TPP-package. It contains all necessary arguments to start the analysis
 #' (config table and list of data frames).
-
+#' @seealso \code{\link{hdacCCR_data}}, \code{\link{hdacCCR_config}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL
 #' 
 #' @rdname hdacCCR_data
@@ -25,6 +28,11 @@ NULL
 #'   \code{'example_data/CCR_example_data'} in the package's installation 
 #'   directory. You can find it on your system by the \code{R} command 
 #'   \code{system.file('example_data', package = 'TPP')}.
+
+#' @seealso \code{\link{hdacCCR_smallExample}}, \code{\link{hdacTR_config}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL
 #' @rdname hdacCCR_config
 #' @name hdacCCR_config
@@ -33,4 +41,8 @@ NULL
 #' @details \code{hdacCCR_config} is a data frame that specifies the experiment
 #'  names, isobaric labels, and the administered drug concentrations at each
 #'  label.
+#' @seealso \code{\link{hdacCCR_smallExample}}, \code{\link{hdacCCR_data}}
+#' @references Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 NULL

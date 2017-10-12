@@ -9,6 +9,10 @@
 #'   drugs in living cells by thermal profiling of the proteome. Science, 
 #'   346(6205), 1255784.
 #'   
+#'   Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
+#'   
 #' @return A data frame in which the fit results are stored row-wise for each 
 #'   protein.
 #'   

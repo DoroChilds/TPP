@@ -11,6 +11,10 @@
 #'   drugs in living cells by thermal profiling of the proteome. Science, 
 #'   346(6205), 1255784.
 #'   
+#'   Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
+#'   
 #' @details Invokes the following steps: \enumerate{ \item Import data using the
 #'   \code{\link{tppccrImport}} function. \item Perform normalization by fold 
 #'   change medians (optional) using the \code{\link{tppccrNormalize}} function.

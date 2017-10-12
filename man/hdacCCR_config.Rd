@@ -11,3 +11,11 @@ The configuration table to analyze \link{hdacCCR_data}.
  names, isobaric labels, and the administered drug concentrations at each
  label.
 }
+\references{
+Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+  Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+  Nature protocols 10(10), 1567-1593.
+}
+\seealso{
+\code{\link{hdacCCR_smallExample}}, \code{\link{hdacCCR_data}}
+}

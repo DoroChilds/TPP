@@ -45,11 +45,14 @@
 #' tpptrNorm <- tpptrNormalize(data=tpptrData, normReqs=tpptrDefaultNormReqs())
 #' names(tpptrNorm)
 #' 
-#' @references Savitski, M. M. and Reinhard, F. BM. and Franken, H. and Werner, 
-#'   T. and Savitski, M. F. and Eberhard, D. and Molina, D. M. and Jafari, R. 
-#'   and Dovega, R. B. and Klaeger, S. and others (2014) Tracking cancer drugs 
-#'   in living cells by thermal profiling of the proteome. Science 346(6205), p.
-#'   1255784.
+#' @references Savitski, M. M., Reinhard, F. B., Franken, H., Werner, T., 
+#'   Savitski, M. F., Eberhard, D., ... & Drewes, G. (2014). Tracking cancer 
+#'   drugs in living cells by thermal profiling of the proteome. Science, 
+#'   346(6205), 1255784.
+#'   
+#'   Franken, H, Mathieson, T, Childs, D. Sweetman, G. Werner, T. Huber, W. & Savitski, M. M. (2015),
+#'   Thermal proteome profiling for unbiased identification of drug targets and detection of downstream effectors.
+#'   Nature protocols 10(10), 1567-1593.
 #'   
 #' @export
 tpptrNormalize <- function(data, normReqs=tpptrDefaultNormReqs(), 
