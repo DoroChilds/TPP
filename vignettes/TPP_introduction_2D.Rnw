@@ -138,7 +138,7 @@ data_tpp2d$X020466 %>% colnames
 @
 
 In order to perform the complete workflow we can now simply use:
-<<ttp2dworkflow, eval = TRUE >>=
+<<ttp2dworkflow, eval = TRUE, warning=FALSE >>=
 tpp2dResults <- analyze2DTPP(configTable = config_tpp2d, 
                              data = data_tpp2d,
                              compFc = TRUE,
@@ -158,7 +158,7 @@ Using the import function the data is subsequently imported and stored in a sing
 data columns and those that the user likes to take along through the analysis to be displayed together with the results 
 of this workflow.
 \newpage
-<<ttp2dDataImport2, eval=TRUE>>=
+<<ttp2dDataImport2, eval=TRUE, warning=FALSE>>=
 data2d <- tpp2dImport(configTable = config_tpp2d, 
                       data = data_tpp2d, 
                       idVar = "representative",
