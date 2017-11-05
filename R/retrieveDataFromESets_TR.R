@@ -51,12 +51,12 @@ retrieveDataFromESets_TR <- function(data){
     
     ## Append experiment id to all data frame columns to make them unique when 
     ## combined to big experiment-spanning results table:
-    colnames(df1) <- paste(colnames(df1), en, sep="_")
-    colnames(df2) <- paste(colnames(df2), en, sep="_")
-    colnames(df3) <- paste(colnames(df3), en, sep="_")
-    colnames(df4) <- paste(colnames(df4), en, sep="_")
-    colnames(df5) <- paste(colnames(df5), en, sep="_")
-    colnames(df6) <- paste(colnames(df6), en, sep="_")
+    if (ncol(df1) > 0) colnames(df1) <- paste(colnames(df1), en, sep="_")
+    if (ncol(df2) > 0) colnames(df2) <- paste(colnames(df2), en, sep="_")
+    if (ncol(df3) > 0) colnames(df3) <- paste(colnames(df3), en, sep="_")
+    if (ncol(df4) > 0) colnames(df4) <- paste(colnames(df4), en, sep="_")
+    if (ncol(df5) > 0) colnames(df5) <- paste(colnames(df5), en, sep="_")
+    if (ncol(df6) > 0) colnames(df6) <- paste(colnames(df6), en, sep="_")
     
     ## If data was normalized, add suffix 'norm_' to the fold change column 
     ## names. Normalized data is recognized by the values of the normalization 
