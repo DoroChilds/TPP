@@ -45,7 +45,7 @@ export(tpp2dSplineFitAndTest)
 export(tpp2dTRReferenceObject) # define object
 import(Biobase, except = combine) # conflict with gridExtra::combine
 import(data.table, except = c(between, last, melt, first)) # conflict with dplyr and reshape2
-import(dplyr)
+import(dplyr, except = c(exprs)) # conflict with Biobase::exprs
 import(ggplot2)
 import(grid)
 import(gridExtra, except = combine)
