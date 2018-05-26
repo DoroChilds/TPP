@@ -1,4 +1,4 @@
-fit_splines_under_H0_and_H1 <- function(data, df, strH0, strH1, returnModels){
+fit_splines_under_H0_and_H1 <- function(data, df, strH0, strH1, returnModels, intercept = TRUE){
   
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
