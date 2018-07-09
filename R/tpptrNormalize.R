@@ -6,7 +6,7 @@
 #' @return A list of ExpressionSets storing the normalized data for each
 #'   experiment. Each ExpressionSet contains the measured fold changes, as well
 #'   as row and column metadata. In each ExpressionSet \code{S}, the fold
-#'   changes can be accessed by \code{exprs(S)}. Protein expNames can be
+#'   changes can be accessed by \code{Biobase::exprs(S)}. Protein expNames can be
 #'   accessed by \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are 
 #'   returned by \code{S$label} and \code{S$temperature}
 #'   

@@ -15,7 +15,7 @@ the normalization.}
 \value{
 List of expressionSet objects storing the normalized fold changes, 
 as well as row and column metadata. In each expressionSet \code{S}, the fold 
-changes can be accessed by \code{exprs(S)}. Protein expNames can be accessed 
+changes can be accessed by \code{Biobase::exprs(S)}. Protein expNames can be accessed 
 by \code{featureNames(S)}. Isobaric labels and the corresponding 
 concentrations are returned by \code{S$label} and \code{S$concentration}.
 }

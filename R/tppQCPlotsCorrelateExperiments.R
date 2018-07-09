@@ -64,8 +64,8 @@ No plot produced."
         } else {
           commonDat1 <- dat1[commonProteins,]
           commonDat2 <- dat2[commonProteins,]
-          fc1 <- data.frame(exprs(commonDat1))
-          fc2 <- data.frame(exprs(commonDat2))
+          fc1 <- data.frame(Biobase::exprs(commonDat1))
+          fc2 <- data.frame(Biobase::exprs(commonDat2))
           df1 <- reshape(data=fc1, idvar="protID", ids=row.names(fc1), 
                          times=paste(commonDat1$temperature, "\U00B0 C"), 
                          timevar="temperature",

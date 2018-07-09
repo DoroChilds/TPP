@@ -7,7 +7,7 @@ eSetsToLongTable_fc <- function(data){
     labelValue = foldChange = labelName = experiment <- NULL
   
   expInfo <- data %>% lapply(function(eSet){
-    cbind(pData(eSet), colNameOrig = colnames(exprs(eSet)))
+    cbind(pData(eSet), colNameOrig = colnames(Biobase::exprs(eSet)))
   }) %>%
     bind_rows(., .id = "experiment") %>%
     mutate(label = factor(as.character(label)))

@@ -13,7 +13,7 @@
 #'   curve parameters for each experiment.
 #'   Each ExpressionSet contains the measured fold changes, as well as row and
 #'   column metadata. In each ExpressionSet \code{S}, the fold changes can be
-#'   accessed by \code{exprs(S)}. Protein expNames can be accessed by 
+#'   accessed by \code{Biobase::exprs(S)}. Protein expNames can be accessed by 
 #'   \code{featureNames(S)}. Isobaric labels and the corresponding temperatures are 
 #'   returned by \code{S$label} and \code{S$temperature}.
 
@@ -106,7 +106,7 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
   xMat <- t(sapply(data, function(set){set$temperature}))
   yMat <- data.frame(matrix(nrow=0, ncol=(ncol(data[[1]])+2)))
   for (g in expNames){
-    yTmp <- exprs(data[[g]])
+    yTmp <- Biobase::exprs(data[[g]])
     if (nrow(yTmp)==0){
       yTmp <- matrix(NA_real_, nrow=length(protIDs), ncol=ncol(data[[g]]), 
                      dimnames=list(protIDs, colnames(yTmp)))
@@ -123,7 +123,7 @@ tpptrCurveFit <- function(data, dataCI=NULL, resultPath=NULL,
   if (useCI){
     ciMat <- data.frame(matrix(nrow=0, ncol=(ncol(data[[1]])+2)))
     for (g in expNames){
-      ciTmp <- exprs(dataCI[[g]])
+      ciTmp <- Biobase::exprs(dataCI[[g]])
       if (nrow(ciTmp)==0){
         ciTmp <- matrix(NA_real_, nrow=length(protIDs), ncol=ncol(dataCI[[g]]), 
                         dimnames=list(protIDs, colnames(ciTmp)))

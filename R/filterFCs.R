@@ -21,7 +21,7 @@ filterFCs <- function(data, pos, lb, ub){
     lbTmp  <- lb[i]
     ubTmp  <- ub[i]
 
-    x      <- exprs(data)[,posTmp]
+    x      <- Biobase::exprs(data)[,posTmp]
     lbValid <- x >= lbTmp
     ubValid <- x <= ubTmp
 

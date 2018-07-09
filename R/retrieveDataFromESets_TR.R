@@ -44,7 +44,7 @@ retrieveDataFromESets_TR <- function(data){
     
     ## Retrieve fold change matrix from current expressionSet and convert to 
     ## data frame:
-    df4 <- as.data.frame(exprs(setTmp))
+    df4 <- as.data.frame(Biobase::exprs(setTmp))
     
     ## Data frame with indicators which proteins where identified in which experiment:
     df5 <- data.frame("protein_identified_in" = rep(TRUE, nrow(setTmp)))

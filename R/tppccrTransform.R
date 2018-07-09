@@ -18,7 +18,7 @@
 #'                               
 #' @return List of expressionSet objects storing the transformed fold changes, 
 #' as well as row and column metadata. In each expressionSet \code{S}, the fold changes
-#'   can be accessed by \code{exprs(S)}. Protein expNames can be accessed by 
+#'   can be accessed by \code{Biobase::exprs(S)}. Protein expNames can be accessed by 
 #'   \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
 #'   returned by \code{S$label} and \code{S$concentration}.
 #' 
@@ -39,7 +39,7 @@ tppccrTransform <- function(data, fcCutoff=1.5, fcTolerance=0.1) {
   for (expName in names(data)){
     message("Transforming dataset: ", expName)
     dTmp   <- data[[expName]]
-    fcOrig <- exprs(dTmp)
+    fcOrig <- Biobase::exprs(dTmp)
     
     ## Mark proteins that are stabilized or destabilized by compound treatment
     fcMaxConc <- fcOrig[, which.max(dTmp$concentration)]
@@ -80,7 +80,7 @@ tppccrTransform <- function(data, fcCutoff=1.5, fcTolerance=0.1) {
     # fcNew[iD,] <- (fcOrig[iD,] - fcMaxConc[iD])/ (1-fcMaxConc[iD])
 
     ## Store transformed FCs in exprs field:
-    exprs(dTmp) <- fcNew
+    Biobase::exprs(dTmp) <- fcNew
     
     ## Store transformed FCs in featureData so that it can be compared to the 
     ## untransformed values in the result table:

@@ -9,7 +9,7 @@
 #' 
 #' @return List of expressionSet objects storing the normalized fold changes, as well as 
 #'   row and column metadata. In each expressionSet \code{S}, the fold changes
-#'   can be accessed by \code{exprs(S)}. Protein names can be accessed by 
+#'   can be accessed by \code{Biobase::exprs(S)}. Protein names can be accessed by 
 #'   \code{featureNames(S)}. Isobaric labels and the corresponding concentrations are 
 #'   returned by \code{S$label} and \code{S$concentration}.
 #'   
@@ -26,7 +26,7 @@ tppccrNormalize <- function(data){
     dTmp <- data[[expName]]
     
     ## Compute normalization coefficients:
-    fcOld <- exprs(dTmp)
+    fcOld <- Biobase::exprs(dTmp)
     fcMedians <- apply(fcOld, 2, median, na.rm=TRUE)
     normCoeffs <- 1/fcMedians  
     
@@ -35,7 +35,7 @@ tppccrNormalize <- function(data){
     
     ## Store normalized fold changes in the featureData:
     fcNamesNorm <- paste(colnames(fcOld), "median_normalized", sep="_")
-    pData(featureData(dTmpNorm))[,fcNamesNorm] <- exprs(dTmpNorm)
+    pData(featureData(dTmpNorm))[,fcNamesNorm] <- Biobase::exprs(dTmpNorm)
     
     ## Store normalized dataset in output list:
     normData[[expName]] <- dTmpNorm

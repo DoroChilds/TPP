@@ -21,8 +21,8 @@ test_that(desc = "testNormReqs1", code = {
     tpptrNormalize(data=tpptrData, normReqs=reqs)
     )
   
-  expect_equal(exprs(ref[["normData"]][[1]]), 
-               exprs(newResult[["normData"]][[1]]))
+  expect_equal(Biobase::exprs(ref[["normData"]][[1]]), 
+               Biobase::exprs(newResult[["normData"]][[1]]))
 })
 
 test_that(desc = "testNormReqs2", code = {
@@ -42,6 +42,6 @@ test_that(desc = "testNormReqs2", code = {
     tpptrNormalize(data=tpptrData, normReqs=reqs)
     )
   
-  expect_equal(exprs(ref[["normData"]][[1]]), 
-               exprs(newResult[["normData"]][[1]]))
+  expect_equal(Biobase::exprs(ref[["normData"]][[1]]), 
+               Biobase::exprs(newResult[["normData"]][[1]]))
 })
