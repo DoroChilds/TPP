@@ -59,7 +59,7 @@ test_that(desc="allOk1", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
                   c( "black" , "#808080", "#da7f2d"))
   
@@ -80,7 +80,7 @@ test_that(desc="allOk2", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
                   c("black" , "#1B9E77", "#9B58A5", "#BBA90B", "#666666"))
   
@@ -101,7 +101,7 @@ test_that(desc="allOk3", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
                   c("black", "#1B9E77", "#B16548", "#D03792", "#7FA718", "#BF8B12", "#666666"))
   
@@ -154,7 +154,7 @@ test_that(desc="onlyAlternative", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) == 
                   c("#808080", "#da7f2d"))
   
@@ -178,7 +178,7 @@ test_that(desc="onlyNull", code={
   
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   #check3 <- length(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) == 2 # to do: remove the generic 'black' color
   check4 <- length(outPlot$layers) == 2
   
@@ -203,7 +203,7 @@ test_that(desc="noHypothesisNorCondition", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- length(outPlot$layers) == 2
   
   expect_true(check1 & check2 & check3)
@@ -297,7 +297,7 @@ test_that(desc="noData", code={
                                        highlightTxt = "")
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   
   # Check if only the original data was added, not the failed predictions. 
   # Adding these would cause problems due to the missing color columns,

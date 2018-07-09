@@ -22,7 +22,7 @@ test_that(desc="allOk", code={
   outPlot <- TPP:::predict_and_plot_spline_models(dat = datIn, fits = fitsIn)
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   
   expect_true(check1 & check2)
   
@@ -36,7 +36,7 @@ test_that(desc="allOk_H0", code={
   outPlot <- TPP:::predict_and_plot_spline_models(dat = datIn, fits = fitsIn)
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- length(outPlot$layers) == 2 # to do: the null models should be displayed and a corresponding geom_line layer present
   
   expect_true(check1 & check2 & check3)
@@ -51,7 +51,7 @@ test_that(desc="allOk_H1", code={
   outPlot <- TPP:::predict_and_plot_spline_models(dat = datIn, fits = fitsIn)
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- length(outPlot$layers) == 2
   
   expect_true(check1 & check2 & check3)
@@ -92,7 +92,7 @@ test_that(desc="modelColInvalid", code={
   outPlot <- TPP:::predict_and_plot_spline_models(dat = datIn, fits = fitsIn)
   
   check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("x", "y", "colorColumn"))
+  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
   check3 <- length(outPlot$layers) == 1 # to do: the null models should be disyplayed and a corresponding geom_line layer present
   
   expect_true(check1 & check2 & check3)
