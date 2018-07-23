@@ -13,31 +13,24 @@ extract_fit_factors <- function(splineModel, mode){
   ## Check whether spline model is a linear model fit:
   if (inherits(splineModel, "lm")){
     
-    m_augmented <- splineModel %>% broom::augment()
+    factorColumns <- splineModel$model %>% 
+      dplyr::select(contains("factor"))
     
-    factorColumns <- m_augmented %>% 
-      colnames %>% 
-      grep("factor.", ., value = TRUE) 
+    colnames(factorColumns) <- colnames(factorColumns) %>% 
+      gsub("factor\\(", "", .) %>%
+      gsub("\\)", "", .)
     
-    factorNames <- factorColumns %>% 
-      gsub("factor.", "", .) %>% 
-      substr(1, nchar(.)-1) # remove the final '.'
     
     if (mode == "names"){
       
-      out <- factorNames
+      out <- colnames(factorColumns)
       
     } else if (mode == "values"){
       
-      if (length(factorNames) > 0){
+      if (ncol(factorColumns) > 0){
         
-        factorValues <- m_augmented %>% 
-          subset(select = factorColumns) %>% 
-          distinct %>%
-          set_names(factorNames) %>%
+        out <- distinct(factorColumns) %>%
           mutate_all(as.character)
-        
-        out <- factorValues
         
       }
     } 
