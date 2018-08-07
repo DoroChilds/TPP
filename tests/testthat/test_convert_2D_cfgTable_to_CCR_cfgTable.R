@@ -8,7 +8,7 @@ test_that("createCCRConfig", code={
   ref <- data.frame("Panobinostat", 5, 1, 0.143, 0.02, 0, row.names = "") %>%
     set_colnames(c("Experiment", 5, 1, 0.143, 0.02, 0))
   
-  expect_identical(new, ref)
+  expect_equal(new, ref)
 })
 
 test_that("createCCRConfigErr", code={

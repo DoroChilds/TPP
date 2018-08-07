@@ -84,21 +84,21 @@ cfgRef <- panobinostat_2DTPP_config %>% select(-Path)
 test_that(desc="allOK", code={
   cfgIn <- cfg
   out <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = "2D")
-  expect_identical(cfgRef, out)
+  expect_equal(cfgRef, out)
 })
 
 test_that(desc="evalConfigSpecialChars", code={
   cfgIn <- cfg %>% mutate_("126" = "'_'")
   ref <- cfgIn %>% mutate_("126" = "NULL")
   new <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = "2D")
-  expect_identical(ref, new)
+  expect_equal(ref, new)
 })
 
 test_that(desc="evalConfigTxt", code={
   cfgPath <- file.path(filePath, "panobinostat_ex_confg.txt")
   ref <- cfgRef
   new <- TPP:::importCheckConfigTable(infoTable = cfgPath, type = "2D")
-  expect_identical(ref, new)
+  expect_equal(ref, new)
 })
 
 

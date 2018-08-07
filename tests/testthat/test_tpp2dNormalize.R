@@ -13,7 +13,7 @@ test_that(desc="all_ok1", code={
   
   new <- tpp2dNormalize(data = datIn)
   
-  expect_identical(new, out1)
+  expect_equal(new, out1)
 })
 
 test_that(desc="all_ok2", code={
@@ -21,7 +21,7 @@ test_that(desc="all_ok2", code={
   
   new <- tpp2dNormalize(data = datIn)
 
-  expect_identical(object = new, expected = out2)
+  expect_equal(object = new, expected = out2)
 })
 
 test_that(desc="all_ok2_different_sorting", code={
@@ -30,7 +30,7 @@ test_that(desc="all_ok2_different_sorting", code={
   new <- tpp2dNormalize(data = datIn)
   old <- out2 %>% arrange(representative, temperature)
   
-  expect_identical(object = new, expected = old)
+  expect_equal(object = new, expected = old)
 })
 
 test_that(desc="all_ok2_scientificFotma", code={
@@ -40,7 +40,7 @@ test_that(desc="all_ok2_scientificFotma", code={
   old <- out2 %>% rename_("rel_fc_protein_1e-4" = "rel_fc_protein_1",
                           "norm_rel_fc_protein_1e-4" = "norm_rel_fc_protein_1")
   
-  expect_identical(object = new, expected = old)
+  expect_equal(object = new, expected = old)
 })
 
 

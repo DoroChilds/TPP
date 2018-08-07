@@ -24,7 +24,7 @@ test_that(desc="evalImportData", code={
   # # The reference data were created before introduction of attributes in version 2.99.0:
   # attr(new, "importSettings")  <- NULL
   # attr(new, "configTable") <- NULL
-  expect_identical(ref, new)
+  expect_equal(ref, new)
 })
 
 test_that(desc="cfg_empty_entries", code={
@@ -46,7 +46,7 @@ test_that(desc="cfg_empty_entries", code={
   # # The reference data were created before introduction of attributes in version 2.99.0:
   # attr(new, "importSettings")  <- NULL
   # attr(new, "configTable") <- NULL
-  expect_identical(ref, new)
+  expect_equal(ref, new)
 })
 
 
