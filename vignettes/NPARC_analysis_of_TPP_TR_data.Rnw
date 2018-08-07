@@ -46,6 +46,14 @@ This document describes the analysis of TPP-TR data by the NPARC approach.
 General information regarding package installation and format of the input data is provided in the complementary \href{https://www.bioconductor.org/packages/release/bioc/vignettes/TPP/inst/doc/TPP_introduction.pdf}{introductory vignette}.
 
 \section{Getting started}
+To install the package, type the following commands into the \R{} console
+<<install, eval=FALSE>>=
+if (!requireNamespace("BiocManager", quietly=TRUE)){
+    install.packages("BiocManager")
+}
+BiocManager::install("TPP")
+@
+
 First, we load the \Rpackage{TPP} package by
 <<package>>=
 library("TPP")

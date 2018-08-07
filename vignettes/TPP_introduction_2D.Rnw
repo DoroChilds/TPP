@@ -68,8 +68,10 @@ vignette \texttt{TPP\_introduction\_1D}.
 \section{Installation}
 To install the package, type the following commands into the \R{} console
 <<install, eval=FALSE>>=
-source("http://bioconductor.org/biocLite.R")
-biocLite("TPP")
+if (!requireNamespace("BiocManager", quietly=TRUE)){
+    install.packages("BiocManager")
+}
+BiocManager::install("TPP")
 @
 
 The installed package can be loaded by

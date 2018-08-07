@@ -7,13 +7,13 @@
 analyze2DTPP(configTable, data = NULL, resultPath = NULL,
   idVar = "gene_name", fcStr = NULL, intensityStr = "signal_sum_",
   naStrs = c("NA", "n/d", "NaN", "<NA>"), methods = "doseResponse",
-  qualColName = "qupm", compFc = TRUE, normalize = TRUE, addCol = NULL,
-  nCores = 1, nonZeroCols = "qssm", fcTolerance = 0.1, r2Cutoff = 0.8,
-  fcCutoff = 1.5, slopeBounds = c(1, 50), fractAbund = FALSE,
-  xlsxExport = TRUE, plotAll = FALSE, plotAllR2 = FALSE,
-  plotSingle = FALSE, trRef = NULL, refFcStr = "norm_rel_fc_",
-  addInfo = FALSE, createReport = "none", paletteName = "Spectral",
-  configFile)
+  qualColName = "qupm", compFc = TRUE, normalize = TRUE,
+  addCol = NULL, nCores = 1, nonZeroCols = "qssm",
+  fcTolerance = 0.1, r2Cutoff = 0.8, fcCutoff = 1.5,
+  slopeBounds = c(1, 50), fractAbund = FALSE, xlsxExport = TRUE,
+  plotAll = FALSE, plotAllR2 = FALSE, plotSingle = FALSE,
+  trRef = NULL, refFcStr = "norm_rel_fc_", addInfo = FALSE,
+  createReport = "none", paletteName = "Spectral", configFile)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file, 

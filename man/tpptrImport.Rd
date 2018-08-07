@@ -5,8 +5,8 @@
 \title{Import TPP-TR datasets for analysis by the \code{\link{TPP}} package.}
 \usage{
 tpptrImport(configTable, data = NULL, idVar = "gene_name",
-  fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN"), qualColName = "qupm",
-  outputFormat = "eSetList")
+  fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN"),
+  qualColName = "qupm", outputFormat = "eSetList")
 }
 \arguments{
 \item{configTable}{either a dataframe or the path to a spreadsheet. In both 

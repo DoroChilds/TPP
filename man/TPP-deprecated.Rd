@@ -3,17 +3,11 @@
 \name{TPP-deprecated}
 \alias{TPP-deprecated}
 \alias{tpp2dPlotCCRGoodCurves}
-\alias{TPP-deprecated}
 \alias{tpp2dPlotCCRAllCurves}
-\alias{TPP-deprecated}
 \alias{tpp2dPlotCCRSingleCurves}
-\alias{TPP-deprecated}
 \alias{tpp2dEvalConfigTable}
-\alias{TPP-deprecated}
 \alias{tpp2dRemoveZeroSias}
-\alias{TPP-deprecated}
 \alias{tpp2dReplaceColNames}
-\alias{TPP-deprecated}
 \alias{tpp2dCreateCCRConfigFile}
 \title{Deprecated functions in package \sQuote{TPP}}
 \usage{

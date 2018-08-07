@@ -5,11 +5,12 @@
 \title{Create Report of 2D-TPP analysis}
 \usage{
 tpp2dCreateReport(data = NULL, configFile = NULL, resultPath = NULL,
-  documentType = "html_document", configTable = NULL, normalize = TRUE,
-  methods = c(""), idVar = "gene_name", fcStr = "rel_fc_",
-  fcStrUpdated = "norm_rel_fc_", intensityStr = "signal_sum_",
-  addCol = NULL, fcTolerance = NA, r2Cutoff = NA, fcCutoff = NA,
-  slopeBounds = c(NA, NA), fTest = FALSE, trRef = "none")
+  documentType = "html_document", configTable = NULL,
+  normalize = TRUE, methods = c(""), idVar = "gene_name",
+  fcStr = "rel_fc_", fcStrUpdated = "norm_rel_fc_",
+  intensityStr = "signal_sum_", addCol = NULL, fcTolerance = NA,
+  r2Cutoff = NA, fcCutoff = NA, slopeBounds = c(NA, NA),
+  fTest = FALSE, trRef = "none")
 }
 \arguments{
 \item{data}{output data frame from an 2D-TPP analysis}

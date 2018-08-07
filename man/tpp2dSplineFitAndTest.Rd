@@ -4,9 +4,10 @@
 \alias{tpp2dSplineFitAndTest}
 \title{Fit splines and perform f-Test}
 \usage{
-tpp2dSplineFitAndTest(data_2D = NULL, data, trRefDataPath = NULL, dataRef,
-  refIDVar = "Protein_ID", refFcStr = "norm_rel_fc_", resultPath = NULL,
-  doPlot = TRUE, verbose = FALSE, nCores = "max", ggplotTheme = NULL)
+tpp2dSplineFitAndTest(data_2D = NULL, data, trRefDataPath = NULL,
+  dataRef, refIDVar = "Protein_ID", refFcStr = "norm_rel_fc_",
+  resultPath = NULL, doPlot = TRUE, verbose = FALSE,
+  nCores = "max", ggplotTheme = NULL)
 }
 \arguments{
 \item{data_2D}{DEPRECATED}
