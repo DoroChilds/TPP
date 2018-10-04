@@ -1,35 +1,12 @@
 dataPath <- system.file("test_data", package="TPP")
 
 # Load function input:
-dat1 <- readRDS(file.path(dataPath, "panobinostat_2D_normResults.rds")) # example input
 dat2 <- readRDS(file.path(dataPath, "panobinostat_2D_normResults2.rds")) # example input from an older experiment (12 rows)
 dat3 <- readRDS(file.path(dataPath, "panobinostat_2D_normResults3.rds")) # example input from an older experiment (20 rows)
 
 # Load expected result for the given input:
-out1 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults.rds")) # example output
 out2 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults2.rds")) # example output from an older experiment (12 rows)
 out3 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults3.rds")) # example output from an older experiment (20 rows)
-
-# Start tests:
-test_that("all_ok1", code={
-  datIn <- dat1
-  
-  new <- tpp2dCurveFit(data = datIn, nCores = 1)
-
-  # for the following protein, the results are different for different operating systems.
-  # nls converges on Mac OS, but not on linux and windows. Therefore, currently remove
-  # this protein from this unit test and focus on the 4655 others
-  out1 <- out1 %>% 
-    filter(Protein_ID != "X020471_63.9_IPI00910781.1") %>% 
-    mutate(pEC50_quality_check = as.numeric(pEC50_quality_check))
-  
-  new  <- new %>% 
-    filter(Protein_ID != "X020471_63.9_IPI00910781.1") %>%
-    mutate(pEC50_quality_check = as.numeric(pEC50_quality_check))
-
-  expect_equal(new, out1, 
-               tolerance = 1e-3) # There are some small deviations in the estimated slopes on windows which do not occur on the Mac.
-})
 
 test_that("all_ok2", code={
   datIn <- dat2
