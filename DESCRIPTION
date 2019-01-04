@@ -1,7 +1,7 @@
 Package: TPP
 Type: Package
 Title: Analyze thermal proteome profiling (TPP) experiments
-Version: 3.11.0
+Version: 3.11.1
 Author: Dorothee Childs, Nils Kurzawa, Holger Franken, Carola Doce, Mikhail Savitski and Wolfgang Huber
 Maintainer: Dorothee Childs <dorothee.childs@embl.de>
 Depends:
@@ -48,5 +48,5 @@ Description: Analyze thermal proteome profiling (TPP) experiments with varying
     temperatures (TR) or compound concentrations (CCR).
 License: Artistic-2.0
 VignetteBuilder: knitr
-biocViews: Proteomics, MassSpectrometry
+biocViews: ImmunoOncology, Proteomics, MassSpectrometry
 RoxygenNote: 6.1.0
