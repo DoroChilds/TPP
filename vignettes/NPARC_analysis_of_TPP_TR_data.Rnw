@@ -77,7 +77,7 @@ resultPath = file.path(getwd(), 'NPARC_Vignette_Example')
 @
 
 We start the workflow by typing
-<<analyzeTR, eval = TRUE>>=
+<<analyzeTR, eval = TRUE, warning=FALSE>>=
 TRresults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
                           method = "splinefit", nCores = 2, resultPath = resultPath, 
                           plotCurves = FALSE) 
