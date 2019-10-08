@@ -178,3 +178,6 @@ Changes in version 3.5.14 (May-02-2017):
  o Importing the whole tidyverse instead of ggplot2, dplyr etc. individually
  o Shift Biobase, dplyr and tidyr to "depends" so that they are automatically availabe for downstream analyses.
  o Add the option to use the 'old' config table with a Replicate column. On the support site, users expressed confusion that this column was deprecated since the Nature Protocols paper release. Now, the comparison columns are automatically generated from the replicate column, if only the replicate column is defined as described in the old documentation.
+
+3.13.1 (Okt-08-2019)
+ o Avoid warnings due to factor/character conversions in vignette 
