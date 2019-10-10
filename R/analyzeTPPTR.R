@@ -165,6 +165,9 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
                          pValParams = list(binWidth = 300), 
                          verbose = FALSE, xlsxExport = TRUE){
   
+  ## Trigger Warning: using method = "splineFit" is deprecated  
+  if("splinefit" %in% methods)   
+      message("Warning: using method = 'splineFit' is deprecated")
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
   meltcurve_plot = Protein_ID <- NULL
