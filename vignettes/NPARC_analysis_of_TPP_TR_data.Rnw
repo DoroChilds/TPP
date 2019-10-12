@@ -36,7 +36,7 @@ knitr::opts_chunk$set(concordance=TRUE,
 \begin{abstract}
 This document demonstrates how to analyze TPP-TR (temperature range) experiments by the NPARC approach \cite{childs2019}. NPARC is a recent extension to the \Rpackage{TPP} package. It offers a novel methodology to model the temperature dependent melting behaviour of each protein, and to detect significant changes in this behavior due to changes in experimental conditions like drug treatment \cite{savitski2014tracking}.
 
-In brief, the melting curve of each protein is represented by natural splines, either once for all conditions (null model), or separately for different experimental conditions (alternative model). Condition specific effects are then detected by testing for significant improvements in goodnes-of-fit of the alternative model relative to the null model. % to do: cite our manuscript
+The melting curve of each protein is represented by sigmoid functions or natural splines, either once for all conditions (null model), or separately for different experimental conditions (alternative model). Condition specific effects are then detected by testing for significant improvements in goodnes-of-fit of the alternative model relative to the null model.
 \end{abstract}
 
 \tableofcontents
