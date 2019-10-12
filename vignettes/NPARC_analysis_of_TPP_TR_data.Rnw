@@ -34,57 +34,59 @@ knitr::opts_chunk$set(concordance=TRUE,
 \maketitle
 
 \begin{abstract}
-This document demonstrates how to analyze TPP-TR (temperature range) experiments by the NPARC approach. NPARC is a recent extension to the \Rpackage{TPP} package. It offers a novel methodology to model the temperature dependent melting behaviour of each protein, and to detect significant changes in this behavior due to changes in experimental conditions like drug treatment \cite{savitski2014tracking}.
+This document demonstrates how to analyze TPP-TR (temperature range) experiments by the NPARC approach \cite{childs2019}. NPARC is a recent extension to the \Rpackage{TPP} package. It offers a novel methodology to model the temperature dependent melting behaviour of each protein, and to detect significant changes in this behavior due to changes in experimental conditions like drug treatment \cite{savitski2014tracking}.
 
 In brief, the melting curve of each protein is represented by natural splines, either once for all conditions (null model), or separately for different experimental conditions (alternative model). Condition specific effects are then detected by testing for significant improvements in goodnes-of-fit of the alternative model relative to the null model. % to do: cite our manuscript
 \end{abstract}
 
 \tableofcontents
 
-\section{Installation and input data}
-This document describes the analysis of TPP-TR data by the NPARC approach.
-General information regarding package installation and format of the input data is provided in the complementary \href{https://www.bioconductor.org/packages/release/bioc/vignettes/TPP/inst/doc/TPP_introduction.pdf}{introductory vignette}.
-
-\section{Getting started}
-To install the package, type the following commands into the \R{} console
-<<install, eval=FALSE>>=
-if (!requireNamespace("BiocManager", quietly=TRUE)){
-    install.packages("BiocManager")
-}
-BiocManager::install("TPP")
-@
-
-First, we load the \Rpackage{TPP} package by
-<<package>>=
-library("TPP")
-@
-Note that this command only works if the package has been correctly installed beforehand, as described in the \href{https://www.bioconductor.org/packages/release/bioc/vignettes/TPP/inst/doc/TPP_introduction.pdf}{introductory vignette}.
-
-Next, we load the example data for the analysis (treatment of K562 cells using the clinical HDAC
-inhibitor panobinostat\cite{franken2015}):
-<<load_tr_data>>=
-data("hdacTR_smallExample")
-@
-This command loads two objects: 
-\begin{enumerate}
-\item \texttt{hdacTR\_data}: a list of data frames that contain the measurements to be analyzed,
-\item \texttt{hdacTR\_config}: a configuration table with details about each experiment.
-\end{enumerate}
-
-Now we define the desired output path for the results:
-<<result_path_TR>>=
-resultPath = file.path(getwd(), 'NPARC_Vignette_Example')
-@
-
-We start the workflow by typing
-<<analyzeTR, eval = TRUE, warning=FALSE>>=
-TRresults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
-                          method = "splinefit", nCores = 2, resultPath = resultPath, 
-                          plotCurves = FALSE) 
-@
-Here, the new methodology is activated by the argument \texttt{method = "splinefit"} (available since package version 3.0.0)
-This performs the spline fitting procedure in parallel on a maximum of two CPUs (requirement for package vignettes). Without specifying the \texttt{nCores} argument, fitting is performed by default on the maximum number of CPUs on your device.
-
+\section{Using NPARC }
+The integration of NPARC into the \Rpackage{TPP} is currently ongoing (you can find the GitHub repository \href{https://github.com/DoroChilds/NPARC}{here}). If you want to try it in the mean time please refer to \href{https://git.embl.de/childs/TPP-data-analysis/tree/master/NPARC_paper/reports}{this workflow}.  
+% \section{Installation and input data}
+% This document describes the analysis of TPP-TR data by the NPARC approach.
+% General information regarding package installation and format of the input data is provided in the complementary \href{https://www.bioconductor.org/packages/release/bioc/vignettes/TPP/inst/doc/TPP_introduction.pdf}{introductory vignette}.
+% 
+% \section{Getting started}
+% To install the package, type the following commands into the \R{} console
+% <<install, eval=FALSE>>=
+% if (!requireNamespace("BiocManager", quietly=TRUE)){
+%     install.packages("BiocManager")
+% }
+% BiocManager::install("TPP")
+% @
+% 
+% First, we load the \Rpackage{TPP} package by
+% <<package>>=
+% library("TPP")
+% @
+% Note that this command only works if the package has been correctly installed beforehand, as described in the \href{https://www.bioconductor.org/packages/release/bioc/vignettes/TPP/inst/doc/TPP_introduction.pdf}{introductory vignette}.
+% 
+% Next, we load the example data for the analysis (treatment of K562 cells using the clinical HDAC
+% inhibitor panobinostat\cite{franken2015}):
+% <<load_tr_data>>=
+% data("hdacTR_smallExample")
+% @
+% This command loads two objects: 
+% \begin{enumerate}
+% \item \texttt{hdacTR\_data}: a list of data frames that contain the measurements to be analyzed,
+% \item \texttt{hdacTR\_config}: a configuration table with details about each experiment.
+% \end{enumerate}
+% 
+% Now we define the desired output path for the results:
+% <<result_path_TR>>=
+% resultPath = file.path(getwd(), 'NPARC_Vignette_Example')
+% @
+% 
+% We start the workflow by typing
+% <<analyzeTR, eval = TRUE, warning=FALSE>>=
+% TRresults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
+%                           method = "splinefit", nCores = 2, resultPath = resultPath, 
+%                           plotCurves = FALSE) 
+% @
+% Here, the new methodology is activated by the argument \texttt{method = "splinefit"} (available since package version 3.0.0)
+% This performs the spline fitting procedure in parallel on a maximum of two CPUs (requirement for package vignettes). Without specifying the \texttt{nCores} argument, fitting is performed by default on the maximum number of CPUs on your device.
+% 
 
 
 \bibliography{TPP_references}
