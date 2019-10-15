@@ -184,3 +184,8 @@ Changes in version 3.5.14 (May-02-2017):
  
 3.13.2 (Okt-12-2019)
   o Revise vignette
+  
+3.13.3 (Okt-15-2019)
+ o defunct the following functions: tpp2dPlotCCRGoodCurves, tpp2dPlotCCRAllCurves, 
+   tpp2dPlotCCRSingleCurves, tpp2dEvalConfigTable, tpp2dRemoveZeroSias, 
+   tpp2dReplaceColNames, tpp2dCreateCCRConfigFile
