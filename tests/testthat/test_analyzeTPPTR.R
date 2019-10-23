@@ -4,9 +4,7 @@ data(hdacTR_smallExample)
 dat <- hdacTR_data %>% purrr::map(. %>% filter(grepl("HDAC", gene_name)))
 cfg <- hdacTR_config
 
-## ------------------------------------------------------------------------- ##
-## function 'analyzeTPPTR' with option 'methods = splinefit':
-## ------------------------------------------------------------------------- ##
+context("function 'analyzeTPPTR' with option 'methods = splinefit'")
 test_that(desc="NPARC_allok", code={
   # Start analysis
   cfgIn <- cfg
@@ -58,7 +56,7 @@ test_that(desc="NPARC_allok_plot", code={
   datIn <- dat
   dirOut <- file.path(getwd(), "TR_results")
   
-  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, 
+  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, methods = "NPARC",
                                normalize = FALSE, resultPath = dirOut,
                                nCores = 1, splineDF = 3)
   # Are still the expected results produced?
@@ -119,20 +117,25 @@ test_that(desc="NPARC_allok_files", code={
 
 
 
-# test_that(desc="analyzeTPPTR_9TMTlabels", code={
-#   # Remove lowest temperature from config and data tables:
-#   cfgIn <- hdacTR_config %>% mutate("131L" = NULL)
-#   datIn <- hdacTR_data %>% purrr::map(function(d) {d$rel_fc_131L <- NULL; return(d)})
-#   # Start analysis
-#   tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn,
-#                                normalize = FALSE, # under default settings, normalization requires 10 fold changes
-#                                methods = c("meltcurvefit", "splinefit"), nCores = 1)
-#   # View hits:
-#   filter(tpptrResults, fulfills_all_4_requirements)$Protein_ID # melting curve results
-#   filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID # smoothing spline results
-#   
-# })
-
+context("function 'analyzeTPPTR' with option 'methods = NPARC'")
+test_that(desc="NPARC_call_allok", code={
+  # Start analysis
+  cfgIn <- cfg
+  datIn <- hdacTR_data
+  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, normalize = TRUE,
+                               methods = "splinefit", nCores = 1, splineDF = c(3,7))
+  # Are still the expected results produced?
+  cols <- colnames(tpptrResults)
+  colsExpected <- c("F_statistic", "F_moderated", "F_scaled", "residual_df_H1", 
+                    "prior_df_H1", "df1", "df2", "df2_moderated", 
+                    "posterior_var_H1", "p_NPARC", "p_adj_NPARC")
+  
+  check1 <- all(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID) ==
+                  c("COPS3", "DNLZ", "HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8", "PSMB5", "STX4", "YBX3"))
+  check2 <- all(colsExpected %in% cols)
+  check3 <- nrow(tpptrResults) == 510
+  expect_true(check1 & check2 & check3)
+})
 
 
 test_that(desc="analyzeTPPTR_9TMTlabels", code={

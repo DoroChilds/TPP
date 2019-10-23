@@ -149,7 +149,7 @@
 #' tpptrAnalyzeMeltingCurves
 #' @export
 analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL, 
-                         methods = c("meltcurvefit", "splinefit"),
+                         methods = c("meltcurvefit", "splinefit", "NPARC"),
                          idVar = "gene_name", fcStr = "rel_fc_", ciStr = NULL, # settings for data import
                          naStrs = c("NA", "n/d", "NaN", "<NA>"), 
                          qualColName = "qupm", 
@@ -163,11 +163,12 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
                          pValMethod = "robustZ", # to do: remove this argument
                          pValFilter = list(minR2 = 0.8, maxPlateau = 0.3), # settings for robust-z-test
                          pValParams = list(binWidth = 300), 
-                         verbose = FALSE, xlsxExport = TRUE){
+                         verbose = FALSE, xlsxExport = TRUE,
+                         df_type = "empirical"){
   
   ## Trigger Warning: using method = "splineFit" is deprecated  
   if("splinefit" %in% methods)   
-      message("Warning: using method = 'splineFit' is deprecated")
+    message("Warning: using method = 'splineFit' is deprecated")
   ## Initialize variables to prevent "no visible binding for global
   ## variable" NOTE by R CMD check:
   meltcurve_plot = Protein_ID <- NULL
@@ -238,7 +239,7 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
   
   resultTable <- data.frame(Protein_ID = allIDs, stringsAsFactors = FALSE)
   
-  if (any(methods == "splinefit")){
+  if (any(methods %in% c("splinefit", "NPARC"))){
     ## Preparation: convert eSets to long tables:
     fitData <- trDataNormalized %>% tpptrTidyUpESets(., returnType = "exprs")
     
@@ -249,20 +250,41 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
       annotData <- NULL
     }
     
-    splineFitResultTable <- tpptrSplineFitAndTest(data = fitData,
-                                                  factorsH1 = "condition",
-                                                  resultPath = resultPath,
-                                                  doPlot = plotCurves,
-                                                  splineDF = splineDF,# settings for spline fits
-                                                  nCores = nCores, 
-                                                  additionalCols = annotData) %>% 
-      mutate(Protein_ID = as.character(Protein_ID))
-    
-    if (flagDoWrite){
-      save(list = c("splineFitResultTable"), 
-           file = file.path(pathDataObj, "trResultsSplineFit.RData"))
+    if (any(methods %in% c("splinefit"))){
+      splineFitResultTable <- tpptrSplineFitAndTest(data = fitData,
+                                                    factorsH1 = "condition",
+                                                    resultPath = resultPath,
+                                                    doPlot = plotCurves,
+                                                    splineDF = splineDF,# settings for spline fits
+                                                    nCores = nCores, 
+                                                    additionalCols = annotData) %>% 
+        mutate(Protein_ID = as.character(Protein_ID))
+      
+      if (flagDoWrite){
+        save(list = c("splineFitResultTable"), 
+             file = file.path(pathDataObj, "trResultsSplineFit.RData"))
+      }
+      resultTable <- left_join(resultTable, splineFitResultTable )
     }
-    resultTable <- left_join(resultTable, splineFitResultTable )
+    
+    if (any(methods %in% c("NPARC"))){
+      nparc_control <- list(start = startPars, maxAttempts = maxAttempts, seed = 123)
+      nparcResultTable <- NPARC::runNPARC(x = fitData$x, 
+                                              y = fitData$y, 
+                                              id = fitData$uniqueID, 
+                                              groupsNull = NULL, 
+                                              groupsAlt = as.character(fitData$condition), 
+                                              BPPARAM = BiocParallel::SerialParam(), 
+                                              df_type = df_type, 
+                                              control = nparc_control) %>% 
+        mutate(Protein_ID = as.character(id))
+      
+      if (flagDoWrite){
+        save(list = c("nparcResultTable"), 
+             file = file.path(pathDataObj, "trResultsSplineFit.RData"))
+      }
+      resultTable <- left_join(resultTable, nparcResultTable )
+    }
   }
   
   
