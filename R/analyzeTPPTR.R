@@ -277,7 +277,9 @@ analyzeTPPTR <- function(configTable, data = NULL, resultPath = NULL,
                                               BPPARAM = BiocParallel::SerialParam(), 
                                               df_type = df_type, 
                                               control = nparc_control) %>% 
-        mutate(Protein_ID = as.character(id))
+        mutate(Protein_ID = as.character(id)) %>%
+        dplyr::select(-id) %>%
+        dplyr::rename(F_statistic = F, p_NPARC = pVal, p_adj_NPARC = pAdj)
       
       if (flagDoWrite){
         save(list = c("nparcResultTable"), 
