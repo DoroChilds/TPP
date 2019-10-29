@@ -4,8 +4,26 @@ data(hdacTR_smallExample)
 dat <- hdacTR_data %>% purrr::map(. %>% filter(grepl("HDAC", gene_name)))
 cfg <- hdacTR_config
 
-context("function 'analyzeTPPTR' with option 'methods = splinefit'")
+context("function 'analyzeTPPTR' with option 'methods = NPARC'")
 test_that(desc="NPARC_allok", code={
+  # Start analysis
+  cfgIn <- cfg
+  datIn <- hdacTR_data
+  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, normalize = TRUE,
+                               methods = "NPARC", nCores = 1)
+  # Are still the expected results produced?
+  cols <- colnames(tpptrResults)
+  colsExpected <- c("rssDiff", "F_statistic", "df1", "df2", "rssNull", "rssAlt", 
+                    "nFittedNull", "nFittedAlt", "nCoeffsNull", "nCoeffsAlt")
+  
+  expect_true(all(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID) ==
+                  c("HDAC1", "HDAC10", "HDAC2", "HDAC5", "HDAC6", "HDAC8")))
+  expect_true(all(colsExpected %in% cols))
+  expect_true(nrow(tpptrResults) == 510)
+})
+
+context("function 'analyzeTPPTR' with option 'methods = splinefit'")
+test_that(desc="splinefit_allok", code={
   # Start analysis
   cfgIn <- cfg
   datIn <- hdacTR_data
@@ -24,7 +42,7 @@ test_that(desc="NPARC_allok", code={
   expect_true(check1 & check2 & check3)
 })
 
-test_that(desc="NPARC_allok_output", code={
+test_that(desc="splinefit_allok_output", code={
   # Start analysis
   cfgIn <- cfg
   datIn <- dat
@@ -50,33 +68,29 @@ test_that(desc="NPARC_allok_output", code={
 })
 
 
-test_that(desc="NPARC_allok_plot", code={
+test_that(desc="splinefit_allok_plot", code={
   # Start analysis
   cfgIn <- cfg
   datIn <- dat
   dirOut <- file.path(getwd(), "TR_results")
   
-  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, methods = "NPARC",
+  tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, methods = "splinefit",
                                normalize = FALSE, resultPath = dirOut,
                                nCores = 1, splineDF = 3)
   # Are still the expected results produced?
   cols <- colnames(tpptrResults)
   
-  check1 <- all(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID) ==
-                  c("HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8"))
-  check2 <- all(c("meltcurve_plot", "splinefit_plot") %in% cols)
-  check3 <- all.equal(round(tpptrResults$p_adj_NPARC, 10), 
-                  c(0.0000000000, 0.0000000651, 0.0000000016, 0.5654779288,
-                    0.2918881921, 0.9328006686, 0.0000031269, 0.1471673324,
-                    0.0006474845, NA))
-  check4 <- c(tpptrResults$splinefit_plot, tpptrResults$meltcurve_plot) %>% file.path(dirOut, .) %>% file.exists %>% all
+  expect_equal(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID), c("HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8"))
+  expect_true("splinefit_plot" %in% cols)
+  expect_equal(round(tpptrResults$p_adj_NPARC, 10), 
+               c(0.0000000000, 0.0000000651, 0.0000000016, 0.5654779288, 0.2918881921, 
+                 0.9328006686, 0.0000031269, 0.1471673324,0.0006474845, NA))
+  expect_true(all(file.exists(c(tpptrResults$splinefit_plot, tpptrResults$meltcurve_plot) %>% file.path(dirOut, .))))
   
   unlink(dirOut, recursive = TRUE)
-  
-  expect_true(check1 & check2 & check3 & check4)
 })
 
-test_that(desc="NPARC_allok_files", code={
+test_that(desc="slpinefit_allok_files", code={
 
   dirIn <- system.file("example_data", package="TPP") %>% file.path("TR_example_data")
 
@@ -118,7 +132,7 @@ test_that(desc="NPARC_allok_files", code={
 
 
 context("function 'analyzeTPPTR' with option 'methods = NPARC'")
-test_that(desc="NPARC_call_allok", code={
+test_that(desc="splinefit_call_allok", code={
   # Start analysis
   cfgIn <- cfg
   datIn <- hdacTR_data
