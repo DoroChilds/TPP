@@ -32,7 +32,7 @@ fit_splines_under_H0_and_H1 <- function(data, df, strH0, strH1, returnModels, in
   # Combine results
   fitsCombined <- fitsH0 %>% mutate(testHypothesis = "null") %>%
     rbind(fitsH1 %>% mutate(testHypothesis = "alternative")) %>%
-    mutate(splineDF = df, testHypothesis = factor(testHypothesis)) %>% 
+    mutate(splineDF = df) %>% 
     ungroup %>%
     ## Mark proteins where model fit was not successful
     mutate(successfulFit = (sapply(fittedModel, class) != "try-error"))
