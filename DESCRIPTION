@@ -34,7 +34,6 @@ Imports:
     RCurl,
     reshape2,
     rmarkdown,
-    sme,
     splines,
     stats,
     stringr,
