@@ -189,3 +189,6 @@ Changes in version 3.5.14 (May-02-2017):
  o defunct the following functions: tpp2dPlotCCRGoodCurves, tpp2dPlotCCRAllCurves, 
    tpp2dPlotCCRSingleCurves, tpp2dEvalConfigTable, tpp2dRemoveZeroSias, 
    tpp2dReplaceColNames, tpp2dCreateCCRConfigFile
+   
+3.15.1 (Jan-31-2019)
+ o remove dependency to the sme package because it is not available any more on CRAN.
