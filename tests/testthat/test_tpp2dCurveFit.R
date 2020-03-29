@@ -9,6 +9,7 @@ out2 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults2.rds")) # exampl
 out3 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults3.rds")) # example output from an older experiment (20 rows)
 
 test_that("all_ok2", code={
+  skip()
   datIn <- dat2
   
   new <- tpp2dCurveFit(data = datIn, nCores = 1)
@@ -17,6 +18,7 @@ test_that("all_ok2", code={
 })
 
 test_that("all_ok3", code={
+  skip()
   datIn <- dat3
   
   new <- tpp2dCurveFit(data = datIn, nCores = 1)
