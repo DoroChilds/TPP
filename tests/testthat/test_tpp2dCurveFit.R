@@ -8,25 +8,25 @@ dat3 <- readRDS(file.path(dataPath, "panobinostat_2D_normResults3.rds")) # examp
 out2 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults2.rds")) # example output from an older experiment (12 rows)
 out3 <- readRDS(file.path(dataPath, "panobinostat_2D_fitResults3.rds")) # example output from an older experiment (20 rows)
 
-test_that("all_ok2", code={
-  skip()
-  datIn <- dat2
-  
-  new <- tpp2dCurveFit(data = datIn, nCores = 1)
-  
-  expect_equal(new, out2)
-})
+# test_that("all_ok2", code={
+#   skip()
+#   datIn <- dat2
+#   
+#   new <- tpp2dCurveFit(data = datIn, nCores = 1)
+#   
+#   expect_equal(new, out2)
+# })
 
-test_that("all_ok3", code={
-  skip()
-  datIn <- dat3
-  
-  new <- tpp2dCurveFit(data = datIn, nCores = 1)
-  
-  expect_equal(new %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
-               out3 %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
-               tolerance = 1e-5)
-})
+# test_that("all_ok3", code={
+#   skip()
+#   datIn <- dat3
+#   
+#   new <- tpp2dCurveFit(data = datIn, nCores = 1)
+#   
+#   expect_equal(new %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+#                out3 %>% mutate(pEC50_quality_check = as.numeric(pEC50_quality_check)), 
+#                tolerance = 1e-5)
+# })
 
 test_that("idCol_updated", code={
   datIn <- dat2
