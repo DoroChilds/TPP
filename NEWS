@@ -181,3 +181,14 @@ Changes in version 3.5.14 (May-02-2017):
 
 3.13.1 (Okt-08-2019)
  o Avoid warnings due to factor/character conversions in vignette 
+ 
+3.13.2 (Okt-12-2019)
+  o Revise vignette
+  
+3.13.3 (Okt-15-2019)
+ o defunct the following functions: tpp2dPlotCCRGoodCurves, tpp2dPlotCCRAllCurves, 
+   tpp2dPlotCCRSingleCurves, tpp2dEvalConfigTable, tpp2dRemoveZeroSias, 
+   tpp2dReplaceColNames, tpp2dCreateCCRConfigFile
+   
+3.15.1 (Jan-31-2019)
+ o remove dependency to the sme package because it is not available any more on CRAN.
