@@ -122,10 +122,7 @@ tpp2dCreateTPPTRreference <- function(trConfigTable=NULL,
                                 nCores='max', verbose=FALSE)
   
   # analyze melting curves and create result table
-  meltCurveResultTable <- tpptrAnalyzeMeltingCurves(data = trDataFitted, 
-                                                    pValMethod = pValMethod, 
-                                                    pValFilter = pValFilter, 
-                                                    pValParams = pValParams) %>%
+  meltCurveResultTable <- tpptrAnalyzeMeltingCurves(data = trDataFitted) %>%
       rename(meltcurve_plot = plot) %>% 
       mutate(meltcurve_plot = as.character(meltcurve_plot)) %>%
       mutate(Protein_ID = as.character(Protein_ID))
