@@ -128,7 +128,7 @@ tpp2dCreateTPPTRreference <- function(trConfigTable=NULL,
       mutate(Protein_ID = as.character(Protein_ID))
   
   # save result table
-  save(resultTable, file=file.path(outPath, "resultTable.RData"))    
+  save(meltCurveResultTable, file=file.path(outPath, "resultTable.RData"))    
   
   # generate summary
   sumResTable = summarizeResultTable(meltCurveResultTable, wantedColPatterns, 

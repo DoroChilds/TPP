@@ -243,7 +243,7 @@ We then load the TPP TR example data and modify it to use only replicate 1 of th
 <<generateReferenceInputData, eval = FALSE, warning=FALSE>>=
 data("hdacTR_smallExample")
 trConfig <- hdacTR_config[1:2,] %>% 
-    dplyr::select(-matches("Comparison"))
+    dplyr::select(-dplyr::matches("Comparison"))
 
 trConfig
 @
