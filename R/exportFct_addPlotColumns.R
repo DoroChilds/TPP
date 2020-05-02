@@ -18,19 +18,16 @@ exportFct_addPlotColumns <- function(tab, path, idVar, trRef){
   paths_allCurves    <- paste0(pathBase, "_2D_TPP_all_plots.pdf")
   paths_goodCurves   <- paste0(pathBase, "_2D_TPP_good_plots.pdf")
   paths_singleCurves <- paste0(pathBase, "_2D_TPP_single_plots.pdf")
-  paths_splineCurves <- paste0(pathBase, "_2D_TPP_spline_plots.pdf")
   
   ## Check files for existence and remove duplicates:
   paths_allCurves_final     <- removeInvalidPaths(paths_allCurves)
   paths_goodCurves_final    <- removeInvalidPaths(paths_goodCurves)
   paths_singleCurves_final  <- removeInvalidPaths(paths_singleCurves)
-  paths_splineCurves_final  <- removeInvalidPaths(paths_splineCurves)
   
   ## Add to output table:
   tab$plot_all_drcurves   <- paths_allCurves_final
   tab$plot_good_drcurve   <- paths_goodCurves_final
   tab$plot_single_drcurve <- paths_singleCurves_final
-  tab$plot_spline_fits    <- paths_splineCurves_final
   
   ## Special case: reference data boxplots
   if (existsRef){
