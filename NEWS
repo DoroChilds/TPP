@@ -192,3 +192,14 @@ Changes in version 3.5.14 (May-02-2017):
    
 3.15.1 (Jan-31-2019)
  o remove dependency to the sme package because it is not available any more on CRAN.
+ 
+
+3.17.0
+ o New Bioconductor release candidate
+
+3.17.1
+ o Fixed bug in tpp2dCreateTPPTRreferenece upon user request (#10)
+  o removed adding spline fit column from 2DTPP output table
+  o fixed bug in tpp2dCreateTPPTRReference and made example in vignette work
+  o removed leftover parameters in tpp2dCreateTPref function
+  o final fix of tpp2dCreateTPPTRreference and call in vignette now works
