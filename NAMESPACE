@@ -69,7 +69,6 @@ importFrom(rmarkdown, render)
 importFrom(RColorBrewer, brewer.pal)
 importFrom(RCurl, url.exists)
 importFrom(purrr, map)
-importFrom(sme, AICc)
 importFrom(stringr, str_to_title)
 importFrom("grDevices", "colorRampPalette", "dev.off", "pdf")  # The following lines are recommendations from R CMD check
 importFrom("stats", "as.formula", "complete.cases", "contrasts", "df", "lm",

@@ -17,6 +17,9 @@
 #'  a table matching each temperature to an isobaric label}
 #' 
 #' @param trConfigTable config file for a reference TR dataset
+#' @param trDat list of dataframes, containing fold change measurements and 
+#'   additional annotation columns to be imported. Can be used instead of 
+#'   specifying the file path in the \code{configTable} argument.
 #' @param resultPath character string containing a valid system path to which folder output files 
 #'   will be written 
 #' @param outputName character string which will be used as name of the output folder
@@ -29,9 +32,14 @@
 #' @param normalize boolean argument stating whether the data should be normalized or not
 #' 
 #' @export
-tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, resultPath=NULL, outputName=NULL, 
-                                      createFCboxplots=FALSE, idVar="gene_name", 
-                                      fcStr="rel_fc_", qualColName="qupm", 
+tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, 
+                                      trDat=NULL,
+                                      resultPath=NULL, 
+                                      outputName=NULL, 
+                                      createFCboxplots=FALSE, 
+                                      idVar="gene_name", 
+                                      fcStr="rel_fc_", 
+                                      qualColName="qupm", 
                                       normalize=TRUE){
   # set options
   options("TPPTR_plot" = FALSE)
@@ -84,9 +92,9 @@ tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, resultPath=NULL, outpu
   
   # perform TPP-TR data import
   trData <- tpptrImport(configTable=trConfigTable, 
+                        data=trDat,
                         idVar=idVar, 
                         fcStr=fcStr,
-                        naStrs= "n/d",
                         qualColName=qualColName)
   
   # normalize data if requested
@@ -99,7 +107,6 @@ tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, resultPath=NULL, outpu
   }else {
     trDataNormalized <- trData
   }
-  
   
   # write outout data file
   if (!is.null(outPath)){
@@ -115,13 +122,16 @@ tpp2dCreateTPPTRreference <- function(trConfigTable=NULL, resultPath=NULL, outpu
                                 nCores='max', verbose=FALSE)
   
   # analyze melting curves and create result table
-  resultTable <- tpptrAnalyzeMeltingCurves(data=trDataFitted)
+  meltCurveResultTable <- tpptrAnalyzeMeltingCurves(data = trDataFitted) %>%
+      rename(meltcurve_plot = plot) %>% 
+      mutate(meltcurve_plot = as.character(meltcurve_plot)) %>%
+      mutate(Protein_ID = as.character(Protein_ID))
   
   # save result table
-  save(resultTable, file=file.path(outPath, "resultTable.RData"))    
+  save(meltCurveResultTable, file=file.path(outPath, "resultTable.RData"))    
   
   # generate summary
-  sumResTable = summarizeResultTable(resultTable, wantedColPatterns, 
+  sumResTable = summarizeResultTable(meltCurveResultTable, wantedColPatterns, 
                                      temperatures, fcStr) 
   tppRefData = list(#'userCfgTable'=trConfigTable,
     'tppCfgTable'=trConfigTable,
