@@ -4,10 +4,17 @@
 \alias{tpptrCurveFit}
 \title{Fit melting curves to all proteins in a dataset.}
 \usage{
-tpptrCurveFit(data, dataCI = NULL, resultPath = NULL,
-  ggplotTheme = tppDefaultTheme(), doPlot = TRUE, startPars = c(Pl =
-  0, a = 550, b = 10), maxAttempts = 500, nCores = "max",
-  verbose = FALSE)
+tpptrCurveFit(
+  data,
+  dataCI = NULL,
+  resultPath = NULL,
+  ggplotTheme = tppDefaultTheme(),
+  doPlot = TRUE,
+  startPars = c(Pl = 0, a = 550, b = 10),
+  maxAttempts = 500,
+  nCores = "max",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{list of \code{ExpressionSet}s with protein fold changes for curve

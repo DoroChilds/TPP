@@ -5,9 +5,15 @@
 \title{Import TPP-CCR dataset for analysis by the 
   \code{\link{TPP}} package.}
 \usage{
-tppccrImport(configTable, data = NULL, idVar = "gene_name",
-  fcStr = "rel_fc_", naStrs = c("NA", "n/d", "NaN", "<NA>"),
-  qualColName = "qupm", nonZeroCols = "qssm")
+tppccrImport(
+  configTable,
+  data = NULL,
+  idVar = "gene_name",
+  fcStr = "rel_fc_",
+  naStrs = c("NA", "n/d", "NaN", "<NA>"),
+  qualColName = "qupm",
+  nonZeroCols = "qssm"
+)
 }
 \arguments{
 \item{configTable}{either a dataframe or the path to a spreadsheet. In both cases

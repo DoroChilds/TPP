@@ -4,8 +4,12 @@
 \alias{tppQCPlotsCorrelateExperiments}
 \title{Visually compare fold changes of different TPP experiments.}
 \usage{
-tppQCPlotsCorrelateExperiments(tppData, annotStr = "", path = NULL,
-  ggplotTheme = tppDefaultTheme())
+tppQCPlotsCorrelateExperiments(
+  tppData,
+  annotStr = "",
+  path = NULL,
+  ggplotTheme = tppDefaultTheme()
+)
 }
 \arguments{
 \item{tppData}{List of expressionSets with data to be plotted.}

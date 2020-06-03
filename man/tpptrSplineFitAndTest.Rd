@@ -4,9 +4,18 @@
 \alias{tpptrSplineFitAndTest}
 \title{Perform spline fitting and analyze by moderated F-test}
 \usage{
-tpptrSplineFitAndTest(data, factorsH1, factorsH0 = character(),
-  resultPath = NULL, doPlot = TRUE, nCores = "max", splineDF = 3:7,
-  additionalCols = NULL, verbose = NULL, ggplotTheme = NULL)
+tpptrSplineFitAndTest(
+  data,
+  factorsH1,
+  factorsH0 = character(),
+  resultPath = NULL,
+  doPlot = TRUE,
+  nCores = "max",
+  splineDF = 3:7,
+  additionalCols = NULL,
+  verbose = NULL,
+  ggplotTheme = NULL
+)
 }
 \arguments{
 \item{data}{the data to be fitted.}

@@ -4,10 +4,15 @@
 \alias{tpptrNormalize}
 \title{Normalize protein fold changes}
 \usage{
-tpptrNormalize(data, normReqs = tpptrDefaultNormReqs(),
-  qcPlotTheme = tppDefaultTheme(), qcPlotPath = NULL,
-  startPars = c(Pl = 0, a = 550, b = 10), maxAttempts = 1,
-  fixedReference = NULL)
+tpptrNormalize(
+  data,
+  normReqs = tpptrDefaultNormReqs(),
+  qcPlotTheme = tppDefaultTheme(),
+  qcPlotPath = NULL,
+  startPars = c(Pl = 0, a = 550, b = 10),
+  maxAttempts = 1,
+  fixedReference = NULL
+)
 }
 \arguments{
 \item{data}{List of \code{ExpressionSet}s with protein fold changes to be 

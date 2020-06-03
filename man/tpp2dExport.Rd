@@ -4,9 +4,19 @@
 \alias{tpp2dExport}
 \title{Produce Excel table of 2D-TPP experiment.}
 \usage{
-tpp2dExport(configTable = NULL, tab, resultPath = NULL, idVar = NULL,
-  fcStr = NULL, intensityStr = NULL, outPath, addCol = NULL,
-  normalizedData = NULL, trRef = NULL, addPlotColumns = TRUE)
+tpp2dExport(
+  configTable = NULL,
+  tab,
+  resultPath = NULL,
+  idVar = NULL,
+  fcStr = NULL,
+  intensityStr = NULL,
+  outPath,
+  addCol = NULL,
+  normalizedData = NULL,
+  trRef = NULL,
+  addPlotColumns = TRUE
+)
 }
 \arguments{
 \item{configTable}{DEPRECATED}

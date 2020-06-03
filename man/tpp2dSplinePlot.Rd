@@ -4,9 +4,16 @@
 \alias{tpp2dSplinePlot}
 \title{Fit splines and generate ggplot visualizations}
 \usage{
-tpp2dSplinePlot(data_2D = NULL, trRef = NULL, fcStr = NULL,
-  idVar = NULL, refIdVar = "Protein_ID", methods = c("doseResponse",
-  "splineFit"), refFcStr = "norm_rel_fc_protein_", verbose = FALSE)
+tpp2dSplinePlot(
+  data_2D = NULL,
+  trRef = NULL,
+  fcStr = NULL,
+  idVar = NULL,
+  refIdVar = "Protein_ID",
+  methods = c("doseResponse", "splineFit"),
+  refFcStr = "norm_rel_fc_protein_",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data_2D}{result data.frame from a 2D-TPP CCR analysis}

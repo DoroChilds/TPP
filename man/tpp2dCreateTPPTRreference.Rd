@@ -4,9 +4,16 @@
 \alias{tpp2dCreateTPPTRreference}
 \title{Create TPP-TR reference for 2D-TPP experiment}
 \usage{
-tpp2dCreateTPPTRreference(trConfigTable = NULL, resultPath = NULL,
-  outputName = NULL, createFCboxplots = FALSE, idVar = "gene_name",
-  fcStr = "rel_fc_", qualColName = "qupm", normalize = TRUE)
+tpp2dCreateTPPTRreference(
+  trConfigTable = NULL,
+  resultPath = NULL,
+  outputName = NULL,
+  createFCboxplots = FALSE,
+  idVar = "gene_name",
+  fcStr = "rel_fc_",
+  qualColName = "qupm",
+  normalize = TRUE
+)
 }
 \arguments{
 \item{trConfigTable}{config file for a reference TR dataset}
