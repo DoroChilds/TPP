@@ -203,3 +203,6 @@ Changes in version 3.5.14 (May-02-2017):
   o fixed bug in tpp2dCreateTPPTRReference and made example in vignette work
   o removed leftover parameters in tpp2dCreateTPref function
   o final fix of tpp2dCreateTPPTRreference and call in vignette now works
+
+3.17.2
+ o Fixed bug and warnings after update to dplyr v1.0.0.

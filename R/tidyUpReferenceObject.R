@@ -1,6 +1,6 @@
 tidyUpReferenceObject <- function(refDatList, refFcColName, refIdColName){
   # Convert reference data from wide to long table:
-  refMeasurements <- refDatList$sumResTable$detail %>% tbl_df
+  refMeasurements <- refDatList$sumResTable$detail %>% tibble::as_tibble()
   lblsByTemp      <- refDatList$lblsByTemp
   cfg             <- refDatList$tppCfgTable
   

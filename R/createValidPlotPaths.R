@@ -25,7 +25,7 @@ createValidPlotPaths <- function(type, protIDs, plotDir){
   plotPathsFull <- file.path(plotDir, fNames)
   
   pathTable <- data.frame(uniqueID = protIDs, path = plotPathsFull) %>%
-    tbl_df() %>% mutate_all(as.character)
+    tibble::as_tibble() %>% mutate_all(as.character)
   
   return(pathTable)
 }
