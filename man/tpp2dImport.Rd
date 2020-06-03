@@ -4,9 +4,16 @@
 \alias{tpp2dImport}
 \title{Import 2D-TPP data}
 \usage{
-tpp2dImport(configTable = NULL, data = NULL, idVar = "gene_name",
-  addCol = NULL, intensityStr = "signal_sum_", qualColName = "qupm",
-  nonZeroCols = "qssm", fcStr = NULL)
+tpp2dImport(
+  configTable = NULL,
+  data = NULL,
+  idVar = "gene_name",
+  addCol = NULL,
+  intensityStr = "signal_sum_",
+  qualColName = "qupm",
+  nonZeroCols = "qssm",
+  fcStr = NULL
+)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file, 

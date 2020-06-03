@@ -4,8 +4,14 @@
 \alias{tppccrCurveFit}
 \title{Fit dose response curves}
 \usage{
-tppccrCurveFit(data = NULL, fcTable = NULL, cpdEffects = NULL,
-  slopeBounds = c(1, 50), nCores = "max", verbose = FALSE)
+tppccrCurveFit(
+  data = NULL,
+  fcTable = NULL,
+  cpdEffects = NULL,
+  slopeBounds = c(1, 50),
+  nCores = "max",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{list of expressionSet objects containing protein fold changes for 

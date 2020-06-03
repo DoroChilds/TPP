@@ -4,9 +4,19 @@
 \alias{tpp2dCurveFit}
 \title{Run TPP-CCR analysis for 2D-TPP experiment}
 \usage{
-tpp2dCurveFit(configFile = NULL, data, nCores = 1, naStrs = NULL,
-  fcStr = NULL, idVar = NULL, nonZeroCols = NULL, r2Cutoff = 0.8,
-  fcCutoff = 1.5, slopeBounds = c(1, 50), fcTolerance = 0.1)
+tpp2dCurveFit(
+  configFile = NULL,
+  data,
+  nCores = 1,
+  naStrs = NULL,
+  fcStr = NULL,
+  idVar = NULL,
+  nonZeroCols = NULL,
+  r2Cutoff = 0.8,
+  fcCutoff = 1.5,
+  slopeBounds = c(1, 50),
+  fcTolerance = 0.1
+)
 }
 \arguments{
 \item{configFile}{DEPCRECATED}

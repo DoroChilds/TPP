@@ -4,12 +4,22 @@
 \alias{tpptrPlotSplines}
 \title{Plot spline fits per protein}
 \usage{
-tpptrPlotSplines(data, factorsH1 = NULL, factorsH0 = NULL,
-  fittedModels, testResults, resultPath = NULL, individual = TRUE,
-  overview = FALSE, returnPlots = FALSE, control = list(nCores =
-  "max", maxRank = 500, highlightBelow = 0.05), maxRank = NULL,
-  highlightBelow = NULL, plotIndividual = NULL,
-  plotAlphabetical = NULL)
+tpptrPlotSplines(
+  data,
+  factorsH1 = NULL,
+  factorsH0 = NULL,
+  fittedModels,
+  testResults,
+  resultPath = NULL,
+  individual = TRUE,
+  overview = FALSE,
+  returnPlots = FALSE,
+  control = list(nCores = "max", maxRank = 500, highlightBelow = 0.05),
+  maxRank = NULL,
+  highlightBelow = NULL,
+  plotIndividual = NULL,
+  plotAlphabetical = NULL
+)
 }
 \arguments{
 \item{data}{long table of proteins measurements that were used for spline fitting.}

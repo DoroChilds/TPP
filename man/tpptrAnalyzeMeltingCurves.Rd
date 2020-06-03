@@ -5,9 +5,12 @@
 \title{Analyze fitted curve parameters to detect significant shifts in 
   melting points.}
 \usage{
-tpptrAnalyzeMeltingCurves(data, pValMethod = "robustZ",
+tpptrAnalyzeMeltingCurves(
+  data,
+  pValMethod = "robustZ",
   pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
-  pValParams = list(binWidth = 300))
+  pValParams = list(binWidth = 300)
+)
 }
 \arguments{
 \item{data}{list of ExpressionSets containing fold changes and metadata. Their

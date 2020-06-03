@@ -4,9 +4,15 @@
 \alias{tppccrPlotCurves}
 \title{Plot dose response curves}
 \usage{
-tppccrPlotCurves(data = NULL, fcTable = NULL, curvePars = NULL,
-  resultPath = NULL, ggplotTheme = tppDefaultTheme(), nCores = "max",
-  verbose = FALSE)
+tppccrPlotCurves(
+  data = NULL,
+  fcTable = NULL,
+  curvePars = NULL,
+  resultPath = NULL,
+  ggplotTheme = tppDefaultTheme(),
+  nCores = "max",
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{list of expressionSet objects containing protein fold changes, as 
