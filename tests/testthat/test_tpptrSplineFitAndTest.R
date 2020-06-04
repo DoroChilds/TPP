@@ -37,7 +37,7 @@ test_that(desc="allOk1", code={
   
   check1 <- all(unique(out$Protein_ID) == unique(datIn$uniqueID))
   check2 <- all(expectedCols %in% colnames(out))
-  check3 <- !all(apply(out[,expectedCols], 2, is.na))
+  check3 <- !all(apply(select(out,!!expectedCols), 2, is.na))
   
   expect_true(check1 & check2 & check3)
 })
@@ -63,7 +63,7 @@ test_that(desc="allOk2", code={
   
   check1 <- all(unique(out$Protein_ID) == unique(datIn$uniqueID))
   check2 <- all(expectedCols %in% colnames(out))
-  check3 <- !all(apply(out[,expectedCols], 2, is.na))
+  check3 <- !all(apply(select(out,!!expectedCols), 2, is.na))
   
   expect_true(check1 & check2 & check3)
 })
@@ -89,7 +89,7 @@ test_that(desc="allOk3", code={
   
   check1 <- all(unique(out$Protein_ID) == unique(datIn$uniqueID))
   check2 <- all(expectedCols %in% colnames(out))
-  check3 <- !all(apply(out[,expectedCols], 2, is.na))
+  check3 <- !all(apply(select(out,!!expectedCols), 2, is.na))
   
   expect_true(check1 & check2 & check3)
 })
@@ -115,7 +115,7 @@ test_that(desc="allOk3_doplot", code={
   
   check1 <- all(unique(out$Protein_ID) == unique(datIn$uniqueID))
   check2 <- all(expectedCols %in% colnames(out))
-  check3 <- !all(apply(out[,expectedCols], 2, is.na))
+  check3 <- !all(apply(select(out,!!expectedCols), 2, is.na))
   check4 <- out$splinefit_plot %>% file.path(resPath, .) %>% file.exists %>% all
   
   unlink(file.path(resPath, "Spline_Fits"), recursive = TRUE)
@@ -145,7 +145,7 @@ test_that(desc="allOk_eSets", code={
   
   check1 <- all(unique(out$Protein_ID) == unique(datIn$uniqueID))
   check2 <- all(expectedCols %in% colnames(out))
-  check3 <- !all(apply(out[,expectedCols], 2, is.na))
+  check3 <- !all(apply(select(out,!!expectedCols), 2, is.na))
   
   expect_true(check1 & check2 & check3)
 })

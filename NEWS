@@ -196,5 +196,5 @@ Changes in version 3.5.14 (May-02-2017):
 3.16.0
  o New Bioconductor release candidate
 
-3.16.1
- o Fixed bug and warnings after update to dplyr v1.0.0.
+3.16.1-2
+ o Fixed bugs and warnings after update to dplyr v1.0.0.
