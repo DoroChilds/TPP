@@ -4,8 +4,12 @@
 \alias{tpp2dCreateDRplots}
 \title{Create dose response curve plots for 2D-TPP data}
 \usage{
-tpp2dCreateDRplots(data = NULL, type = "all", verbose = FALSE,
-  paletteName = "Spectral")
+tpp2dCreateDRplots(
+  data = NULL,
+  type = "all",
+  verbose = FALSE,
+  paletteName = "Spectral"
+)
 }
 \arguments{
 \item{data}{the data that should be plotted.}

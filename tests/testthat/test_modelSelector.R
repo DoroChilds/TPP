@@ -182,8 +182,8 @@ test_that(desc = "aicc_col_hasNA1", code = {
                              hypothesis = "alternative")   # Expected outcome: return splineDF = NA only for protein1
   
   check1 <- nrow(out) == length(unique(statsIn$uniqueID))
-  check2 <- is.na(out$splineDF[1])
-  check3 <- all(out$splineDF[2:5] == 3)
+  check2 <- is.na(out$splineDF[which(out$uniqueID == "protein 1")])
+  check3 <- all(out$splineDF[-which(out$uniqueID == "protein 1")])
   
   expect_true(check1 & check2 & check3)
   

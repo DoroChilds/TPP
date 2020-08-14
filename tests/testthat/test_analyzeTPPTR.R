@@ -60,18 +60,19 @@ test_that(desc="NPARC_allok_plot", code={
   
   tpptrResults <- analyzeTPPTR(configTable = cfgIn, data = datIn, 
                                normalize = FALSE, resultPath = dirOut,
-                               nCores = 1, splineDF = 3)
+                               nCores = 1, splineDF = 3, 
+                               methods = "splinefit")
   # Are still the expected results produced?
   cols <- colnames(tpptrResults)
   
   check1 <- all(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID) ==
                   c("HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8"))
-  check2 <- all(c("meltcurve_plot", "splinefit_plot") %in% cols)
+  check2 <- all(c("splinefit_plot") %in% cols)
   check3 <- all.equal(round(tpptrResults$p_adj_NPARC, 10), 
                   c(0.0000000000, 0.0000000651, 0.0000000016, 0.5654779288,
                     0.2918881921, 0.9328006686, 0.0000031269, 0.1471673324,
                     0.0006474845, NA))
-  check4 <- c(tpptrResults$splinefit_plot, tpptrResults$meltcurve_plot) %>% file.path(dirOut, .) %>% file.exists %>% all
+  check4 <- tpptrResults$splinefit_plot %>% file.path(dirOut, .) %>% file.exists %>% all
   
   unlink(dirOut, recursive = TRUE)
   

@@ -4,8 +4,13 @@
 \alias{tpp2dComputeFoldChanges}
 \title{Compute 2D-TPP fold changes}
 \usage{
-tpp2dComputeFoldChanges(configTable = NULL, data, intensityStr = NULL,
-  fcStr = NULL, newFcStr = "rel_fc_")
+tpp2dComputeFoldChanges(
+  configTable = NULL,
+  data,
+  intensityStr = NULL,
+  fcStr = NULL,
+  newFcStr = "rel_fc_"
+)
 }
 \arguments{
 \item{configTable}{DEPRECATED}

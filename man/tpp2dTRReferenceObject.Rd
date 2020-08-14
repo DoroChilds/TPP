@@ -4,8 +4,12 @@
 \alias{tpp2dTRReferenceObject}
 \title{TPP-TR reference object}
 \usage{
-tpp2dTRReferenceObject(tppRefData = NULL, tppRefPath = NULL,
-  fcStr = "norm_rel_fc_", qualColName = "qupm")
+tpp2dTRReferenceObject(
+  tppRefData = NULL,
+  tppRefPath = NULL,
+  fcStr = "norm_rel_fc_",
+  qualColName = "qupm"
+)
 }
 \arguments{
 \item{tppRefData}{TPP-TR reference object that can be directly passed to the function}

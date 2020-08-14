@@ -82,3 +82,4 @@ test_that(desc="modelFitError", code={
   expect_true(check1 & check2)
   
 })
+

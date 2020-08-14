@@ -4,7 +4,6 @@
 \name{TPP}
 \alias{TPP}
 \alias{.onLoad}
-\alias{TPP-package}
 \title{Thermal proteome profiling (TPP)}
 \usage{
 .onLoad(libname, pkgname)

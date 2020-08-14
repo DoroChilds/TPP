@@ -5,8 +5,12 @@
 \title{Calculate fractional abundance and DMSO ratio of successive sumionareas  
   (usage of function is only reasonable when at least two temperatures are multiplexed!)}
 \usage{
-tpp2dCalcFractAbundance(configTable = NULL, data, intensityStr = NULL,
-  idVar = NULL)
+tpp2dCalcFractAbundance(
+  configTable = NULL,
+  data,
+  intensityStr = NULL,
+  idVar = NULL
+)
 }
 \arguments{
 \item{configTable}{DEPCRECATED}

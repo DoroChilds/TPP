@@ -4,13 +4,26 @@
 \alias{analyzeTPPCCR}
 \title{Analyze TPP-CCR experiment}
 \usage{
-analyzeTPPCCR(configTable, data = NULL, resultPath = NULL,
-  idVar = "gene_name", fcStr = "rel_fc_", naStrs = c("NA", "n/d",
-  "NaN", "<NA>"), qualColName = "qupm", normalize = TRUE,
-  ggplotTheme = tppDefaultTheme(), nCores = "max",
-  nonZeroCols = "qssm", r2Cutoff = 0.8, fcCutoff = 1.5,
-  slopeBounds = c(1, 50), plotCurves = TRUE, verbose = FALSE,
-  xlsxExport = TRUE, fcTolerance = 0.1)
+analyzeTPPCCR(
+  configTable,
+  data = NULL,
+  resultPath = NULL,
+  idVar = "gene_name",
+  fcStr = "rel_fc_",
+  naStrs = c("NA", "n/d", "NaN", "<NA>"),
+  qualColName = "qupm",
+  normalize = TRUE,
+  ggplotTheme = tppDefaultTheme(),
+  nCores = "max",
+  nonZeroCols = "qssm",
+  r2Cutoff = 0.8,
+  fcCutoff = 1.5,
+  slopeBounds = c(1, 50),
+  plotCurves = TRUE,
+  verbose = FALSE,
+  xlsxExport = TRUE,
+  fcTolerance = 0.1
+)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file, 

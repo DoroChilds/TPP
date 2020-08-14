@@ -4,9 +4,15 @@
 \alias{tpptrFitSplines}
 \title{Perform spline fitting}
 \usage{
-tpptrFitSplines(data, factorsH1, factorsH0 = character(0),
-  splineDF = 3:7, computeAUC = NULL, returnModels = TRUE,
-  nCores = "max")
+tpptrFitSplines(
+  data,
+  factorsH1,
+  factorsH0 = character(0),
+  splineDF = 3:7,
+  computeAUC = NULL,
+  returnModels = TRUE,
+  nCores = "max"
+)
 }
 \arguments{
 \item{data}{the data to be fitted}

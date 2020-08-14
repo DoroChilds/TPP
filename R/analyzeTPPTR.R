@@ -90,7 +90,7 @@
 #' @examples
 #' data(hdacTR_smallExample)
 #' tpptrResults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
-#'                 methods = "splinefit", nCores = 1)
+#'                 methods = "meltcurvefit", nCores = 1)
 #' 
 #' @param configTable dataframe, or character object with the path to a file, 
 #'   that specifies important details of the TPP-TR experiment. See Section 

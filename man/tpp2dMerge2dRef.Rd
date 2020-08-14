@@ -4,8 +4,14 @@
 \alias{tpp2dMerge2dRef}
 \title{Merge 2D-TPP result data with TPP-TR reference data}
 \usage{
-tpp2dMerge2dRef(resultTable_2D, referenceDataSummary,
-  refIDVar = "Protein_ID", idVar = NULL, data = NULL, trRef = NULL)
+tpp2dMerge2dRef(
+  resultTable_2D,
+  referenceDataSummary,
+  refIDVar = "Protein_ID",
+  idVar = NULL,
+  data = NULL,
+  trRef = NULL
+)
 }
 \arguments{
 \item{resultTable_2D}{dataframe containing the 2D-TPP results}

@@ -4,17 +4,31 @@
 \alias{analyzeTPPTR}
 \title{Analyze TPP-TR experiment}
 \usage{
-analyzeTPPTR(configTable, data = NULL, resultPath = NULL,
-  methods = c("meltcurvefit", "splinefit"), idVar = "gene_name",
-  fcStr = "rel_fc_", ciStr = NULL, naStrs = c("NA", "n/d", "NaN",
-  "<NA>"), qualColName = "qupm", normalize = TRUE,
-  normReqs = tpptrDefaultNormReqs(), ggplotTheme = tppDefaultTheme(),
-  nCores = "max", startPars = c(Pl = 0, a = 550, b = 10),
-  splineDF = c(3:7), maxAttempts = 500, plotCurves = TRUE,
-  fixedReference = NULL, pValMethod = "robustZ",
+analyzeTPPTR(
+  configTable,
+  data = NULL,
+  resultPath = NULL,
+  methods = c("meltcurvefit", "splinefit"),
+  idVar = "gene_name",
+  fcStr = "rel_fc_",
+  ciStr = NULL,
+  naStrs = c("NA", "n/d", "NaN", "<NA>"),
+  qualColName = "qupm",
+  normalize = TRUE,
+  normReqs = tpptrDefaultNormReqs(),
+  ggplotTheme = tppDefaultTheme(),
+  nCores = "max",
+  startPars = c(Pl = 0, a = 550, b = 10),
+  splineDF = c(3:7),
+  maxAttempts = 500,
+  plotCurves = TRUE,
+  fixedReference = NULL,
+  pValMethod = "robustZ",
   pValFilter = list(minR2 = 0.8, maxPlateau = 0.3),
-  pValParams = list(binWidth = 300), verbose = FALSE,
-  xlsxExport = TRUE)
+  pValParams = list(binWidth = 300),
+  verbose = FALSE,
+  xlsxExport = TRUE
+)
 }
 \arguments{
 \item{configTable}{dataframe, or character object with the path to a file, 
@@ -176,7 +190,7 @@ Invokes the following steps: \enumerate{ \item Import data using the
 \examples{
 data(hdacTR_smallExample)
 tpptrResults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
-                methods = "splinefit", nCores = 1)
+                methods = "meltcurvefit", nCores = 1)
 
 }
 \references{
