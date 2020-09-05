@@ -277,7 +277,7 @@ tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, 
   tmp.df <- resultTable %>% 
     select_(idVar, temp, qualColName) %>%
     filter_(qualColName>1) %>%
-    group_by_(idVar) %>% 
+    group_by(!!idVar) %>% 
     summarise(count=length(temperature))
   tbl <- as.data.frame(table(tmp.df$count))
   

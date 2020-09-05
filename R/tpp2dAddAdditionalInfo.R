@@ -24,7 +24,7 @@ tpp2dAddAdditionalInfo <- function(data, idVar = "gene_name"){
   compound_effect <- NULL
   
   data <- data %>%
-    group_by_(.dots=idVar) %>%
+    group_by(!!idVar) %>%
     mutate(protein_stabilized_count=
              sum((!is.na(compound_effect) & compound_effect=="stabilized")*1)) %>%
     mutate(protein_destabilized_count=

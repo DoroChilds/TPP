@@ -127,8 +127,13 @@ prepareForImport <- function(dataframe, fcColNames, qualColName, idVar, expName)
   dataframe <- data.frame(dataframe) # not a tibble (downstream function still expects scalar vectors when using '$' operator)
   df2 <- importFct_makeUniqueIDs(inDF = dataframe, 
                                  idColName = idVar, 
-                                 expName = expName) %>% 
-    rename_("uniqueID" = idVar)
+                                 expName = expName)
+  
+  if (idVar != "uniqueID"){
+    df2[["uniqueID"]] <- df2[[idVar]]
+    df2[[idVar]] <- NULL
+  }
+  
   
   ## Make sure that ID variable 'idvar' is unique:
   df3 <- importFct_removeDuplicates(inDF = df2, 

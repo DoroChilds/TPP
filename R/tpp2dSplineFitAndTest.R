@@ -140,7 +140,7 @@ tpp2dSplineFitAndTest <- function(data_2D = NULL,
   idVar <- checkAndReturnDataSetting(attr(data, "importSettings"), 
                                      "proteinIdCol", colnames(data))
   
-  outTable <- left_join(as_data_frame(data), testResults, by=setNames("uniqueID", idVar))
+  outTable <- left_join(as_tibble(data), testResults, by=setNames("uniqueID", idVar))
   
   return(as.data.frame(outTable))
 }

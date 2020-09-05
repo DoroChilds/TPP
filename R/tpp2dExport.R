@@ -99,7 +99,7 @@ tpp2dExport <- function(configTable = NULL,
   tab <- exportFct_convertBoolean_2DTPP(tab)
   
   ## Sort rows by protein ID and temperature:
-  tab <- arrange_(tab, .dots=c(idVar, "temperature"))
+  tab <- arrange(tab, !!sym(idVar), temperature)
   
   # remove empty columns
   # tab <- tab[, colSums(is.na(tab))<nrow(tab)]

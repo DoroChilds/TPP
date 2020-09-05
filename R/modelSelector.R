@@ -37,11 +37,13 @@ modelSelector <- function(fitStats, criterion, hypothesis) {
   fitStats <- ungroup(fitStats)
   allIDs <- distinct(fitStats, uniqueID)
   
+  fitStats[["fitMetric"]] <- fitStats[[criterion]]
+  
   out <- fitStats %>% 
-    filter_(paste0('testHypothesis == "', hypothesis, '"')) %>%
+    dplyr::filter(testHypothesis == hypothesis) %>%
     mutate(splineDF = ifelse(is.na(splineDF), Inf, splineDF)) %>%
     group_by(uniqueID) %>% 
-    filter_(paste0(criterion, ' == min(', criterion, ', na.rm = TRUE)')) %>% 
+    dplyr::filter(fitMetric == min(fitMetric, na.rm = TRUE)) %>% 
     dplyr::summarize(splineDF = min(splineDF)) %>% # in case of ties, use the least complex model
     mutate(splineDF = ifelse(is.infinite(splineDF), NA_real_, splineDF)) %>%
     arrange(uniqueID) %>%
