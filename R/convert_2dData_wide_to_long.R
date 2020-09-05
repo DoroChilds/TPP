@@ -12,10 +12,15 @@ convert_2dData_wide_to_long <- function(datWide, idColname, fcStr){
   ptrn <- paste0(idColname,"|temperature|", fcStr)
   datLong <- datWide %>% tibble::as_tibble() %>%
     select(matches(ptrn)) %>% 
-    gather(columnName, fc, contains(fcStr)) %>%
-    rename_(uniqueID = idColname) %>%
-    arrange(uniqueID)
+    gather(columnName, fc, contains(fcStr)) 
   
+  if (idColname != "uniqueID"){
+    datLong[["uniqueID"]] <- datLong[[idColname]]
+    datLong[[idColname]] <- NULL
+  }
+  
+  datLong <- arrange(datLong, uniqueID)
+
   # Add column with drug concentrations
   ptrn <- paste(fcStr, "([0-9,\\.]+)[^0-9]*", sep="")
   oldValues <- unique(datLong$columnName)

@@ -55,7 +55,7 @@ tpp2dSplinePlot <- function(data_2D=NULL, trRef=NULL, fcStr=NULL, idVar=NULL,
   idVec <- data_2D[[idVar]] %>% as.character %>% unique
   resultList <- lapply(idVec, function(protID){
     # subset 2D data
-    protData_2D <- data_2D %>% rename_("uniqueID" = idVar) %>% 
+    protData_2D <- data_2D %>% rename("uniqueID" = !!idVar) %>% 
       filter(uniqueID == protID)
     #protData_2D <- data_2D[which(as.character(data_2D[[idVar]])==protID),] 
     if ("doseResponse" %in% methods){
@@ -66,7 +66,7 @@ tpp2dSplinePlot <- function(data_2D=NULL, trRef=NULL, fcStr=NULL, idVar=NULL,
                                      grep("temperature", colnames(data_2D)))] 
     }
     
-    protData_detail = detailData %>% rename_("uniqueID" = refIdVar) %>%
+    protData_detail = detailData %>% rename("uniqueID" = !!refIdVar) %>%
       filter(uniqueID == protID)
     #[which(detailData$Protein_ID==protID),] 
     if (length(which(!is.na(protData_detail)))<10){

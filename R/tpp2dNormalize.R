@@ -74,7 +74,7 @@ tpp2dNormalize <- function(configTable = NULL, data, fcStr = NULL){
     mutate(y = as.numeric(as.character(y)))
   
   normCoeffs <- dataLong %>% 
-    group_by_(.dots = c("temperature", "columnName")) %>%
+    group_by(temperature, columnName) %>%
     summarise(median_per_temp_and_conc = median(y, na.rm = TRUE))
   
   dataNormed <- dataLong %>% 
