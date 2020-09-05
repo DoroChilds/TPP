@@ -88,8 +88,8 @@ test_that(desc="allOK", code={
 })
 
 test_that(desc="evalConfigSpecialChars", code={
-  cfgIn <- cfg %>% mutate_("126" = "'_'")
-  ref <- cfgIn %>% mutate_("126" = "NULL")
+  cfgIn <- cfg %>% mutate(`126` = "_")
+  ref <- cfgIn %>% select(-`126`)
   new <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = "2D")
   expect_equal(ref, new)
 })
