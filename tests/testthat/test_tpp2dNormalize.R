@@ -34,7 +34,7 @@ test_that(desc="all_ok2_different_sorting", code={
 })
 
 test_that(desc="all_ok2_scientificFormat", code={
-  datIn <- dat2 %>% rename_("rel_fc_protein_1e-4" = "rel_fc_protein_1")
+  datIn <- dat2 %>% rename(`rel_fc_protein_1e-4` = rel_fc_protein_1)
   
   new <- tpp2dNormalize(data = datIn)
   old <- out2 %>% rename(`rel_fc_protein_1e-4` = `rel_fc_protein_1`,

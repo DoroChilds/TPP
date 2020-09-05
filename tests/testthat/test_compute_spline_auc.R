@@ -40,14 +40,12 @@ test_that(desc="allOk_H0", code={
   mIn <- modelH0
   xmin <- 30
   xmax <- 60
-  out <- TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
+  out <- compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
   
-  check1 <- is.data.frame(out)
-  check2 <- nrow(out) == 1
-  check3 <- all(colnames(out) == c("auc"))
-  check4 <- all(out$auc > 0)
-  
-  expect_true(check1 & check2 & check3 & check4)
+  expect_true(is.data.frame(out))
+  expect_equal(nrow(out), 1)
+  expect_equal(colnames(out), c("auc"))
+  expect_true(all(out$auc > 0))
 })
 
 test_that(desc="allOk_H1_1", code={
@@ -55,14 +53,13 @@ test_that(desc="allOk_H1_1", code={
   mIn <- modelH1_1
   xmin <- 30
   xmax <- 60
-  out <- TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
+  out <- compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
   
-  check1 <- is.data.frame(out)
-  check2 <- nrow(out) == 2
-  check3 <- all(colnames(out) == c("condition", "auc"))
-  check4 <- all(out$auc > 0)
+  expect_true(is.data.frame(out))
+  expect_equal(nrow(out), 2)
+  expect_equal(colnames(out), c("condition", "auc"))
+  expect_true(all(out$auc > 0))
   
-  expect_true(check1 & check2 & check3 & check4)
 })
 
 test_that(desc="allOk_H1_2", code={
@@ -70,7 +67,7 @@ test_that(desc="allOk_H1_2", code={
   mIn <- modelH1_2
   xmin <- 30
   xmax <- 60
-  out <- TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
+  out <- compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
   
   check1 <- is.data.frame(out)
   check2 <- nrow(out) == 4
@@ -85,7 +82,7 @@ test_that(desc="modelMissing", code={
   
   xmin <- 30
   xmax <- 60
-  expect_error(TPP:::compute_spline_auc(xmin = xmin, xmax = xmax))
+  expect_error(compute_spline_auc(xmin = xmin, xmax = xmax))
   
 })
 
@@ -94,7 +91,7 @@ test_that(desc="xMinMissing", code={
   mIn <- modelH0
   xmax <- 60
   
-  expect_error(TPP:::compute_spline_auc(splineModel = mIn, xmax = xmax))
+  expect_error(compute_spline_auc(splineModel = mIn, xmax = xmax))
 })
 
 test_that(desc="xMaxMissing", code={
@@ -102,7 +99,7 @@ test_that(desc="xMaxMissing", code={
   mIn <- modelH0
   xmin <- 30
 
-  expect_error(TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin))
+  expect_error(compute_spline_auc(splineModel = mIn, xmin = xmin))
 })
 
 test_that(desc="modelNULL", code={
@@ -111,7 +108,7 @@ test_that(desc="modelNULL", code={
   xmin <- 30
   xmax <- 60
   
-  out <- TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
+  out <- compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
   
   check1 <- is.data.frame(out)
   check2 <- nrow(out) == 1
@@ -127,7 +124,7 @@ test_that(desc="xNULL", code={
   xmin <- c() # equivalent to NULL
   xmax <- 60
   
-  expect_error(TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
+  expect_error(compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
   
 })
 
@@ -137,7 +134,7 @@ test_that(desc="modelFitError", code={
   xmin <- 30
   xmax <- 60
   
-  out <- TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
+  out <- compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax)
   
   check1 <- is.data.frame(out)
   check2 <- nrow(out) == 1
@@ -152,7 +149,7 @@ test_that(desc="xNonNumeric", code={
   mIn <- modelH0
   xmin <- "30"
   xmax <- 60
-  expect_error(TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
+  expect_error(compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
 })
 
 test_that(desc="xEmpty", code={
@@ -160,6 +157,6 @@ test_that(desc="xEmpty", code={
   xmin <- numeric()
   xmax <- 60
   
-  expect_error(TPP:::compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
+  expect_error(compute_spline_auc(splineModel = mIn, xmin = xmin, xmax = xmax))
   
 })

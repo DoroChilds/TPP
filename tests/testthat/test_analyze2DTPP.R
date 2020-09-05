@@ -21,9 +21,7 @@ test_that(desc="allOK", code={
                       nonZeroCols = "qusm",
                       fcStr = NULL)
   
-  check1 <- nrow(out) == 4656
-  
-  expect_true(check1)
+  expect_equal(nrow(out), 4656)
 })
 
 test_that(desc="allOK_scientific_drug_concentration_format", code={
@@ -44,15 +42,14 @@ test_that(desc="allOK_scientific_drug_concentration_format", code={
                      nonZeroCols = "qusm",
                      fcStr = NULL)
   
-  check1 <- nrow(out) == 4656
-  check2 <- all(grep("1e.04", colnames(out), value = TRUE) == 
-                  c("norm_rel_fc_protein_1e.04_unmodified", 
-                    "norm_rel_fc_protein_1e.04_normalized_to_lowest_conc",
-                    "norm_rel_fc_protein_1e.04_transformed",
-                    "sumionarea_protein_1e.04",
-                    "rel_fc_protein_1e.04")) # The '-' character will be converted to '.' by the data.frame command when producing the wide result table.
+  expect_equal(nrow(out), 4656)
+  expect_equal(grep("0.02", colnames(out), value = TRUE), 
+                  c("norm_rel_fc_protein_0.02_unmodified", 
+                    "norm_rel_fc_protein_0.02_normalized_to_lowest_conc",
+                    "norm_rel_fc_protein_0.02_transformed",
+                    "sumionarea_protein_0.02",
+                    "rel_fc_protein_0.02")) # The '-' character will be converted to '.' by the data.frame command when producing the wide result table.
   
-  expect_true(check1 & check2)
 })
 
 test_that(desc="warning_deprecated_fct_arg", code={

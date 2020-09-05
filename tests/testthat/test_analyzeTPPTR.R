@@ -19,11 +19,10 @@ test_that(desc="NPARC_allok", code={
                     "prior_df_H1", "df1", "df2", "df2_moderated", 
                     "posterior_var_H1", "p_NPARC", "p_adj_NPARC")
   
-  check1 <- all(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID) ==
-                  c("COPS3", "DNLZ", "HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8", "PSMB5", "STX4", "YBX3"))
-  check2 <- all(colsExpected %in% cols)
-  check3 <- nrow(tpptrResults) == 510
-  expect_true(check1 & check2 & check3)
+  expect_equal(sort(filter(tpptrResults, p_adj_NPARC <= 0.01)$Protein_ID),
+               c("COPS3", "DNLZ", "HDAC1", "HDAC10", "HDAC2", "HDAC6", "HDAC8", "PSMB5", "STX4", "YBX3"))
+  expect_true(all(colsExpected %in% cols))
+  expect_equal(nrow(tpptrResults), 510)
 })
 
 test_that(desc="NPARC_allok_output", code={
