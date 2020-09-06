@@ -25,7 +25,7 @@ helperFctPlotGood <- function(configTable, dataTable, idVar, fcStr,  verbose,
   color.vals <- generateColors4Temps(configTable, paletteName = paletteName)
   # extract only those rows which passed the filter criteria
   filterCol <- grep("passed_filter", colnames(dataTable), value = TRUE) # new
-  dataTableNew <- filter_(dataTable, filterCol)
+  dataTableNew <- filter(dataTable, !!!syms(filterCol))
   idsFiltered <- unique(dataTableNew[[idVar]])
   
   # loop over all detected proteins and create data.frame for each of them
