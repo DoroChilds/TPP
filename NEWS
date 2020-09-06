@@ -206,3 +206,10 @@ Changes in version 3.5.14 (May-02-2017):
 
 3.17.2-3
  o Fixed bugs and warnings after update to dplyr v1.0.0.
+
+3.17.4
+  o fix errors in build report on Bioconductor
+  o fix warnings due to conversion of non-numeric values during 2D-TPP import
+  o fix warnings in ggplot command
+  o upgrade deprecated dplyr functions
+  o make syntax of testthat checks more consistent across files
