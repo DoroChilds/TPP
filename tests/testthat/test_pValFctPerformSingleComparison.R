@@ -16,11 +16,14 @@ test_that("Invoke p-value computation for a single comparison (should work)", {
 
 test_that("No valid melting point difference", {
   i <- !refFilteredOut
-  newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
-                                               mpdiff=rep(NA, length(refMinSl)), 
-                                               method="robustZ", 
-                                               control=list(binWidth=300),
-                                               comparisonName = "T_vs_V")
+  suppressWarnings(
+    newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
+                                           mpdiff=rep(NA, length(refMinSl)), 
+                                           method="robustZ", 
+                                           control=list(binWidth=300),
+                                           comparisonName = "T_vs_V")
+  )
+
   expect_equal(newP, rep(NA_real_, length(refMinSl)), label = "Computed p-values")
   
 })
