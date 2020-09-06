@@ -213,3 +213,6 @@ Changes in version 3.5.14 (May-02-2017):
   o fix warnings in ggplot command
   o upgrade deprecated dplyr functions
   o make syntax of testthat checks more consistent across files
+
+3.17.5
+ o fix bugs and warnings in executable examples
