@@ -37,10 +37,10 @@ retrieveDataFromESets_TR <- function(data){
     cols3 <- setdiff(colnames(fDat), c(cols1,cols2, cols6))
     
     ## Split featureData into separate data frames:
-    df1  <- select_(fDat, .dots = cols1)
-    df2  <- select_(fDat, .dots = cols2)
-    df3  <- select_(fDat, .dots = cols3)
-    df6  <- select_(fDat, .dots = cols6)
+    df1  <- select(fDat, !!!syms(cols1))
+    df2  <- select(fDat, !!!syms(cols2))
+    df3  <- select(fDat, !!!syms(cols3))
+    df6  <- select(fDat, !!!syms(cols6))
     
     ## Retrieve fold change matrix from current expressionSet and convert to 
     ## data frame:
