@@ -19,8 +19,8 @@ addTableToPlot = function(plotObj, tableDF, meltVar, clrs){
   assign("tableDF_m", tableDF_m, envir=globalenv())
 
   data_table <- ggplot(tableDF_m, aes(x=factor(variable,
-                                               levels=c(' ', (setdiff(unique(tableDF_m$variable) , ' ')))),
-                                      y=factor(condition, levels=rev(c(' ', setdiff(levels(tableDF_m$condition), ' ')))),
+                                               levels=c(' ', (setdiff(unique(variable) , ' ')))),
+                                      y=factor(condition, levels=rev(c(' ', setdiff(levels(condition), ' ')))),
                                       label = format(value, nsmall = 1),
                                       colour=condition)) +
     geom_text(size = 5, vjust=1.3, fontface='bold') +
