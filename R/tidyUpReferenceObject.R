@@ -10,7 +10,7 @@ tidyUpReferenceObject <- function(refDatList, refFcColName, refIdColName){
                                               lblsByTemp= lblsByTemp,
                                               experiments = cfg$Experiment)
   
-  if (fcColname != "uniqueID"){
+  if (refIdColName != "uniqueID"){
     refTableLong[["uniqueID"]] <- refTableLong[[refIdColName]]
     refTableLong[[refIdColName]] <- NULL
   }
