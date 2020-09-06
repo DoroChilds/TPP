@@ -26,12 +26,13 @@ modelSelector <- function(fitStats, criterion, hypothesis) {
   if (!is.numeric(fitStats[[criterion]])) 
     stop("'fitStats[[",criterion,"]]' must be numeric")
   
-  if (any(is.na(fitStats$testHypothesis))) 
-    warning("'fitsStats$testHypothesis' contains missing values")
-  
   if (! hypothesis %in% fitStats$testHypothesis) 
     stop("Given argument '", hypothesis, 
          "' not found in column 'fitsStats$testHypothesis'")
+  
+  if (any(is.na(fitStats$testHypothesis))) 
+    warning("'fitsStats$testHypothesis' contains missing values")
+  
   
   # Replace NA entries in filter column by numerics so that protein is not discarded :
   fitStats <- ungroup(fitStats)
@@ -43,8 +44,15 @@ modelSelector <- function(fitStats, criterion, hypothesis) {
     dplyr::filter(testHypothesis == hypothesis) %>%
     mutate(splineDF = ifelse(is.na(splineDF), Inf, splineDF)) %>%
     group_by(uniqueID) %>% 
-    dplyr::filter(fitMetric == min(fitMetric, na.rm = TRUE)) %>% 
-    dplyr::summarize(splineDF = min(splineDF)) %>% # in case of ties, use the least complex model
+    mutate(minMetric = min(c(fitMetric, Inf), na.rm = TRUE)) %>%
+    dplyr::filter(fitMetric == minMetric)
+  
+  if (nrow(out) > 0) {
+    out <- out %>% 
+      dplyr::summarize(splineDF = min(splineDF)) # in case of ties, use the least complex model
+  }
+  
+  out <- out %>%
     mutate(splineDF = ifelse(is.infinite(splineDF), NA_real_, splineDF)) %>%
     arrange(uniqueID) %>%
     ungroup() %>%
