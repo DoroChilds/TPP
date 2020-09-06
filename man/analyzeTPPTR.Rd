@@ -190,7 +190,7 @@ Invokes the following steps: \enumerate{ \item Import data using the
 \examples{
 data(hdacTR_smallExample)
 tpptrResults <- analyzeTPPTR(configTable = hdacTR_config, data = hdacTR_data, 
-                methods = "splinefit", nCores = 1)
+                methods = "meltcurvefit", nCores = 1)
 
 }
 \references{

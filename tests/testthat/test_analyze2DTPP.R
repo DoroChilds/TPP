@@ -3,7 +3,8 @@ data("panobinostat_2DTPP_smallExample")
 cfg <- panobinostat_2DTPP_config
 dat <- panobinostat_2DTPP_data
 
-dataPath <- system.file("example_data", package="TPP") %>% file.path(., "2D_example_data")
+dataPath <- system.file("example_data", package="TPP") %>% 
+  file.path(., "2D_example_data")
 
 # Start tests:
 test_that(desc="allOK", code={
@@ -29,12 +30,12 @@ test_that(desc="allOK_scientific_drug_concentration_format", code={
   ## Motivated by a bug report from Isabelle (2016-12-07)
   
   cfgIn <- cfg
-  cfgIn[c(1,3,5,7,9,11), "128L"] <- "1E-4"
-  cfgIn[c(1,3,5,7,9,11)+1, "130H"] <- "1E-4"
+  cfgIn[c(1,3,5,7,9,11), "128L"] <- "2E-2"
+  cfgIn[c(1,3,5,7,9,11)+1, "130H"] <- "2E-2"
   
   datIn <- dat
   
-  out<- analyze2DTPP(configTable = cfgIn,
+  out <- analyze2DTPP(configTable = cfgIn,
                      data = datIn,
                      idVar = "representative",
                      addCol = c("clustername", "msexperiment_id"), 

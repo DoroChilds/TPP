@@ -29,18 +29,18 @@ tpptrTidyUpESets <- function(tppESetList, returnType = "exprs"){
   expNames <- unname(expInfo["name",])
   conditions <- unname(expInfo["condition",])
   
-  replicatePattern <- ".*[^[:digit:]]+([:digit:]+)" # Only use the last digits
+  #replicatePattern <- ".*[^[:digit:]]+([:digit:]+)" # Only use the last digits
   
   if (returnType == "exprs"){
     # 1. Create long table of fold changes per protein and TMT-label:
     # 1.1 Convert list of ExpressionSets to long table:
-    df1 <- eSetsToLongTable_fc(tppESetList) %>% tibble::as_tibble()
+    df1 <- eSetsToLongTable_fc(tppESetList) %>% as_tibble()
     
     # 1.2 Extract information about condition and replicate from experiment names:
     df2 <- df1 %>% 
       mutate(condition = plyr::mapvalues(experiment, expNames, conditions)) %>%
-      extract(experiment, c("replicate"), replicatePattern, remove = FALSE) %>%
-      mutate(replicate = paste("Replicate", replicate, sep = "")) # avoid problems due to unnoticed factor-to-numeric conversions
+      #extract(experiment, c("replicate"), replicatePattern, remove = FALSE) %>%
+      mutate(replicate = paste("Replicate", gsub("[^0-9]+", "", experiment), sep = "")) # avoid problems due to unnoticed factor-to-numeric conversions
     
     allReplicatesUnique <- df2 %>% distinct(experiment, replicate) %>% 
       extract2("replicate") %>% table() %>% equals(1) %>% all()
@@ -75,14 +75,14 @@ tpptrTidyUpESets <- function(tppESetList, returnType = "exprs"){
     
     # 2. Create long table with further annotation of each protein:
     # 2.1 Convert list of ExpressionSets to long table:
-    df1 <- eSetsToLongTable_fData(tppESetList) %>% tibble::as_tibble() 
+    df1 <- eSetsToLongTable_fData(tppESetList) %>% as_tibble() 
     
     # 2.2 Extract information about condition and replicate from experiment names:
     df2 <- df1 %>% 
       mutate(condition = plyr::mapvalues(experiment, expNames, conditions)) %>%
-      extract(experiment, c("replicate"), replicatePattern, remove = FALSE) %>%
-      mutate(replicate = paste("Replicate", replicate, sep = "")) # avoid problems due to unnoticed factor-to-numeric conversions
-    
+      # extract(experiment, c("replicate"), replicatePattern, remove = FALSE) %>%
+      # mutate(replicate = paste("Replicate", replicate, sep = "")) # avoid problems due to unnoticed factor-to-numeric conversions
+      mutate(replicate = paste("Replicate", gsub("[^0-9]+", "", experiment), sep = ""))
     # 2.3 Rename some columns to make them more intuitive to understand:
     df3 <- df2  %>% rename(uniqueID = id) 
     
