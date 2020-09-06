@@ -26,7 +26,7 @@ test_that(desc="confgCheck", code={
 })
 
 test_that(desc="confgCheck_tibble", code={
-  cfgIn <- hdacTR_config %>% as.tbl()
+  cfgIn <- hdacTR_config %>% tibble::as_tibble()
   typeIn <- "TR"
   
   confgList <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = typeIn)

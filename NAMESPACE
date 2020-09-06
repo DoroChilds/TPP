@@ -77,3 +77,4 @@ importFrom("stats", "as.formula", "complete.cases", "contrasts", "df", "lm",
            "sigma", "uniroot")
 importFrom("utils", "combn", "packageVersion", "read.delim",
            "read.table", "write.table")
+importFrom("tibble", "as_tibble")

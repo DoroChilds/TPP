@@ -77,7 +77,7 @@ tpptrFitSplines <- function(data, factorsH1, factorsH0 = character(0),
   factorStrH0 <- ifelse(length(factorsH0) > 0,
                         yes = paste0("factor(",factorsH0, ")", collapse = " * ") %>% paste0(" * ", .),
                         no = "")
-  message(paste("Fitting smoothing splines and AICc values for the following degrees of freedom:", 
+  message(paste("Fitting natural splines for the following degrees of freedom:", 
           paste(splineDF, collapse = ", ")))
   
   ## Loop over different degrees of freedom in parallel:

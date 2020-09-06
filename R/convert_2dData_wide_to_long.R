@@ -10,7 +10,7 @@ convert_2dData_wide_to_long <- function(datWide, idColname, fcStr){
   #                "^", fcStr, "[0-9,\\.]+$|", 
   #                "^", fcStr, "[0-9,\\.]+_unmodified")
   ptrn <- paste0(idColname,"|temperature|", fcStr)
-  datLong <- datWide %>% as.tbl() %>%
+  datLong <- datWide %>% tibble::as_tibble() %>%
     select(matches(ptrn)) %>% 
     gather(columnName, fc, contains(fcStr)) %>%
     rename_(uniqueID = idColname) %>%
