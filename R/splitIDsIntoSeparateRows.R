@@ -8,7 +8,7 @@ splitIDsIntoSeparateRows <- function(singleDat, idVar) {
   
   newRows <- lapply(nonUniques, function(entry){
     ## Create one row for each unique identifier in 'entry'
-    currentRow <- singleDat %>% filter_(paste0(idVar, '  == "', entry, '"'))
+    currentRow <- singleDat %>% filter(idVar  == !!sym(entry))
     
     # Repeat the row corresponding to the current entry separately for each unique
     # identifier in the entry.  
