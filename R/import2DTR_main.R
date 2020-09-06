@@ -39,10 +39,10 @@ import2DTR_main <- function(configTable, data, idVar, fcStr, addCol, naStrs,
     rowTmp <- configTable[iTmp,]
     
     ## Get settings or current experiment
-    expTmp <- rowTmp$Experiment
+    expTmp <- rowTmp[, "Experiment", drop = TRUE]
     message("Importing 2D-TPP dataset: ", expTmp)
     
-    tTmp <- rowTmp$Temperature     ## Corresponding Temperature value
+    tTmp <- rowTmp[,"Temperature", drop=TRUE]     ## Corresponding Temperature value
     
     ## Get corresponding data set
     dataTmp <- data[[expTmp]]
@@ -51,7 +51,9 @@ import2DTR_main <- function(configTable, data, idVar, fcStr, addCol, naStrs,
     noFCCols <- c("Compound", "Experiment", "Temperature", "RefCol", "Path", "Condition")
     allCols <- colnames(rowTmp)
     labelCols <- setdiff(allCols, noFCCols)
-    labelValues <- suppressMessages(rowTmp[,labelCols] %>% as.numeric)
+    labelValues <- as.character(rowTmp[,labelCols])
+    labelValues <- gsub("[^[:digit:]*|\\.]", "", labelValues)
+    labelValues <- as.numeric(labelValues)
     labelColsNum <- labelCols[!is.na(labelValues)]
     
     # Define all columns that should be imported:

@@ -34,7 +34,7 @@ test_that(desc="allOk", code={
   datIn <- testData
   fitsIn <- splineFits
 
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == sum(fitsIn$testHypothesis == "null" & fitsIn$successfulFit) + 2*sum(fitsIn$testHypothesis == "alternative" & fitsIn$successfulFit)
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"
@@ -50,7 +50,7 @@ test_that(desc="allOk2", code={
   datIn <- testData
   fitsIn <- splineFits2
   
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == 2 * sum(fitsIn$testHypothesis == "null" & fitsIn$successfulFit) + 4*sum(fitsIn$testHypothesis == "alternative" & fitsIn$successfulFit)
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"
@@ -68,7 +68,7 @@ test_that(desc="allOk3", code={
   datIn <- testData
   fitsIn <- splineFits3
   
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == sum(fitsIn$testHypothesis == "null" & fitsIn$successfulFit) + 4*sum(fitsIn$testHypothesis == "alternative" & fitsIn$successfulFit)
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"
@@ -86,7 +86,7 @@ test_that(desc="allOk_H0", code={
   datIn <- testData
   fitsIn <- splineFits %>% filter(testHypothesis == "null")
   
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == sum(fitsIn$successfulFit)
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"
@@ -103,7 +103,7 @@ test_that(desc="allOk_H1", code={
   datIn <- testData
   fitsIn <- splineFits %>% filter(testHypothesis == "alternative")
   
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == sum(fitsIn$successfulFit) * 2
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"
@@ -119,7 +119,7 @@ test_that(desc="modelColMissing", code={
   fitsIn <- splineFits %>% select(-fittedModel)
   datIn <- testData
   
-  expect_error(TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn))
+  expect_error(tpptrSplineAUCs(data = datIn, fits = fitsIn))
   
 })
 
@@ -131,7 +131,7 @@ test_that(desc="modelColInvalid", code={
   fitsIn <- splineFits %>% mutate(fittedModel = NA) # Create invalid models
   datIn <- testData
   
-  aucs <- TPP:::tpptrSplineAUCs(data = datIn, fits = fitsIn)
+  aucs <- tpptrSplineAUCs(data = datIn, fits = fitsIn)
   
   check1 <- nrow(aucs) == sum(fitsIn$successfulFit)
   check2 <- setdiff(colnames(fitsIn), colnames(aucs)) == "fittedModel"

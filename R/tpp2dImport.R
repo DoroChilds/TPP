@@ -81,7 +81,7 @@ tpp2dImport <- function(configTable = NULL,
                                                   fcStr = fcStr) %>%
     mutate(experiment = factor(experiment), unique_ID = factor(unique_ID))
   
-  dataWide <- dataWide %>% arrange_(.dots = c(idVar, "temperature"))
+  dataWide <- dataWide %>% arrange(!!sym(idVar), temperature)
   
   ## Add annotation for use in later functions:
   attr(dataWide, "configTable") <- configWide

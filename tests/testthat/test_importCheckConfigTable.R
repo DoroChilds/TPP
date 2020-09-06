@@ -55,7 +55,7 @@ test_that(desc="'confgCheck_expColConvertAlnum", code={
 
 test_that(desc="'confgCheck_expColEmptyEntries", code={
   hdacTR_config$Experiment <- gsub("Vehicle_1", "", hdacTR_config$Experiment)
-  confgList <- TPP:::importCheckConfigTable(infoTable=hdacTR_config, type="TR")
+  expect_warning(confgList <- TPP:::importCheckConfigTable(infoTable=hdacTR_config, type="TR"))
   expect_equal(confgList$expNames, hdacTR_config$Experiment[-1])
 })
 
@@ -88,8 +88,8 @@ test_that(desc="allOK", code={
 })
 
 test_that(desc="evalConfigSpecialChars", code={
-  cfgIn <- cfg %>% mutate_("126" = "'_'")
-  ref <- cfgIn %>% mutate_("126" = "NULL")
+  cfgIn <- cfg %>% mutate(`126` = "_")
+  ref <- cfgIn %>% select(-`126`)
   new <- TPP:::importCheckConfigTable(infoTable = cfgIn, type = "2D")
   expect_equal(ref, new)
 })

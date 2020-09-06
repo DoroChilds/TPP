@@ -19,8 +19,11 @@ compute_spline_auc <- function(splineModel, xmin, xmax){
     
     if (length(factors) > 0){
       
-      factorInfo <- factorInfo %>%
-        group_by_(.dots = lapply(factors, as.symbol))
+      if(length(factors) == 1){
+        factorInfo <- group_by(factorInfo, !!sym(factors))
+      } else {
+        factorInfo <- group_by(factorInfo, !!!syms(factors))
+      }
       
     } else {
       

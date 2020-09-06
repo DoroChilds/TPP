@@ -6,7 +6,7 @@ load(file.path(datapath, "validationData_pvalComputation.Rdata"))
 
 test_that("Invoke p-value computation for a single comparison (should work)", {
   i <- !refFilteredOut
-  newP <- TPP:::pValFctPerformSingleComparison(minsl=refMinSl[which(i)],
+  newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)],
                                                mpdiff=refMpDiff[which(i)], 
                                                method="robustZ", 
                                                control=list(binWidth=300),
@@ -16,11 +16,14 @@ test_that("Invoke p-value computation for a single comparison (should work)", {
 
 test_that("No valid melting point difference", {
   i <- !refFilteredOut
-  newP <- TPP:::pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
-                                               mpdiff=rep(NA, length(refMinSl)), 
-                                               method="robustZ", 
-                                               control=list(binWidth=300),
-                                               comparisonName = "T_vs_V")
+  suppressWarnings(
+    newP <- pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
+                                           mpdiff=rep(NA, length(refMinSl)), 
+                                           method="robustZ", 
+                                           control=list(binWidth=300),
+                                           comparisonName = "T_vs_V")
+  )
+
   expect_equal(newP, rep(NA_real_, length(refMinSl)), label = "Computed p-values")
   
 })
@@ -38,7 +41,7 @@ test_that("No valid melting point difference", {
 test_that("Given binWidth too big", {
   i <- !refFilteredOut
   expect_warning(
-    TPP:::pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
+    pValFctPerformSingleComparison(minsl=refMinSl[which(i)], 
                                          mpdiff=refMpDiff[which(i)], 
                                          method="robustZ", 
                                          control=list(binWidth=3500),

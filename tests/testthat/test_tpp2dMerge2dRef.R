@@ -53,32 +53,16 @@ test_that(desc="idCols_mismatch_exists", code={
   datIn <- datLeft
   refIn <- datRight %>% filter(!(Protein_ID %in% c("IPI00013895.1", "IPI00030275.5")))
   
-  tc <- tryCatch(
-    suppressMessages(
-      tpp2dMerge2dRef(resultTable_2D = datIn, referenceDataSummary = refIn, refIDVar = "Protein_ID")
-    ),
-    warning = function(w) {
-      return(list(
-        new = suppressMessages(
-          tpp2dMerge2dRef(resultTable_2D = datIn, referenceDataSummary = refIn)
-        ), 
-        w = w))
-    }
-  )
-  
-  missingRows <- tc$new %>% 
+  expect_warning(new <- tpp2dMerge2dRef(resultTable_2D = datIn, referenceDataSummary = refIn, refIDVar = "Protein_ID"))
+
+  missingRows <- new %>% 
     filter(representative %in% c("IPI00013895.1", "IPI00030275.5")) %>%
     subset(select = setdiff(colnames(datRight), "Protein_ID"))
   
   # The rows for the proteins that were missing in the reference data should be 
   # present, but filled with NAs:
-  check1 <- nrow(missingRows) == 2
-  check2 <- all(is.na(missingRows))
-  
-  # We expect an informative warning:
-  check3 <- inherits(tc$w, "warning")
-  
-  expect_true(check1 & check2 & check3)
+  expect_equal(nrow(missingRows), 2)
+  expect_true(all(is.na(missingRows)))
 })
 
 

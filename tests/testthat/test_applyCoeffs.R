@@ -10,5 +10,7 @@ test_that(desc="testApplyCoeffs", code={
   
   xNew <- unname(Biobase::exprs(eSetNormed))
   xRef <- rbind(x[1,] * normCoeffs, x[2,] * normCoeffs)
+  
+  expect_equal(xNew, xRef)
 })
 
