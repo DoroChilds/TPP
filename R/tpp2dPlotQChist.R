@@ -60,26 +60,19 @@ tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, 
   fileName <- file.path(dirPath, "qc_histograms.pdf")
   pdf(fileName, onefile=TRUE)
   
-
-  temp <- "temperature"
-  exp <- "experiment"
-  conc <- "concentration"
-  type <- "type"
-  fc <- "fc"
-  log2fc <- "log2fc"
   dmsoRatio <- "dmso1_vs_dmso2"
-  extra <- grep(paste0("^", fcStrNorm,".*unmodified"),colnames(resultTable),value=TRUE)
-  extra2 <- grep(paste0("^", fcStr),colnames(resultTable),value=TRUE)
+  fc_cols_orig <- grep(paste0("^", fcStrNorm,".*unmodified"),colnames(resultTable),value=TRUE)
+  fc_cols <- grep(paste0("^", fcStr),colnames(resultTable),value=TRUE)
   
   # create tidy dataframe
   tmp.df <- resultTable %>%
-    select(!!!syms(c(idVar, temp, exp, extra, extra2))) %>%
-    gather("key", "fc", !!!syms(c(extra, extra2))) %>%
+    select(!!idVar, temperature, experiment, !!!fc_cols_orig, !!!fc_cols) %>%
+    gather("key", "fc", !!!syms(c(fc_cols_orig, fc_cols))) %>%
     mutate(concentration=gsub("(.+)_([0-9,\\.]+)(.*)", "\\2", key),
            type=sub(paste(fcStr, ".*", sep=""), "original", 
                     sub(".*unmodified", "normalized", key)),
            log2fc=log2(fc)) %>%
-    select(!!!syms(idVar, temp, exp, conc, type, fc, log2fc)) %>%
+    select(!!idVar, temperature, experiment, concentration, type, fc, log2fc) %>%
     filter(concentration!="0")
   
   # loop over all ms experiments
@@ -204,12 +197,12 @@ tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, 
   
   if (length(grep(dmsoRatio, colnames(resultTable)))>0){
     tmp.df <- resultTable %>% 
-      select(!!!syms(idVar, exp, temp, qualColName, dmsoRatio)) %>%
+      select(!!idVar, experiment, temperature, !!qualColName, !!dmsoRatio) %>%
       filter(!!sym(qualColName)>1) %>%
       mutate(marked=abs(log2(as.numeric(dmso1_vs_dmso2)))>=1,
              annotation=sub("TRUE", "abs(log2(DMSO1/DMSO2))>=1", marked))  %>%
       mutate(annotation=sub("FALSE", "abs(log2(DMSO1/DMSO2))<1", annotation)) %>%
-      ddply(.variables=c(idVar, exp, qualColName, dmsoRatio, "marked", "annotation"), 
+      ddply(.variables=c(idVar, "experiment", qualColName, dmsoRatio, "marked", "annotation"), 
             function(df) {
               data.frame(temperature=paste(df$temperature, collapse=", "))
             }) %>%
@@ -275,7 +268,7 @@ tpp2dPlotQChist <- function(configFile=NULL, resultTable=NULL, resultPath=NULL, 
   
   # no. of temperatures per protein plot
   tmp.df <- resultTable %>% 
-    select(!!!syms(idVar, temp, qualColName)) %>%
+    select(!!idVar, temperature, !!qualColName) %>%
     filter(!!sym(qualColName)>1) %>%
     group_by(!!idVar) %>% 
     summarise(count=length(temperature))

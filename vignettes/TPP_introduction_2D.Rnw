@@ -234,7 +234,7 @@ drPlotsByTemperature[[IPI_id_HDAC2]][["54"]]
 In order to access the quality of the experimental 2D-TPP data set acquired in a specific cell line, we recommend to compare the data with vehicle TR experiments (at least two replicates) of the same cell line. For the analysis of this data we supply a QC-workflow that enables comparison of treatment and non-treatment samples with reference data.
 
 In order to start this workflow the first thing we need to do, is to generate a cell line specific TR reference object. We also need to specify the result path where this object should be stored:
-<<result_path_2DTPP, eval = FALSE>>=
+<<result_path_2DTPP, eval = TRUE>>=
 resultPath = file.path(getwd(), 'Panobinostat_Vignette_Example_2D')
 if (!file.exists(resultPath)) dir.create(resultPath, recursive = TRUE)
 @
