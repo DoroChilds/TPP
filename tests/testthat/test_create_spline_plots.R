@@ -58,13 +58,10 @@ test_that(desc="allOk1", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
-                  c( "black" , "#808080", "#da7f2d"))
-  
-  expect_true(check1 & check2 & check3)
-  
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)),
+               c("black", "grey50", "#808080", "#da7f2d"))
 })
 
 test_that(desc="allOk2", code={
@@ -79,13 +76,10 @@ test_that(desc="allOk2", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
-                  c("black" , "#1B9E77", "#9B58A5", "#BBA90B", "#666666"))
-  
-  expect_true(check1 & check2 & check3)
-  
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)),
+               c("black" , "grey50", "#1B9E77", "#9B58A5", "#BBA90B", "#666666"))
 })
 
 test_that(desc="allOk3", code={
@@ -100,13 +94,10 @@ test_that(desc="allOk3", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  # check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  # check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) ==
-  #                 c("black", "#1B9E77", "#B16548", "#D03792", "#7FA718", "#BF8B12", "#666666"))
-  
-  expect_true(check1) #  & check2 & check3
-  
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)),
+               c("black", "grey50", "#1B9E77", "#B16548", "#D03792", "#7FA718", "#BF8B12", "#666666"))
 })
 
 test_that(desc="sevenConditions", code={
@@ -131,11 +122,8 @@ test_that(desc="sevenConditions", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- length(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) == 6
-  
-  expect_true(check1 & check2)
-  
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(length(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)), 6)
 })
 
 test_that(desc="onlyAlternative", code={
@@ -153,12 +141,10 @@ test_that(desc="onlyAlternative", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  check3 <- all(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) == 
-                  c("#808080", "#da7f2d"))
-  
-  expect_true(check1 & check2 & check3)
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)),
+                  c("grey50", "#808080", "#da7f2d"))
 })
 
 test_that(desc="onlyNull", code={
@@ -177,12 +163,11 @@ test_that(desc="onlyNull", code={
                                        highlightTxt = "")
   
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  #check3 <- length(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)) == 2 # to do: remove the generic 'black' color
-  check4 <- length(outPlot$layers) == 2
-  
-  expect_true(check1 & check2 & check4)
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(na.omit(unique(ggplot2::ggplot_build(outPlot)$data[[2]]$colour)),
+               c("black", "#BF8B12", "#666666")) # to do: remove the generic 'black' color
+  expect_equal(length(outPlot$layers), 2)
 })
 
 test_that(desc="noHypothesisNorCondition", code={
@@ -202,11 +187,9 @@ test_that(desc="noHypothesisNorCondition", code={
                                        highlightIDs = c(),
                                        highlightTxt = "")
   
-  check1 <- inherits(outPlot, "ggplot")
-  check2 <- all(paste(outPlot$mapping) == c("~x", "~y", "~colorColumn"))
-  check3 <- length(outPlot$layers) == 2
-  
-  expect_true(check1 & check2 & check3)
+  expect_true(inherits(outPlot, "ggplot"))
+  expect_equal(paste(outPlot$mapping), c("~x", "~y", "~colorColumn"))
+  expect_equal(length(outPlot$layers), 2) 
 })
 
 
