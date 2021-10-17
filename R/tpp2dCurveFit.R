@@ -128,10 +128,8 @@ tpp2dCurveFit <- function(configFile = NULL,
   
   message("Performing TPP-CCR dose response curve fitting and generating result table...")
   
-  # create CCR config file list
   cfgIn <- convert_2D_cfgTable_to_CCR_cfgTable(configTable = configTable)
   
-  # Re-format data as data frame: -> to do: ask Nils for reasons
   datIn <- as.data.frame(data)
   
   CCRresult <- suppressMessages(
