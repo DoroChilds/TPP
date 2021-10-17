@@ -29,7 +29,8 @@ knitr::opts_chunk$set(concordance = TRUE,
                       resize.width="0.45\\textwidth",
                       fig.align='center',
                       tidy = FALSE,
-                      message=FALSE)
+                      message=FALSE, 
+                      warning = FALSE)
 @
 
 \maketitle

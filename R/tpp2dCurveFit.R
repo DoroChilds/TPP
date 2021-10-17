@@ -132,7 +132,7 @@ tpp2dCurveFit <- function(configFile = NULL,
   
   datIn <- as.data.frame(data)
   
-  CCRresult <- suppressMessages(
+  CCRresult <- suppressWarnings(
     analyzeTPPCCR(configTable = cfgIn, 
                   data = datIn, 
                   nCores = nCores, 
