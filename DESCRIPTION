@@ -3,7 +3,7 @@ Type: Package
 Title: Analyze thermal proteome profiling (TPP) experiments
 Version: 3.23.0
 Author: Dorothee Childs, Nils Kurzawa, Holger Franken, Carola Doce, Mikhail Savitski and Wolfgang Huber
-Maintainer: Dorothee Childs <dorothee.childs@embl.de>
+Maintainer: Dorothee Childs <d.childs@posteo.de>
 Depends:
     R (>= 3.4),
     Biobase,
